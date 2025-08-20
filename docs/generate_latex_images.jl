@@ -28,7 +28,7 @@ render(ltab1, MIME("image/png"); use_tectonic=true,
 
 functions = [
     x -> "\\verb+$(string(x))+",
-    x -> latexify(x; fmt=FancyNumberFormatter()),
+    x -> latexify(x),
     x -> latexify(x; fmt=SiunitxNumberFormatter()),
     x -> latexify(x; fmt=SiunitxNumberFormatter(; simple=true)),
 ]
@@ -129,12 +129,12 @@ tab2 = map(allunits) do unit
     [LaTeXString(f(unit)) for f in functions]
 end
 ltab2 = latextabular(tab2, adjustment=:l, transpose=true, latex=false, booktabs=true, 
-    head=["Name", ":mathrm", ":siunitx", ":siunitxsimple"])
+    head=["Name", "Default number formatter", "\\verb+SiunitxNumberFormatter()+", "\\verb+SiunitxNumberFormatter(;simple=true)+"])
 # Set background to not-quite-white so it doesn't get treated as transparent
 ltab2 = LaTeXString(
     """
-    \\setmainfont{Noto Serif}
-    \\setmonofont{Noto Sans Mono}
+    \\setmainfont{FreeSerif}
+    \\setmonofont{FreeMono}
     \\definecolor{offwhite}{rgb}{0.999,0.999,0.999}
     \\pagecolor{offwhite}
     \\color{black}
