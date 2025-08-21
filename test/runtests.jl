@@ -1643,6 +1643,10 @@ end
                 Tridiagonal{Int}
             @test typeof(ustrip(SymTridiagonal([1,2,3]u"m", [4,5]u"m"))) <:
                 SymTridiagonal{Int}
+            A = zeros(3,3)*1u"s"
+            V = view(A,2:3,2:3)
+            ustrip(V)[1,1]=1
+            @test A[2,2] == 1u"s"
         end
         @testset ">> Linear algebra" begin
             @test istril(1m) === true
