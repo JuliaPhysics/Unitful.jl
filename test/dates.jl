@@ -168,9 +168,9 @@
             @test_throws DimensionError atan(1u"m", Second(1))
 
             @test atan(CompoundPeriod(Minute(1), Second(30)), 10u"s") == atan(9,1)
-            @test atan(1u"yr", CompoundPeriod(Day(365), Hour(6))) == atan(1,1)
-            @test_throws DimensionError atan(1u"m", CompoundPeriod(Day(365), Hour(6)))
-            @test_throws DimensionError atan(CompoundPeriod(Day(365), Hour(6)), 1u"m")
+            @test atan(1u"yr", CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12))) == atan(1,1)
+            @test_throws DimensionError atan(1u"m", CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)))
+            @test_throws DimensionError atan(CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)), 1u"m")
             @test_throws MethodError atan(1u"s", CompoundPeriod(Year(1)))
             @test_throws MethodError atan(CompoundPeriod(Month(6)), 1u"s")
         end
@@ -194,20 +194,21 @@
             @test uconvert(u"ns", CompoundPeriod()) === u"ns"(CompoundPeriod()) === Int64(0)u"ns"
             @test uconvert(u"ps", CompoundPeriod()) === u"ps"(CompoundPeriod()) === Int64(0)u"ps"
             @static if Sys.WORD_SIZE == 32
-                @test uconvert(u"yr", CompoundPeriod(Day(365),Hour(6))) === 1.0u"yr"
-                @test u"yr"(CompoundPeriod(Day(365),Hour(6))) === 1.0u"yr"
+                @test uconvert(u"yr", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === 1.0u"yr"
+                @test u"yr"(CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === 1.0u"yr"
             else
-                @test uconvert(u"yr", CompoundPeriod(Day(365),Hour(6))) === Rational{Int64}(1,1)u"yr"
-                @test u"yr"(CompoundPeriod(Day(365),Hour(6))) === Rational{Int64}(1,1)u"yr"
+                @test uconvert(u"yr", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === Rational{Int64}(1,1)u"yr"
+                @test u"yr"(CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === Rational{Int64}(1,1)u"yr"
             end
-            @test uconvert(u"μs", CompoundPeriod(Day(365),Hour(6))) === Rational{Int64}(31_557_600_000_000,1)u"μs"
-            @test u"μs"(CompoundPeriod(Day(365),Hour(6))) === Rational{Int64}(31_557_600_000_000,1)u"μs"
-            @test uconvert(u"ns", CompoundPeriod(Day(365),Hour(6))) === Int64(31_557_600_000_000_000)u"ns"
-            @test u"ns"(CompoundPeriod(Day(365),Hour(6))) === Int64(31_557_600_000_000_000)u"ns"
+            @test uconvert(u"μs", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === Rational{Int64}(31_556_952_000_000,1)u"μs"
+            @test u"μs"(CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === Rational{Int64}(31_556_952_000_000,1)u"μs"
+            @test uconvert(u"ns", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === Int64(31_556_952_000_000_000)u"ns"
+            @test u"ns"(CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === Int64(31_556_952_000_000_000)u"ns"
+            @test uconvert(u"ms", 1u"yr") == (Dates.toms(Year(1)))u"ms"  # Compare to Dates stdlib value of a year
             @test uconvert(u"ps", CompoundPeriod(Week(1),Hour(-1))) === Int64(601_200_000_000_000_000)u"ps"
             @test u"ps"(CompoundPeriod(Week(1),Hour(-1))) === Int64(601_200_000_000_000_000)u"ps"
-            @test_throws DimensionError uconvert(u"m", CompoundPeriod(Day(365),Hour(6)))
-            @test_throws DimensionError u"m"(CompoundPeriod(Day(365),Hour(6)))
+            @test_throws DimensionError uconvert(u"m", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12)))
+            @test_throws DimensionError u"m"(CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12)))
             @test_throws MethodError uconvert(u"yr", CompoundPeriod(Year(1),Day(1)))
             @test_throws MethodError u"yr"(CompoundPeriod(Year(1),Day(1)))
             @test_throws MethodError uconvert(u"s", CompoundPeriod(Month(1),Day(1)))
@@ -237,14 +238,14 @@
             @test ustrip(u"ns", CompoundPeriod()) === Int64(0)
             @test ustrip(u"ps", CompoundPeriod()) === Int64(0)
             @static if Sys.WORD_SIZE == 32
-                @test ustrip(u"yr", CompoundPeriod(Day(365),Hour(6))) === 1.0
+                @test ustrip(u"yr", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === 1.0
             else
-                @test ustrip(u"yr", CompoundPeriod(Day(365),Hour(6))) === Rational{Int64}(1,1)
+                @test ustrip(u"yr", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === Rational{Int64}(1,1)
             end
-            @test ustrip(u"μs", CompoundPeriod(Day(365),Hour(6))) === Rational{Int64}(31_557_600_000_000,1)
-            @test ustrip(u"ns", CompoundPeriod(Day(365),Hour(6))) === Int64(31_557_600_000_000_000)
+            @test ustrip(u"μs", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === Rational{Int64}(31_556_952_000_000,1)
+            @test ustrip(u"ns", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12))) === Int64(31_556_952_000_000_000)
             @test ustrip(u"ps", CompoundPeriod(Week(1),Hour(-1))) === Int64(601_200_000_000_000_000)
-            @test_throws DimensionError ustrip(u"m", CompoundPeriod(Day(365),Hour(6)))
+            @test_throws DimensionError ustrip(u"m", CompoundPeriod(Day(365),Hour(5),Minute(49),Second(12)))
             @test_throws MethodError ustrip(CompoundPeriod())
             @test_throws MethodError ustrip(CompoundPeriod(Second(1)))
             @test_throws MethodError ustrip(CompoundPeriod(Week(1), Hour(-1)))
@@ -290,7 +291,7 @@
                      Quantity{Float64,𝐓,typeof(u"s")},
                      Quantity{Int64,𝐓,typeof(u"ns")})
                 @test T(CompoundPeriod()) === convert(T, CompoundPeriod()) === T(0u"s")
-                @test T(CompoundPeriod(Day(365), Hour(6))) === convert(T, CompoundPeriod(Day(365), Hour(6))) === T(1u"yr")
+                @test T(CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12))) === convert(T, CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12))) === T(1u"yr")
                 @test T(CompoundPeriod(Week(1), Hour(-1))) === convert(T, CompoundPeriod(Week(1), Hour(-1))) === T(167u"hr")
                 @test_throws MethodError T(CompoundPeriod(Month(1)))
                 @test_throws MethodError T(CompoundPeriod(Year(1)))
@@ -299,8 +300,8 @@
             end
             @test_throws InexactError Quantity{Int64,𝐓,typeof(u"d")}(CompoundPeriod(Day(1),Hour(6)))
             @test_throws InexactError convert(typeof(1u"d"), CompoundPeriod(Day(1),Hour(1)))
-            @test_throws DimensionError Quantity{Float64,𝐋,typeof(u"m")}(CompoundPeriod(Day(365), Hour(6)))
-            @test_throws DimensionError convert(typeof(1.0u"m"), CompoundPeriod(Day(365), Hour(6)))
+            @test_throws DimensionError Quantity{Float64,𝐋,typeof(u"m")}(CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)))
+            @test_throws DimensionError convert(typeof(1.0u"m"), CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)))
         end
     end
 
@@ -602,8 +603,8 @@
         @test !(Day(4) == 4u"hr")
         @test !(4u"cm" == Day(4))
 
-        @test CompoundPeriod(Day(365), Hour(6)) == 1u"yr"
-        @test 1u"yr" == CompoundPeriod(Day(365), Hour(6))
+        @test CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)) == 1u"yr"
+        @test 1u"yr" == CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12))
         @test CompoundPeriod() == -0.0u"s"
         @test !(1u"m" == CompoundPeriod(Day(1)))
         @test !(CompoundPeriod(Day(1)) == 1u"m")
@@ -619,8 +620,8 @@
         @test !isequal(Day(4), 4u"hr")
         @test !isequal(4u"cm", Day(4))
 
-        @test isequal(CompoundPeriod(Day(365), Hour(6)), 1u"yr")
-        @test isequal(1u"yr", CompoundPeriod(Day(365), Hour(6)))
+        @test isequal(CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)), 1u"yr")
+        @test isequal(1u"yr", CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)))
         @test !isequal(CompoundPeriod(), -0.0u"s") # !isequal(0.0, -0.0)
         @test !isequal(1u"m", CompoundPeriod(Day(1)))
         @test !isequal(CompoundPeriod(Day(1)), 1u"m")
@@ -640,7 +641,7 @@
 
         @test CompoundPeriod(Day(365)) < 1u"yr"
         @test 1u"s" < CompoundPeriod(Second(1), Nanosecond(1))
-        @test !(CompoundPeriod(Day(365), Hour(6)) < 1u"yr")
+        @test !(CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)) < 1u"yr")
         @test !(1u"s" < CompoundPeriod(Second(1)))
         @test !(-0.0u"s" < CompoundPeriod())
         @test_throws DimensionError 7u"kg" < CompoundPeriod(Day(1))
@@ -661,7 +662,7 @@
 
         @test isless(CompoundPeriod(Day(365)), 1u"yr")
         @test isless(1u"s", CompoundPeriod(Second(1), Nanosecond(1)))
-        @test !isless(CompoundPeriod(Day(365), Hour(6)), 1u"yr")
+        @test !isless(CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)), 1u"yr")
         @test !isless(1u"s", CompoundPeriod(Second(1)))
         @test isless(-0.0u"s", CompoundPeriod())
         @test_throws DimensionError isless(7u"kg", CompoundPeriod(Day(1)))
@@ -678,7 +679,7 @@
         @test_throws DimensionError 7u"kg" ≤ Day(1)
         @test_throws DimensionError Day(1) ≤ 7u"kg"
 
-        @test CompoundPeriod(Day(365), Hour(6)) ≤ 1u"yr"
+        @test CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)) ≤ 1u"yr"
         @test 1u"s" ≤ CompoundPeriod(Second(1), Nanosecond(1))
         @test !(1u"s" ≤ CompoundPeriod(Millisecond(999)))
         @test_throws DimensionError 7u"kg" ≤ CompoundPeriod(Day(1))
@@ -699,13 +700,13 @@
         @test_throws DimensionError max(Second(1), 1u"kg")
 
         @test min(1u"s", CompoundPeriod()) == CompoundPeriod()
-        @test min(1u"yr", CompoundPeriod(Day(365), Hour(7))) == 1u"yr"
+        @test min(1u"yr", CompoundPeriod(Day(365), Hour(6))) == 1u"yr"
         @test_throws DimensionError min(CompoundPeriod(), 1u"m")
         @test_throws DimensionError min(1u"m", CompoundPeriod())
         @test_throws MethodError min(1u"yr", CompoundPeriod(Year(1)))
         @test_throws MethodError min(CompoundPeriod(Month(1)), 1u"yr")
         @test max(1u"s", CompoundPeriod()) == 1u"s"
-        @test max(1u"yr", CompoundPeriod(Day(365), Hour(7))) == CompoundPeriod(Day(365), Hour(7))
+        @test max(1u"yr", CompoundPeriod(Day(365), Hour(6))) == CompoundPeriod(Day(365), Hour(6))
         @test_throws DimensionError max(CompoundPeriod(), 1u"m")
         @test_throws DimensionError max(1u"m", CompoundPeriod())
         @test_throws MethodError max(1u"yr", CompoundPeriod(Year(1)))
@@ -728,8 +729,8 @@
         @test_throws DimensionError isapprox(Second(2), 2500u"ms", atol=0.5)
         @test_throws DimensionError isapprox(Second(2), 2500u"ms", atol=0.5u"m")
 
-        @test isapprox(nextfloat(1.0)u"yr", CompoundPeriod(Day(365), Hour(6)))
-        @test isapprox(1.0u"yr", CompoundPeriod(Day(365), Hour(6)), rtol=0)
+        @test isapprox(nextfloat(1.0)u"yr", CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)))
+        @test isapprox(1.0u"yr", CompoundPeriod(Day(365), Hour(5), Minute(49), Second(12)), rtol=0)
         @test isapprox(2u"s", CompoundPeriod(Second(2), Millisecond(500)), atol=1u"s")
         @test isapprox(CompoundPeriod(Second(2), Millisecond(500)), 2u"s", atol=CompoundPeriod(Second(1)))
         @test isapprox(CompoundPeriod(Second(2), Millisecond(500)), 2u"s", rtol=0.5)

@@ -288,10 +288,10 @@ to avoid confusion with the Julia function `min`.
 \nSee Also: [`Unitful.d`](@ref)."
 @unit wk     "wk"       Week                  604800s       false
 "    Unitful.yr
-\nThe year, a unit of time, defined as 365.25 d.
+\nThe year, a unit of time, defined as 365.2425 d.
 \nDimension: [`Unitful.𝐓`](@ref).
 \nSee Also: [`Unitful.hr`](@ref)."
-@unit yr     "yr"       Year                  31557600s     true true
+@unit yr     "yr"       Year                  31556952s     true true
 "    Unitful.rps
 \nRevolutions per second, a unit of rotational speed, defined as 2π rad / s.
 \nDimension: 𝐓^-1.

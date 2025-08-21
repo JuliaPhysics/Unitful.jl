@@ -12,7 +12,7 @@ end
 The `Dates.FixedPeriod` union type includes all `Dates.Period`s that represent a fixed period of time, i.e., `Dates.Week`, `Dates.Day`, `Dates.Hour`, `Dates.Minute`, `Dates.Second`, `Dates.Millisecond`, `Dates.Microsecond`, and `Dates.Nanosecond`. These types can be converted to `Quantity`s or used in place of them.
 
 !!! note
-    `Dates.Year` does not represent a fixed period and cannot be converted to a `Quantity`. While Unitful's `yr` unit is exactly equal to 365.25 days, a `Dates.Year` may contain 365 or 366 days.
+    `Dates.Year` does not represent a fixed period and cannot be converted to a `Quantity`. While Unitful's `yr` unit is exactly equal to 365.2425 days, a `Dates.Year` may contain 365 or 366 days (see [`Dates.days(::Year)`](@ref) and [`Dates.isleapyear`](@ref)).
 
 Each `FixedPeriod` is considered equivalent to a `Quantity`. For example, `Dates.Millisecond(5)` corresponds to the quantity `Int64(5)*u"ms"`. A `FixedPeriod` can be converted to the equivalent `Quantity` with a constructor:
 
@@ -108,8 +108,8 @@ However, not all operations that are defined for `FixedPeriod`s support `Compoun
 The reason for that is that a `CompoundPeriod` does not correspond to a specific unit:
 
 ```@jldoctest
-julia> p = Day(365) + Hour(6)
-365 days, 6 hours
+julia> p = Day(365) + Hour(5) + Minute(49) + Second(12)
+365 days, 5 hours, 49 minutes, 12 seconds
 
 julia> unit(p)  # A CompoundPeriod does not have a corresponding unit ...
 ERROR: MethodError: no method matching unit(::Dates.CompoundPeriod)
@@ -123,7 +123,7 @@ ERROR: MethodError: no method matching Quantity(::Int64)
 [...]
 
 julia> T = typeof(1.0u"hr"); T(p)  # ... but it can be converted to a concrete time quantity
-8766.0 hr
+8765.82 hr
 ```
 
 Consequently, any operation whose result would depend on the input unit is not supported by `CompoundPeriod`s. For example:
