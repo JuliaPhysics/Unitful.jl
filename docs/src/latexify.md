@@ -4,6 +4,10 @@ Unitful has an extension for [Latexify](https://github.com/korsbo/Latexify.jl), 
 
 The default usage is pretty intuitive:
 
+```@setup main
+using LaTeXStrings # for some manual pretty-printing
+```
+
 ```@example main
 using Unitful, Latexify
 
@@ -39,12 +43,14 @@ expected:
 
 ```@example main
 latexify([12u"m", 1u"m^2", 4u"m^3"])
+LaTeXString("\$\$" * ans * "\$\$") # hide
 ```
 
 A special case is an array where all elements have the same unit, and here
-UnitfulLatexify does some extra work:
+the extension does some extra work:
 ```@example main
 latexify([1, 2, 3]u"cm")
+LaTeXString("\$\$" * ans * "\$\$") # hide
 ```
 
 
@@ -69,11 +75,16 @@ To get `siunitx`'s list behavior, pass a tuple instead of an array;
 if you want a tuple to be written as an array instead, use `collect(x)` or `[x...]` to explicitly it into an array first.
 
 ```@example main
-string.([
-latexify((1, 2, 3).*u"m"),
-latexify((1, 2, 3).*u"m"; fmt=SiunitxNumberFormatter()),
-latexify(collect((1, 2, 3).*u"m"); fmt=SiunitxNumberFormatter()),
-])
+latexify((1, 2, 3).*u"m")
+print(ans) # hide
+```
+```@example main
+latexify((1, 2, 3).*u"m"; fmt=SiunitxNumberFormatter())
+print(ans) # hide
+```
+```@example main
+latexify(collect((1, 2, 3).*u"m"); fmt=SiunitxNumberFormatter())
+print(ans) # hide
 ```
 
 
@@ -87,7 +98,7 @@ latexify("v", u"km/s")
 
 This enables this dreamlike example:
 
-```
+```@example plot
 using Unitful, Plots, Latexify 
 gr()
 default(fontfamily="Computer Modern")
@@ -108,17 +119,17 @@ To use these in a plot call, either pass a function like
 ```
 (l,u) -> latexify(l, u; labelformat=:slash)` 
 ```
-or call `Latexify.set_default(labelformat=:square)`, the pass `latexify` as your unitformat.
+or call `Latexify.set_default(labelformat=:square)`, then pass `latexify` as your unitformat.
 
-```
+```@example plot
 args = (m, v)
 kwargs = (xguide="\\mathrm{mass}", yguide="v_x", legend=false)
 Latexify.set_default(labelformat=:square)
 plot(
-	plot(args...; kwargs..., unitformat=(l,u)->latexify(l, u, :slash)),
-	plot(args...; kwargs..., unitformat=(l, u)->latexify(l, u, :round)),
+	plot(args...; kwargs..., unitformat=(l,u)->latexify(l, u, labelformat=:slash)),
+	plot(args...; kwargs..., unitformat=(l, u)->latexify(l, u, labelformat=:round)),
 	plot(args...; kwargs..., unitformat=latexify),
-	plot(args...; kwargs..., unitformat=(l, u)->latexify(l, u, :frac)),
+	plot(args...; kwargs..., unitformat=(l, u)->latexify(l, u, labelformat=:frac)),
 	plot(args...; kwargs..., unitformat=(l, u)->string("\$", l, " \\rightarrow ", latexraw(u), "\$")),
 )
 ```
@@ -132,9 +143,9 @@ Markdown.parse("""
 The period is $(@latexrun T = $(2.5u"ms")), so the frequency is $(@latexdefine f = 1/T post=u"kHz").
 """)
 ```
-, which renders as
+which renders as
 
-> The period is $T = 2.5 \mathrm{ms}$, so the frequency is $f = \frac{1}{T} = 0.4 \mathrm{kHz}$.
+> The period is $T = 2.5\,\mathrm{ms}$, so the frequency is $f = \frac{1}{T} = 0.4\,\mathrm{kHz}$.
 
 Note that the quantity has to be interpolated (put inside a
 dollar-parenthesis), or Latexify will interpret it as a multiplication between
