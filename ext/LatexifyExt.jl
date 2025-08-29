@@ -403,7 +403,4 @@ const unitnames = begin
     )
 end
 
-
-
-
 end # LatexifyExt

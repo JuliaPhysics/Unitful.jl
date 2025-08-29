@@ -108,9 +108,9 @@ v = randn(10)u"m/s"
 plot(m, v; xguide="\\mathrm{mass}", yguide="v_x", unitformat=latexify)
 ```
 
-This format, ``v_x\;\left/\mathrm{m}\,\mathrm{s}^{-1}\right.``, is subject to personal
+This format, ``v_x\;\left/\;\mathrm{m}\,\mathrm{s}^{-1}\right.``, is subject to personal
 preference. A couple other defaults are provided:
-- `:slash`, ``v_x\;\left/\mathrm{m}\,\mathrm{s}^{-1}\right.``
+- `:slash`, ``v_x\;\left/\;\mathrm{m}\,\mathrm{s}^{-1}\right.``
 - `:round`, ``v_x\;\left(\mathrm{m}\,\mathrm{s}^{-1}\right)``
 - `:square`, ``v_x\;\left[\mathrm{m}\,\mathrm{s}^{-1}\right]``
 - `:frac`, ``\frac{v_x}{\mathrm{m}\,\mathrm{s}^{-1}}``
@@ -145,7 +145,7 @@ The period is $(@latexrun T = $(2.5u"ms")), so the frequency is $(@latexdefine f
 ```
 which renders as
 
-> The period is $T = 2.5\,\mathrm{ms}$, so the frequency is $f = \frac{1}{T} = 0.4\,\mathrm{kHz}$.
+> The period is $T = 2.5\;\mathrm{ms}$, so the frequency is $f = \frac{1}{T} = 0.4\;\mathrm{kHz}$.
 
 Note that the quantity has to be interpolated (put inside a
 dollar-parenthesis), or Latexify will interpret it as a multiplication between
