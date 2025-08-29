@@ -156,7 +156,7 @@ a number and a call to `@u_str`.
 
 In mathrm-mode, one might prefer ``\mathrm{J}\,/\,\mathrm{kg}`` or
 ``\frac{\mathrm{J}}{\mathrm{kg}}`` over ``\mathrm{J}\,\mathrm{kg}^{-1}``. This
-can be achieved by supplying `permode=:slash` or `permode=:frac` respectively.
+can be achieved by supplying `permode=:slash` or `permode=:frac` respectively, rather than the default `permode=:power`.
 
 These will have no effect with `SiunitxNumberFormatter`, because the latex package handles
 this for you, and you can set it in your document.
