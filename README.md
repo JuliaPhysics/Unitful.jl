@@ -1,6 +1,6 @@
-[![CI](https://github.com/PainterQubits/Unitful.jl/workflows/CI/badge.svg)](https://github.com/PainterQubits/Unitful.jl/actions?query=workflow%3ACI)
-[![Coverage Status](https://coveralls.io/repos/github/PainterQubits/Unitful.jl/badge.svg?branch=master)](https://coveralls.io/github/PainterQubits/Unitful.jl?branch=master)
-[![codecov.io](https://codecov.io/github/PainterQubits/Unitful.jl/coverage.svg?branch=master)](https://codecov.io/github/PainterQubits/Unitful.jl?branch=master)
+[![CI](https://github.com/JuliaPhysics/Unitful.jl/workflows/CI/badge.svg)](https://github.com/JuliaPhysics/Unitful.jl/actions?query=workflow%3ACI)
+[![Coverage Status](https://coveralls.io/repos/github/JuliaPhysics/Unitful.jl/badge.svg?branch=master)](https://coveralls.io/github/JuliaPhysics/Unitful.jl?branch=master)
+[![codecov.io](https://codecov.io/github/JuliaPhysics/Unitful.jl/coverage.svg?branch=master)](https://codecov.io/github/JuliaPhysics/Unitful.jl?branch=master)
 
 
 
@@ -12,7 +12,7 @@ cases eliminate the run-time penalty of units. There should be facilities
 for dimensional analysis. All of this should integrate easily with the usual
 mathematical operations and collections that are found in Julia base.
 
-### Documentation: [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://PainterQubits.github.io/Unitful.jl/stable) [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://PainterQubits.github.io/Unitful.jl/dev)
+### Documentation: [![](https://img.shields.io/badge/docs-stable-blue.svg)](https://JuliaPhysics.github.io/Unitful.jl/stable) [![](https://img.shields.io/badge/docs-dev-blue.svg)](https://JuliaPhysics.github.io/Unitful.jl/dev)
 
 
 ## Other packages in the Unitful family

@@ -6,7 +6,7 @@ end
 # Unitful.jl
 
 A Julia package for physical units. Available
-[here](https://github.com/PainterQubits/Unitful.jl). Inspired by:
+[here](https://github.com/JuliaPhysics/Unitful.jl). Inspired by:
 
 - [SIUnits.jl](https://github.com/keno/SIUnits.jl)
 - [EngUnits.jl](https://github.com/dhoegh/EngUnits.jl)

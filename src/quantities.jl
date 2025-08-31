@@ -213,11 +213,8 @@ for _y in (:sin, :cos, :tan, :asin, :acos, :atan, :sinh, :cosh, :tanh, :asinh, :
 end
 cis(x::DimensionlessQuantity{<:Real}) = Complex(reverse(sincos(x))...)
 cis(x::DimensionlessQuantity{<:Complex}) = exp(-imag(x)) * cis(real(x))
-if isdefined(Base, :cispi)
-    import Base: cispi
-    Base.cispi(x::DimensionlessQuantity{<:Real}) = Complex(reverse(sincospi(x))...)
-    Base.cispi(x::DimensionlessQuantity{<:Complex}) = exp(-(π*imag(x))) * cispi(real(x))
-end
+cispi(x::DimensionlessQuantity{<:Real}) = Complex(reverse(sincospi(x))...)
+cispi(x::DimensionlessQuantity{<:Complex}) = exp(-(π*imag(x))) * cispi(real(x))
 
 atan(y::AbstractQuantity{T1,D,U1}, x::AbstractQuantity{T2,D,U2}) where {T1,T2,D,U1,U2} =
     atan(promote(y,x)...)

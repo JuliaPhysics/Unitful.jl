@@ -105,22 +105,16 @@ const AbsoluteScaleTemperature = Quantity{T, 𝚯, <:ScalarUnits} where T
 \nDimension: [`Unitful.NoDims`](@ref)."
 @unit rad     "rad"     Radian      1                       true true
 "    Unitful.°
+    Unitful.deg
 \nThe degree, a unit of angle. There are 360° in a circle.
 \nDimension: [`Unitful.NoDims`](@ref)."
-@unit °       "°"       Degree      pi/180                  false
+((@unit °       "°"       Degree      pi/180                  false), const deg = °)
 # For numerical accuracy, specific to the degree
-import Base: sind, cosd, tand, secd, cscd, cotd
-for (_x,_y) in ((:sin,:sind), (:cos,:cosd), (:tan,:tand),
+import Base: sind, cosd, sincosd, tand, secd, cscd, cotd
+for (_x,_y) in ((:sin,:sind), (:cos,:cosd), (:sincos,:sincosd), (:tan,:tand),
         (:sec,:secd), (:csc,:cscd), (:cot,:cotd))
     @eval ($_x)(x::Quantity{T, NoDims, typeof(°)}) where {T} = ($_y)(ustrip(x))
     @eval ($_y)(x::Quantity{T, NoDims, typeof(°)}) where {T} = ($_y)(ustrip(x))
-end
-if isdefined(Base, :sincosd)
-    import Base: sincosd
-    sincos(x::Quantity{T, NoDims, typeof(°)}) where {T} = sincosd(ustrip(x))
-    sincosd(x::Quantity{T, NoDims, typeof(°)}) where {T} = sincosd(ustrip(x))
-else
-    sincos(x::Quantity{T, NoDims, typeof(°)}) where {T} = (u = ustrip(x); (sind(u), cosd(u)))
 end
 for f in (:cos, :sin, :tan, :sincos, :cis)
     f_fast = fast_op[f]

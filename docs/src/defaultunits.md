@@ -920,6 +920,7 @@ The steradian, a unit of spherical angle. There are 4π sr in a sphere.
 
 ```
 Unitful.°
+Unitful.deg
 ```
 
 The degree, a unit of angle. There are 360° in a circle.

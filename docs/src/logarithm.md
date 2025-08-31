@@ -9,7 +9,7 @@ end
 
     Logarithmic scales should be considered experimental 
     because they break some of the basic assumptions about equality and hashing 
-    (see [#402](https://github.com/PainterQubits/Unitful.jl/issues/402))
+    (see [#402](https://github.com/JuliaPhysics/Unitful.jl/issues/402))
 
 Unitful provides a way to use logarithmically-scaled quantities. Some
 compromises have been made in striving for logarithmic quantities to be both usable and

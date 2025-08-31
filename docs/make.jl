@@ -26,4 +26,4 @@ makedocs(
     ]
 )
 
-deploydocs(repo = "github.com/PainterQubits/Unitful.jl.git")
+deploydocs(repo = "github.com/JuliaPhysics/Unitful.jl.git")

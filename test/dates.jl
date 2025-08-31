@@ -92,22 +92,20 @@
                 @test_throws DimensionError div(4u"m", CompoundPeriod(Minute(1), Second(30)))
                 @test_throws DimensionError div(CompoundPeriod(Minute(4)), 90u"m")
 
-                @static if VERSION ≥ v"1.4.0-DEV.208"
-                    for r = (RoundNearest, RoundNearestTiesAway, RoundNearestTiesUp, RoundToZero, RoundUp, RoundDown)
-                        @test div(Second(11), 2u"s", r) == div(11u"s", Second(2), r) == div(11, 2, r)
-                        @test div(Second(-5), 2u"s", r) == div(-5u"s", Second(2), r) == div(-5, 2, r)
-                        @test_throws DimensionError div(Second(1), 1u"m", r)
-                        @test_throws DimensionError div(1u"m", Second(1), r)
+                for r = (RoundNearest, RoundNearestTiesAway, RoundNearestTiesUp, RoundToZero, RoundUp, RoundDown)
+                    @test div(Second(11), 2u"s", r) == div(11u"s", Second(2), r) == div(11, 2, r)
+                    @test div(Second(-5), 2u"s", r) == div(-5u"s", Second(2), r) == div(-5, 2, r)
+                    @test_throws DimensionError div(Second(1), 1u"m", r)
+                    @test_throws DimensionError div(1u"m", Second(1), r)
 
-                        if Sys.WORD_SIZE == 32 && r in (RoundNearestTiesAway, RoundNearestTiesUp)
-                            @test_broken div(4u"minute", CompoundPeriod(Minute(1), Second(30)), r) == div(8, 3, r)
-                        else
-                            @test div(4u"minute", CompoundPeriod(Minute(1), Second(30)), r) == div(8, 3, r)
-                        end
-                        @test div(CompoundPeriod(Minute(4)), 90u"s", r) == div(8, 3, r)
-                        @test_throws DimensionError div(4u"m", CompoundPeriod(Minute(1), Second(30)), r)
-                        @test_throws DimensionError div(CompoundPeriod(Minute(4)), 90u"m", r)
+                    if Sys.WORD_SIZE == 32 && r in (RoundNearestTiesAway, RoundNearestTiesUp)
+                        @test_broken div(4u"minute", CompoundPeriod(Minute(1), Second(30)), r) == div(8, 3, r)
+                    else
+                        @test div(4u"minute", CompoundPeriod(Minute(1), Second(30)), r) == div(8, 3, r)
                     end
+                    @test div(CompoundPeriod(Minute(4)), 90u"s", r) == div(8, 3, r)
+                    @test_throws DimensionError div(4u"m", CompoundPeriod(Minute(1), Second(30)), r)
+                    @test_throws DimensionError div(CompoundPeriod(Minute(4)), 90u"m", r)
                 end
 
                 @test fld(Second(1), 2u"ms") == fld(1u"s", Millisecond(2)) == fld(1000, 2)
@@ -334,93 +332,83 @@
         @test floor(Second, -1.2u"s") === round(Second, -1.2u"s", RoundDown) === Second(-2)
         @test floor(Second, -1.5u"s") === round(Second, -1.5u"s", RoundDown) === Second(-2)
         @test floor(Second, -0.5u"s") === round(Second, -0.5u"s", RoundDown) === Second(-1)
-        @static if VERSION ≥ v"1.5.0-DEV.742"
-            @test trunc(Minute,  45u"s") === round(Minute,   45u"s", RoundToZero) === Minute(0)
-            @test trunc(Minute,  90u"s") === round(Minute,   90u"s", RoundToZero) === Minute(1)
-            @test trunc(Minute, 150u"s") === round(Minute,  150u"s", RoundToZero) === Minute(2)
-            @test ceil(Minute,  45u"s")  === round(Minute,   45u"s", RoundUp) === Minute(1)
-            @test ceil(Minute,  90u"s")  === round(Minute,   90u"s", RoundUp) === Minute(2)
-            @test ceil(Minute, 150u"s")  === round(Minute,  150u"s", RoundUp) === Minute(3)
-            @test floor(Minute,  45u"s") === round(Minute,   45u"s", RoundDown) === Minute(0)
-            @test floor(Minute,  90u"s") === round(Minute,   90u"s", RoundDown) === Minute(1)
-            @test floor(Minute, 150u"s") === round(Minute,  150u"s", RoundDown) === Minute(2)
-        end
+        @test trunc(Minute,  45u"s") === round(Minute,   45u"s", RoundToZero) === Minute(0)
+        @test trunc(Minute,  90u"s") === round(Minute,   90u"s", RoundToZero) === Minute(1)
+        @test trunc(Minute, 150u"s") === round(Minute,  150u"s", RoundToZero) === Minute(2)
+        @test ceil(Minute,  45u"s")  === round(Minute,   45u"s", RoundUp) === Minute(1)
+        @test ceil(Minute,  90u"s")  === round(Minute,   90u"s", RoundUp) === Minute(2)
+        @test ceil(Minute, 150u"s")  === round(Minute,  150u"s", RoundUp) === Minute(3)
+        @test floor(Minute,  45u"s") === round(Minute,   45u"s", RoundDown) === Minute(0)
+        @test floor(Minute,  90u"s") === round(Minute,   90u"s", RoundDown) === Minute(1)
+        @test floor(Minute, 150u"s") === round(Minute,  150u"s", RoundDown) === Minute(2)
         @test_throws DimensionError round(Second, 1u"m")
         @test_throws DimensionError round(Second, 1u"m", RoundNearestTiesUp)
         @test_throws DimensionError trunc(Second, 1u"m")
         @test_throws DimensionError ceil(Second, 1u"m")
         @test_throws DimensionError floor(Second, 1u"m")
 
-        @static if VERSION ≥ v"1.2.0"
-            @test round(u"minute", Second(-50)) === Rational{Int64}(-1,1)u"minute"
-            @test round(u"minute", Second(-90)) === Rational{Int64}(-2,1)u"minute"
-            @test round(u"minute", Second(150)) === Rational{Int64}(2,1)u"minute"
-            @test round(u"minute", Second(-50), RoundNearest) === Rational{Int64}(-1,1)u"minute"
-            @test round(u"minute", Second(-90), RoundNearest) === Rational{Int64}(-2,1)u"minute"
-            @test round(u"minute", Second(150), RoundNearest) === Rational{Int64}(2,1)u"minute"
-            @test round(u"minute", Second(-50), RoundNearestTiesAway) === Rational{Int64}(-1,1)u"minute"
-            @test round(u"minute", Second(-90), RoundNearestTiesAway) === Rational{Int64}(-2,1)u"minute"
-            @test round(u"minute", Second(150), RoundNearestTiesAway) === Rational{Int64}(3,1)u"minute"
-            @test round(u"minute", Second(-50), RoundNearestTiesUp) === Rational{Int64}(-1,1)u"minute"
-            @test round(u"minute", Second(-90), RoundNearestTiesUp) === Rational{Int64}(-1,1)u"minute"
-            @test round(u"minute", Second(150), RoundNearestTiesUp) === Rational{Int64}(3,1)u"minute"
-        end
-        @static if VERSION ≥ v"1.5.0-DEV.742"
-            @test trunc(u"minute", Second(-50)) === round(u"minute", Second(-50), RoundToZero) === Rational{Int64}(0,1)u"minute"
-            @test trunc(u"minute", Second(-90)) === round(u"minute", Second(-90), RoundToZero) === Rational{Int64}(-1,1)u"minute"
-            @test trunc(u"minute", Second(150)) === round(u"minute", Second(150), RoundToZero) === Rational{Int64}(2,1)u"minute"
+        @test round(u"minute", Second(-50)) === Rational{Int64}(-1,1)u"minute"
+        @test round(u"minute", Second(-90)) === Rational{Int64}(-2,1)u"minute"
+        @test round(u"minute", Second(150)) === Rational{Int64}(2,1)u"minute"
+        @test round(u"minute", Second(-50), RoundNearest) === Rational{Int64}(-1,1)u"minute"
+        @test round(u"minute", Second(-90), RoundNearest) === Rational{Int64}(-2,1)u"minute"
+        @test round(u"minute", Second(150), RoundNearest) === Rational{Int64}(2,1)u"minute"
+        @test round(u"minute", Second(-50), RoundNearestTiesAway) === Rational{Int64}(-1,1)u"minute"
+        @test round(u"minute", Second(-90), RoundNearestTiesAway) === Rational{Int64}(-2,1)u"minute"
+        @test round(u"minute", Second(150), RoundNearestTiesAway) === Rational{Int64}(3,1)u"minute"
+        @test round(u"minute", Second(-50), RoundNearestTiesUp) === Rational{Int64}(-1,1)u"minute"
+        @test round(u"minute", Second(-90), RoundNearestTiesUp) === Rational{Int64}(-1,1)u"minute"
+        @test round(u"minute", Second(150), RoundNearestTiesUp) === Rational{Int64}(3,1)u"minute"
 
-            @test ceil(u"minute", Second(-50))  === round(u"minute", Second(-50), RoundUp) === Rational{Int64}(0,1)u"minute"
-            @test ceil(u"minute", Second(-90))  === round(u"minute", Second(-90), RoundUp) === Rational{Int64}(-1,1)u"minute"
-            @test ceil(u"minute", Second(150))  === round(u"minute", Second(150), RoundUp) === Rational{Int64}(3,1)u"minute"
+        @test trunc(u"minute", Second(-50)) === round(u"minute", Second(-50), RoundToZero) === Rational{Int64}(0,1)u"minute"
+        @test trunc(u"minute", Second(-90)) === round(u"minute", Second(-90), RoundToZero) === Rational{Int64}(-1,1)u"minute"
+        @test trunc(u"minute", Second(150)) === round(u"minute", Second(150), RoundToZero) === Rational{Int64}(2,1)u"minute"
 
-            @test floor(u"minute", Second(-50)) === round(u"minute", Second(-50), RoundDown) === Rational{Int64}(-1,1)u"minute"
-            @test floor(u"minute", Second(-90)) === round(u"minute", Second(-90), RoundDown) === Rational{Int64}(-2,1)u"minute"
-            @test floor(u"minute", Second(150)) === round(u"minute", Second(150), RoundDown) === Rational{Int64}(2,1)u"minute"
+        @test ceil(u"minute", Second(-50))  === round(u"minute", Second(-50), RoundUp) === Rational{Int64}(0,1)u"minute"
+        @test ceil(u"minute", Second(-90))  === round(u"minute", Second(-90), RoundUp) === Rational{Int64}(-1,1)u"minute"
+        @test ceil(u"minute", Second(150))  === round(u"minute", Second(150), RoundUp) === Rational{Int64}(3,1)u"minute"
 
-        end
+        @test floor(u"minute", Second(-50)) === round(u"minute", Second(-50), RoundDown) === Rational{Int64}(-1,1)u"minute"
+        @test floor(u"minute", Second(-90)) === round(u"minute", Second(-90), RoundDown) === Rational{Int64}(-2,1)u"minute"
+        @test floor(u"minute", Second(150)) === round(u"minute", Second(150), RoundDown) === Rational{Int64}(2,1)u"minute"
+
         @test_throws DimensionError round(u"m", Second(1))
         @test_throws DimensionError round(u"m", Second(1), RoundNearestTiesAway)
         @test_throws DimensionError trunc(u"m", Second(1))
         @test_throws DimensionError ceil(u"m", Second(1))
         @test_throws DimensionError floor(u"m", Second(1))
 
-        @static if VERSION ≥ v"1.2.0"
-            T = @static Sys.WORD_SIZE == 32 ? Float64 : Rational{Int64}
-            @test round(u"minute", CompoundPeriod(Minute(-1), Second(10))) === T(-1)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-2), Second(30))) === T(-2)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(3), Second(-30))) === T(2)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundNearest) === T(-1)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundNearest) === T(-2)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundNearest) === T(2)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundNearestTiesAway) === T(-1)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundNearestTiesAway) === T(-2)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundNearestTiesAway) === T(3)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundNearestTiesUp) === T(-1)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundNearestTiesUp) === T(-1)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundNearestTiesUp) === T(3)u"minute"
-        end
-        @static if VERSION ≥ v"1.5.0-DEV.742"
-            T = @static Sys.WORD_SIZE == 32 ? Float64 : Rational{Int64}
-            @test trunc(u"minute", CompoundPeriod(Minute(-1), Second(10))) === -T(0)u"minute"
-            @test trunc(u"minute", CompoundPeriod(Minute(-2), Second(30))) === T(-1)u"minute"
-            @test trunc(u"minute", CompoundPeriod(Minute(3), Second(-30))) === T(2)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundToZero) === -T(0)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundToZero) === T(-1)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundToZero) === T(2)u"minute"
-            @test ceil(u"minute", CompoundPeriod(Minute(-1), Second(10)))  === -T(0)u"minute"
-            @test ceil(u"minute", CompoundPeriod(Minute(-2), Second(30)))  === T(-1)u"minute"
-            @test ceil(u"minute", CompoundPeriod(Minute(3), Second(-30)))  === T(3)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundUp) === -T(0)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundUp) === T(-1)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundUp) === T(3)u"minute"
-            @test floor(u"minute", CompoundPeriod(Minute(-1), Second(10))) === T(-1)u"minute"
-            @test floor(u"minute", CompoundPeriod(Minute(-2), Second(30))) === T(-2)u"minute"
-            @test floor(u"minute", CompoundPeriod(Minute(3), Second(-30))) === T(2)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundDown) === T(-1)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundDown) === T(-2)u"minute"
-            @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundDown) === T(2)u"minute"
-        end
+        T = @static Sys.WORD_SIZE == 32 ? Float64 : Rational{Int64}
+        @test round(u"minute", CompoundPeriod(Minute(-1), Second(10))) === T(-1)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-2), Second(30))) === T(-2)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(3), Second(-30))) === T(2)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundNearest) === T(-1)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundNearest) === T(-2)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundNearest) === T(2)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundNearestTiesAway) === T(-1)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundNearestTiesAway) === T(-2)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundNearestTiesAway) === T(3)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundNearestTiesUp) === T(-1)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundNearestTiesUp) === T(-1)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundNearestTiesUp) === T(3)u"minute"
+        @test trunc(u"minute", CompoundPeriod(Minute(-1), Second(10))) === -T(0)u"minute"
+        @test trunc(u"minute", CompoundPeriod(Minute(-2), Second(30))) === T(-1)u"minute"
+        @test trunc(u"minute", CompoundPeriod(Minute(3), Second(-30))) === T(2)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundToZero) === -T(0)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundToZero) === T(-1)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundToZero) === T(2)u"minute"
+        @test ceil(u"minute", CompoundPeriod(Minute(-1), Second(10)))  === -T(0)u"minute"
+        @test ceil(u"minute", CompoundPeriod(Minute(-2), Second(30)))  === T(-1)u"minute"
+        @test ceil(u"minute", CompoundPeriod(Minute(3), Second(-30)))  === T(3)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundUp) === -T(0)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundUp) === T(-1)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundUp) === T(3)u"minute"
+        @test floor(u"minute", CompoundPeriod(Minute(-1), Second(10))) === T(-1)u"minute"
+        @test floor(u"minute", CompoundPeriod(Minute(-2), Second(30))) === T(-2)u"minute"
+        @test floor(u"minute", CompoundPeriod(Minute(3), Second(-30))) === T(2)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-1), Second(10)), RoundDown) === T(-1)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(-2), Second(30)), RoundDown) === T(-2)u"minute"
+        @test round(u"minute", CompoundPeriod(Minute(3), Second(-30)), RoundDown) === T(2)u"minute"
         @test_throws MethodError round(u"s", CompoundPeriod(Year(1)))
         @test_throws MethodError round(u"s", CompoundPeriod(Year(1)), RoundNearestTiesAway)
         @test_throws MethodError trunc(u"s", CompoundPeriod(Year(1)))
@@ -477,24 +465,20 @@
         @test_throws DimensionError ceil(u"m", CompoundPeriod(Week(1), Day(3)), sigdigits=3)
         @test_throws DimensionError floor(u"m", CompoundPeriod(Week(1), Day(3)), digits=1, base=2)
 
-        @static if VERSION ≥ v"1.2.0"
-            @test round(Int, u"minute", Second(-50)) === -1u"minute"
-            @test round(Float32, u"minute", Second(-50)) === -1.0f0u"minute"
-        end
-        @static if VERSION ≥ v"1.5.0-DEV.742"
-            @test round(Int, u"minute", Second(50), RoundDown) === 0u"minute"
-            @test round(Int, u"minute", Second(50), RoundUp) === 1u"minute"
-            @test round(Int, u"minute", Second(50), RoundToZero) === 0u"minute"
-            @test floor(Int, u"minute", Second(50)) === 0u"minute"
-            @test ceil(Int, u"minute", Second(50)) === 1u"minute"
-            @test trunc(Int, u"minute", Second(50)) === 0u"minute"
-            @test round(Float32, u"minute", Second(50), RoundDown) === 0.0f0u"minute"
-            @test round(Float32, u"minute", Second(50), RoundUp) === 1.0f0u"minute"
-            @test round(Float32, u"minute", Second(50), RoundToZero) === 0.0f0u"minute"
-            @test floor(Float32, u"minute", Second(50)) === 0.0f0u"minute"
-            @test ceil(Float32, u"minute", Second(50)) === 1.0f0u"minute"
-            @test trunc(Float32, u"minute", Second(50)) === 0.0f0u"minute"
-        end
+        @test round(Int, u"minute", Second(-50)) === -1u"minute"
+        @test round(Float32, u"minute", Second(-50)) === -1.0f0u"minute"
+        @test round(Int, u"minute", Second(50), RoundDown) === 0u"minute"
+        @test round(Int, u"minute", Second(50), RoundUp) === 1u"minute"
+        @test round(Int, u"minute", Second(50), RoundToZero) === 0u"minute"
+        @test floor(Int, u"minute", Second(50)) === 0u"minute"
+        @test ceil(Int, u"minute", Second(50)) === 1u"minute"
+        @test trunc(Int, u"minute", Second(50)) === 0u"minute"
+        @test round(Float32, u"minute", Second(50), RoundDown) === 0.0f0u"minute"
+        @test round(Float32, u"minute", Second(50), RoundUp) === 1.0f0u"minute"
+        @test round(Float32, u"minute", Second(50), RoundToZero) === 0.0f0u"minute"
+        @test floor(Float32, u"minute", Second(50)) === 0.0f0u"minute"
+        @test ceil(Float32, u"minute", Second(50)) === 1.0f0u"minute"
+        @test trunc(Float32, u"minute", Second(50)) === 0.0f0u"minute"
         @test round(Float32, u"wk", Day(10), digits=1) === 1.4f0u"wk"
         @test round(Float32, u"wk", Day(10), sigdigits=3) === 1.43f0u"wk"
         @test round(Float32, u"wk", Day(10), RoundUp, digits=1) === 1.5f0u"wk"
@@ -512,24 +496,20 @@
         @test_throws DimensionError ceil(Float32, u"m", Second(-50), digits=1)
         @test_throws DimensionError trunc(Float32, u"m", Second(-50), sigdigits=3, base=2)
 
-        @static if VERSION ≥ v"1.2.0"
-            @test round(Int, u"minute", CompoundPeriod(Minute(-1), Second(10))) === -1u"minute"
-            @test round(Float32, u"minute", CompoundPeriod(Minute(-1), Second(10))) === -1.0f0u"minute"
-        end
-        @static if VERSION ≥ v"1.5.0-DEV.742"
-            @test round(Int, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundDown) === 0u"minute"
-            @test round(Int, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundUp) === 1u"minute"
-            @test round(Int, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundToZero) === 0u"minute"
-            @test floor(Int, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 0u"minute"
-            @test ceil(Int, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 1u"minute"
-            @test trunc(Int, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 0u"minute"
-            @test round(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundDown) === 0.0f0u"minute"
-            @test round(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundUp) === 1.0f0u"minute"
-            @test round(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundToZero) === 0.0f0u"minute"
-            @test floor(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 0.0f0u"minute"
-            @test ceil(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 1.0f0u"minute"
-            @test trunc(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 0.0f0u"minute"
-        end
+        @test round(Int, u"minute", CompoundPeriod(Minute(-1), Second(10))) === -1u"minute"
+        @test round(Float32, u"minute", CompoundPeriod(Minute(-1), Second(10))) === -1.0f0u"minute"
+        @test round(Int, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundDown) === 0u"minute"
+        @test round(Int, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundUp) === 1u"minute"
+        @test round(Int, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundToZero) === 0u"minute"
+        @test floor(Int, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 0u"minute"
+        @test ceil(Int, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 1u"minute"
+        @test trunc(Int, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 0u"minute"
+        @test round(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundDown) === 0.0f0u"minute"
+        @test round(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundUp) === 1.0f0u"minute"
+        @test round(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10)), RoundToZero) === 0.0f0u"minute"
+        @test floor(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 0.0f0u"minute"
+        @test ceil(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 1.0f0u"minute"
+        @test trunc(Float32, u"minute", CompoundPeriod(Minute(1), Second(-10))) === 0.0f0u"minute"
         @test round(Float32, u"wk", CompoundPeriod(Week(1), Day(3)), digits=1) === 1.4f0u"wk"
         @test round(Float32, u"wk", CompoundPeriod(Week(1), Day(3)), sigdigits=3) === 1.43f0u"wk"
         @test round(Float32, u"wk", CompoundPeriod(Week(1), Day(3)), RoundUp, digits=1) === 1.5f0u"wk"
@@ -561,12 +541,8 @@
         @test_throws DimensionError  ceil(Float32, u"m", CompoundPeriod(Minute(-1), Second(10)), digits=1)
         @test_throws DimensionError trunc(Float32, u"m", CompoundPeriod(Minute(-1), Second(10)), sigdigits=3, base=2)
 
-        @static if VERSION ≥ v"1.2.0"
-            @test round(typeof(1.0f0u"minute"), Second(-50)) === -1.0f0u"minute"
-        end
-        @static if VERSION ≥ v"1.5.0-DEV.742"
-            @test round(typeof(1.0f0u"minute"), Second(50), RoundToZero) === 0.0f0u"minute"
-        end
+        @test round(typeof(1.0f0u"minute"), Second(-50)) === -1.0f0u"minute"
+        @test round(typeof(1.0f0u"minute"), Second(50), RoundToZero) === 0.0f0u"minute"
         @test round(typeof(1.0f0u"wk"), Day(10), digits=1) === 1.4f0u"wk"
         @test round(typeof(1.0f0u"wk"), Day(10), sigdigits=3) === 1.43f0u"wk"
         @test round(typeof(1.0f0u"wk"), Day(10), RoundUp, digits=1) === 1.5f0u"wk"
@@ -584,12 +560,8 @@
         @test_throws DimensionError ceil(typeof(1.0u"m"), Second(1), sigdigits=2, base=2)
         @test_throws DimensionError trunc(typeof(1.0u"m"), Second(1), digits=1)
 
-        @static if VERSION ≥ v"1.2.0"
-            @test round(typeof(1.0f0u"minute"), CompoundPeriod(Minute(-1), Second(10))) === -1.0f0u"minute"
-        end
-        @static if VERSION ≥ v"1.5.0-DEV.742"
-            @test round(typeof(1.0f0u"minute"), CompoundPeriod(Minute(1), Second(-10)), RoundToZero) === 0.0f0u"minute"
-        end
+        @test round(typeof(1.0f0u"minute"), CompoundPeriod(Minute(-1), Second(10))) === -1.0f0u"minute"
+        @test round(typeof(1.0f0u"minute"), CompoundPeriod(Minute(1), Second(-10)), RoundToZero) === 0.0f0u"minute"
         @test round(typeof(1.0f0u"wk"), CompoundPeriod(Week(1), Day(3)), digits=1) === 1.4f0u"wk"
         @test round(typeof(1.0f0u"wk"), CompoundPeriod(Week(1), Day(3)), sigdigits=3) === 1.43f0u"wk"
         @test round(typeof(1.0f0u"wk"), CompoundPeriod(Week(1), Day(3)), RoundUp, digits=1) === 1.5f0u"wk"

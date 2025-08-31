@@ -31,11 +31,10 @@ jobs:
       fail-fast: false
       matrix:
         julia-version:
-          - "1.0"
-          - "1.6"
-          - "1.10"
+          - "min"
+          - "lts"
           - "1"
-          - "nightly"
+          - "pre"
         os:
           - ubuntu-latest
           - macos-latest
@@ -43,7 +42,7 @@ jobs:
         julia-arch:
           - x64
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia-version }}

@@ -1,7 +1,7 @@
 The Unitful.jl package is licensed under the MIT "Expat" License:
 
 > Copyright (c) 2016: California Institute of Technology and
-> [other contributors](https://github.com/PainterQubits/Unitful.jl/graphs/contributors).
+> [other contributors](https://github.com/JuliaPhysics/Unitful.jl/graphs/contributors).
 >
 > Permission is hereby granted, free of charge, to any person obtaining
 > a copy of this software and associated documentation files (the

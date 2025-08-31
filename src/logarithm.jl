@@ -201,7 +201,7 @@ for op in (:(==), :isequal)
 end
 
 # A consistent `hash` method for `Gain` is impossible with the current promotion rules
-# (https://github.com/PainterQubits/Unitful.jl/issues/402), therefore we don't define one.
+# (https://github.com/JuliaPhysics/Unitful.jl/issues/402), therefore we don't define one.
 Base.hash(x::Level, h::UInt) = hash(x.val, h)
 
 # Addition and subtraction

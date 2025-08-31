@@ -10,7 +10,7 @@ import Unitful:
     ac,
     mg, g, kg,
     Ra, °F, °C, K,
-    rad, mrad, °,
+    rad, mrad, °, deg,
     ms, s, minute, hr, d, yr, Hz,
     J, A, N, mol, V, mJ, eV, dyn, mN,
     mW, W,
@@ -734,6 +734,7 @@ Base.:(<=)(x::Issue399, y::Issue399) = x.num <= y.num
         @test zero(Quantity{Int, 𝐋}) isa Quantity{Int}
         @test @inferred(π/2*u"rad" + 90u"°") ≈ π        # Dimless quantities
         @test @inferred(π/2*u"rad" - 90u"°") ≈ 0        # Dimless quantities
+        @test @inferred(90u"deg" - 90u"°") == 0
         @test_throws DimensionError 1+1m                # Dim mismatched
         @test_throws DimensionError 1-1m
     end
@@ -877,13 +878,9 @@ Base.:(<=)(x::Issue399, y::Issue399) = x.num <= y.num
         @test @inferred(cospi(1rad)) == -1
         @test @inferred(sinc(1rad)) === 0
         @test @inferred(cosc(1ft/3inch)) === 0.25
-        if isdefined(Base, :cispi)
-            @test @inferred(cispi(rad/2)) === complex(0.0, 1.0)
-            @test @inferred(cispi(rad/2 + im*rad)) ≈ complex(0.0, exp(-π))
-        end
-        if isdefined(Base, :sincospi)
-            @test @inferred(sincospi(rad/2)) === (1.0, 0.0)
-        end
+        @test @inferred(cispi(rad/2)) === complex(0.0, 1.0)
+        @test @inferred(cispi(rad/2 + im*rad)) ≈ complex(0.0, exp(-π))
+        @test @inferred(sincospi(rad/2)) === (1.0, 0.0)
         if isdefined(Base, :tanpi)
             @test @inferred(tanpi(1f0rad)) === tanpi(1f0)
             @test @inferred(tanpi(250mrad)) === tanpi(0.25)
@@ -897,9 +894,7 @@ Base.:(<=)(x::Issue399, y::Issue399) = x.num <= y.num
         @test_throws DimensionError atan(m*sqrt(3),1e+3s)
         @test @inferred(angle((3im)*V)) ≈ 90°
 
-        if isdefined(Base, :sincosd)
-            @test @inferred(sincosd(5°)) == sincos(5°) == (sind(5°), cosd(5°))
-        end
+        @test @inferred(sincosd(5°)) == sincos(5°) == (sind(5°), cosd(5°))
     end
     @testset "> Exponentials and logarithms" begin
         for f in (exp, exp10, exp2, expm1, log, log10, log1p, log2)
@@ -1708,17 +1703,8 @@ end
 
 @testset "Display" begin
     withenv("UNITFUL_FANCY_EXPONENTS" => false) do
-        @static if VERSION ≥ v"1.6.0-DEV.770"
-            @test string(typeof(1.0m/s)) ==
-                "Quantity{Float64, 𝐋 𝐓^-1, FreeUnits{(m, s^-1), 𝐋 𝐓^-1, nothing}}"
-            @test string(typeof(m/s)) ==
-                "FreeUnits{(m, s^-1), 𝐋 𝐓^-1, nothing}"
-        else
-            @test string(typeof(1.0m/s)) ==
-                "Quantity{Float64,𝐋 𝐓^-1,FreeUnits{(m, s^-1),𝐋 𝐓^-1,nothing}}"
-            @test string(typeof(m/s)) ==
-                "FreeUnits{(m, s^-1),𝐋 𝐓^-1,nothing}"
-        end
+        @test string(typeof(1.0m/s)) == "Quantity{Float64, 𝐋 𝐓^-1, FreeUnits{(m, s^-1), 𝐋 𝐓^-1, nothing}}"
+        @test string(typeof(m/s)) == "FreeUnits{(m, s^-1), 𝐋 𝐓^-1, nothing}"
         @test string(dimension(1u"m/s")) == "𝐋 𝐓^-1"
         @test string(NoDims) == "NoDims"
     end
@@ -1763,13 +1749,8 @@ Base.show(io::IO, ::MIME"text/plain", ::Foo) = print(io, "42.0")
         @test repr(StepRange(1.0u"°C", 1.0u"K", 3.0u"°C")) == "(1.0:1.0:3.0) °C"
         @test repr(StepRange((0//1)u"°F", 1u"K", (9//1)u"°F")) == "(0//1:9//5:9//1) °F"
         @test repr(StepRangeLen{typeof(1.0u"°C"),typeof(1.0u"°C"),typeof(1u"K")}(1.0u"°C", 1u"K", 3, 1)) == "(1.0:1.0:3.0) °C"
-        @static if VERSION < v"1.5"
-            @test_broken repr(StepRangeLen{typeof(1u"°C"),typeof(1u"°C"),typeof(1u"K")}(1u"°C", 1u"K", 3, 1)) == "(1:1:3) °C"
-            @test_broken repr(StepRangeLen{typeof(1.0u"°F"),typeof(1.0u"°F"),typeof(1u"K")}(0.0u"°F", 1u"K", 6)) == "(0.0:1.8:9.0) °F"
-        else
-            @test repr(StepRangeLen{typeof(1u"°C"),typeof(1u"°C"),typeof(1u"K")}(1u"°C", 1u"K", 3, 1)) == "(1:1:3) °C"
-            @test repr(StepRangeLen{typeof(1.0u"°F"),typeof(1.0u"°F"),typeof(1u"K")}(0.0u"°F", 1u"K", 6)) == "(0.0:1.8:9.0) °F"
-        end
+        @test repr(StepRangeLen{typeof(1u"°C"),typeof(1u"°C"),typeof(1u"K")}(1u"°C", 1u"K", 3, 1)) == "(1:1:3) °C"
+        @test repr(StepRangeLen{typeof(1.0u"°F"),typeof(1.0u"°F"),typeof(1u"K")}(0.0u"°F", 1u"K", 6)) == "(0.0:1.8:9.0) °F"
     end
     withenv("UNITFUL_FANCY_EXPONENTS" => true) do
         @test repr(1.0 * u"m * s * kg^(-1//2)") == "1.0 m s kg⁻¹ᐟ²"
@@ -2328,6 +2309,10 @@ end
     @test (1//2)Unitful.ϵ0 === (1//2)Unitful.ε0
     @test Unitful.Å === Unitful.angstrom
     @test 1.0Unitful.Å === 1.0Unitful.angstrom
+    @test Unitful.deg === Unitful.°
+    @test 2Unitful.° === 2Unitful.deg
+    @test u"deg" === u"°"
+    @test uparse("deg") === uparse("°")
 end
 
 module DocUnits

@@ -1,6 +1,6 @@
 name = "Unitful"
 uuid = "1986cc42-f94f-5a68-af5c-568840ba703d"
-version = "1.23.1"
+version = "1.25.0"
 
 [deps]
 ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
@@ -32,7 +32,7 @@ Printf = "<0.0.1, 1"
 REPL = "<0.0.1, 1"
 Random = "<0.0.1, 1"
 Test = "<0.0.1, 1"
-julia = "1"
+julia = "1.6"
 
 [extras]
 Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
