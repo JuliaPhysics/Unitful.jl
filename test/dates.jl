@@ -12,14 +12,14 @@
             @test_throws MethodError dimension(T(1))
             @test_throws MethodError Unitful.numtype(T)
             @test_throws MethodError Unitful.numtype(T(1))
-            @test unit(T) == NoUnits
-            @test unit(T(1)) == NoUnits
+            @test_throws MethodError unit(T)
+            @test_throws MethodError unit(T(1))
         end
 
         for p = (CompoundPeriod, CompoundPeriod(), CompoundPeriod(Day(1)), CompoundPeriod(Day(1), Hour(-1)))
             @test dimension(p) === 𝐓
             @test_throws MethodError Unitful.numtype(p)
-            @test unit(p) == NoUnits
+            @test_throws MethodError unit(p)
         end
     end
 
