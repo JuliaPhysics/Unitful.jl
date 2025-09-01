@@ -20,12 +20,10 @@ For prefixes, see [below](#Metric-(SI)-Prefixes).
 
 ### Amount
 
+```@docs
+Unitful.Amount 
+Unitful.𝐍 
 ```
-Unitful.Amount
-```
-
-Supertype for quantities and levels of dimension `Unitful.𝐍`
-
 #### Mole
 
 ```
@@ -36,12 +34,10 @@ The mole, the SI base unit for amount of substance.
 
 ### Current
 
+```@docs
+Unitful.Current 
+Unitful.𝐈 
 ```
-Unitful.Current
-```
-
-Supertype for quantities and levels of dimension `Unitful.𝐈`
-
 #### Ampere
 
 ```
@@ -52,12 +48,10 @@ The ampere, the SI base unit of electric current.
 
 ### Length
 
+```@docs
+Unitful.Length 
+Unitful.𝐋 
 ```
-Unitful.Length
-```
-
-Supertype for quantities and levels of dimension `Unitful.𝐋`
-
 #### Angstrom
 
 ```
@@ -117,12 +111,10 @@ The yard, a US customary unit of length defined as 3 ft.
 
 ### Luminosity
 
+```@docs
+Unitful.Luminosity 
+Unitful.𝐉 
 ```
-Unitful.Luminosity
-```
-
-Supertype for quantities and levels of dimension `Unitful.𝐉`
-
 #### Candela
 
 ```
@@ -141,12 +133,10 @@ The lumen, an SI unit of luminous flux, defined as 1 cd × sr.
 
 ### Mass
 
+```@docs
+Unitful.Mass 
+Unitful.𝐌 
 ```
-Unitful.Mass
-```
-
-Supertype for quantities and levels of dimension `Unitful.𝐌`
-
 #### Dram
 
 ```
@@ -213,12 +203,10 @@ The unified atomic mass unit, or dalton, a unit of mass defined as 1/12 the mass
 
 ### Temperature
 
+```@docs
+Unitful.Temperature 
+Unitful.𝚯 
 ```
-Unitful.Temperature
-```
-
-Supertype for quantities and levels of dimension `Unitful.𝚯`
-
 #### Kelvin
 
 ```
@@ -253,12 +241,10 @@ The degree Fahrenheit, a US customary unit of temperature, defined such that 0 �
 
 ### Time
 
+```@docs
+Unitful.Time 
+Unitful.𝐓 
 ```
-Unitful.Time
-```
-
-Supertype for quantities and levels of dimension `Unitful.𝐓`
-
 #### Day
 
 ```
@@ -311,12 +297,9 @@ The year, a unit of time, defined as 365.25 d.
 
 ### Acceleration
 
+```@docs
+Unitful.Acceleration 
 ```
-Unitful.Acceleration
-```
-
-Supertype for quantities and levels of dimension `𝐋 / 𝐓 ^ 2`
-
 #### Gal
 
 ```
@@ -337,12 +320,9 @@ The nominal acceleration due to gravity in a vacuum near the surface of the eart
 
 ### Area
 
+```@docs
+Unitful.Area 
 ```
-Unitful.Area
-```
-
-Supertype for quantities and levels of dimension `𝐋 ^ 2`
-
 #### Are
 
 ```
@@ -377,12 +357,9 @@ The hectare, a metric unit of area, defined as 100 a.
 
 ### BField
 
+```@docs
+Unitful.BField 
 ```
-Unitful.BField
-```
-
-Supertype for quantities and levels of dimension `𝐈 ^ -1 * 𝐌 * 𝐓 ^ -2`
-
 #### Gauss
 
 ```
@@ -401,12 +378,9 @@ The tesla, an SI unit of magnetic B-field strength, defined as 1 kg / (A × s^2)
 
 ### Capacitance
 
+```@docs
+Unitful.Capacitance 
 ```
-Unitful.Capacitance
-```
-
-Supertype for quantities and levels of dimension `𝐈 ^ 2 * 𝐋 ^ -2 * 𝐌 ^ -1 * 𝐓 ^ 4`
-
 #### Farad
 
 ```
@@ -417,12 +391,9 @@ The farad, an SI unit of electrical capacitance, defined as 1 s^4 × A^2 / (kg �
 
 ### Charge
 
+```@docs
+Unitful.Charge 
 ```
-Unitful.Charge
-```
-
-Supertype for quantities and levels of dimension `𝐈 * 𝐓`
-
 #### Coulomb
 
 ```
@@ -433,12 +404,9 @@ The coulomb, an SI unit of electric charge, defined as 1 A × s.
 
 ### DynamicViscosity
 
+```@docs
+Unitful.DynamicViscosity 
 ```
-Unitful.DynamicViscosity
-```
-
-Supertype for quantities and levels of dimension `𝐌 * 𝐋 ^ -1 * 𝐓 ^ -1`
-
 #### Poise
 
 ```
@@ -449,12 +417,9 @@ The poise, a CGS unit of dynamic viscosity, defined as 1 dyn × s / cm^2.
 
 ### ElectricalConductance
 
+```@docs
+Unitful.ElectricalConductance 
 ```
-Unitful.ElectricalConductance
-```
-
-Supertype for quantities and levels of dimension `𝐈 ^ 2 * 𝐋 ^ -2 * 𝐌 ^ -1 * 𝐓 ^ 3`
-
 #### Siemens
 
 ```
@@ -465,12 +430,9 @@ The siemens, an SI unit of electrical conductance, defined as 1 Ω^-1.
 
 ### ElectricalResistance
 
+```@docs
+Unitful.ElectricalResistance 
 ```
-Unitful.ElectricalResistance
-```
-
-Supertype for quantities and levels of dimension `𝐈 ^ -2 * 𝐋 ^ 2 * 𝐌 * 𝐓 ^ -3`
-
 #### Ohm
 
 ```
@@ -481,12 +443,9 @@ The ohm, an SI unit of electrical resistance, defined as 1 V / A.
 
 ### Energy
 
+```@docs
+Unitful.Energy 
 ```
-Unitful.Energy
-```
-
-Supertype for quantities and levels of dimension `(𝐌 * 𝐋 ^ 2) / 𝐓 ^ 2`
-
 #### BritishThermalUnit
 
 ```
@@ -529,12 +488,9 @@ The joule, an SI unit of energy, defined as 1 N × m.
 
 ### Force
 
+```@docs
+Unitful.Force 
 ```
-Unitful.Force
-```
-
-Supertype for quantities and levels of dimension `(𝐌 * 𝐋) / 𝐓 ^ 2`
-
 #### Dyne
 
 ```
@@ -561,12 +517,9 @@ The newton, an SI unit of force, defined as 1 kg × m / s^2.
 
 ### Frequency
 
+```@docs
+Unitful.Frequency 
 ```
-Unitful.Frequency
-```
-
-Supertype for quantities and levels of dimension `inv(𝐓)`
-
 #### Becquerel
 
 ```
@@ -609,12 +562,9 @@ Revolutions per second, a unit of rotational speed, defined as 2π rad / s.
 
 ### HField
 
+```@docs
+Unitful.HField 
 ```
-Unitful.HField
-```
-
-Supertype for quantities and levels of dimension `𝐈 / 𝐋`
-
 #### Oersted
 
 ```
@@ -625,12 +575,9 @@ The oersted, a CGS unit of magnetic H-field strength, defined as 1000 A / (4π �
 
 ### Inductance
 
+```@docs
+Unitful.Inductance 
 ```
-Unitful.Inductance
-```
-
-Supertype for quantities and levels of dimension `𝐈 ^ -2 * 𝐋 ^ 2 * 𝐌 * 𝐓 ^ -2`
-
 #### Henry
 
 ```
@@ -641,12 +588,9 @@ The henry, an SI unit of electrical inductance, defined as 1 J / A^2.
 
 ### KinematicViscosity
 
+```@docs
+Unitful.KinematicViscosity 
 ```
-Unitful.KinematicViscosity
-```
-
-Supertype for quantities and levels of dimension `𝐋 ^ 2 * 𝐓 ^ -1`
-
 #### Stokes
 
 ```
@@ -657,12 +601,9 @@ The stokes, a CGS unit of kinematic viscosity, defined as 1 cm^2 / s.
 
 ### MagneticFlux
 
+```@docs
+Unitful.MagneticFlux 
 ```
-Unitful.MagneticFlux
-```
-
-Supertype for quantities and levels of dimension `𝐈 ^ -1 * 𝐋 ^ 2 * 𝐌 * 𝐓 ^ -2`
-
 #### Maxwell
 
 ```
@@ -681,12 +622,9 @@ The weber, an SI unit of magnetic flux, defined as 1 kg × m^2 / (A × s^2).
 
 ### MolarFlow
 
+```@docs
+Unitful.MolarFlow 
 ```
-Unitful.MolarFlow
-```
-
-Supertype for quantities and levels of dimension `𝐍 / 𝐓`
-
 #### Katal
 
 ```
@@ -697,12 +635,9 @@ The katal, an SI unit of catalytic activity, defined as 1 mol of catalyzed subst
 
 ### Molarity
 
+```@docs
+Unitful.Molarity 
 ```
-Unitful.Molarity
-```
-
-Supertype for quantities and levels of dimension `𝐍 / 𝐋 ^ 3`
-
 #### Molar
 
 ```
@@ -713,12 +648,9 @@ A unit for measuring molar concentration, equal to 1 mol/L.
 
 ### Power
 
+```@docs
+Unitful.Power 
 ```
-Unitful.Power
-```
-
-Supertype for quantities and levels of dimension `𝐋 ^ 2 * 𝐌 * 𝐓 ^ -3`
-
 #### Watt
 
 ```
@@ -729,12 +661,9 @@ The watt, an SI unit of power, defined as 1 J / s.
 
 ### Pressure
 
+```@docs
+Unitful.Pressure 
 ```
-Unitful.Pressure
-```
-
-Supertype for quantities and levels of dimension `𝐌 * 𝐋 ^ -1 * 𝐓 ^ -2`
-
 #### Atmosphere
 
 ```
@@ -785,12 +714,9 @@ The torr, a unit of pressure, defined as 1/760 atm.
 
 ### Velocity
 
+```@docs
+Unitful.Velocity 
 ```
-Unitful.Velocity
-```
-
-Supertype for quantities and levels of dimension `𝐋 / 𝐓`
-
 #### SpeedOfLight
 
 ```
@@ -803,12 +729,9 @@ The speed of light in a vacuum, a unit of speed, defined as exactly 2.997,924,58
 
 ### Voltage
 
+```@docs
+Unitful.Voltage 
 ```
-Unitful.Voltage
-```
-
-Supertype for quantities and levels of dimension `𝐈 ^ -1 * 𝐋 ^ 2 * 𝐌 * 𝐓 ^ -3`
-
 #### Volt
 
 ```
@@ -819,12 +742,9 @@ The volt, an SI unit of electric potential, defined as 1 W / A.
 
 ### Volume
 
+```@docs
+Unitful.Volume 
 ```
-Unitful.Volume
-```
-
-Supertype for quantities and levels of dimension `𝐋 ^ 3`
-
 #### Liter
 
 ```
@@ -835,6 +755,15 @@ Unitful.l
 The liter, a metric unit of volume, defined as 1000 cm^3.
 
 ## Dimensionless units
+
+#### Degree
+
+```
+Unitful.°
+Unitful.deg
+```
+
+The degree, a unit of angle. There are 360° in a circle.
 
 #### Percentmille
 
