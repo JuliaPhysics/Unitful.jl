@@ -37,6 +37,7 @@ some subset of `Unitful.Quantity` subtypes.
 ## API
 
 ### Quantities
+
 ```@docs
     Unitful.AbstractQuantity
     Unitful.Quantity
@@ -44,6 +45,7 @@ some subset of `Unitful.Quantity` subtypes.
 ```
 
 ### Units and dimensions
+
 ```@docs
     Unitful.Unitlike
     Unitful.Units
@@ -53,4 +55,5 @@ some subset of `Unitful.Quantity` subtypes.
     Unitful.Dimensions
     Unitful.Unit
     Unitful.Dimension
+	Unitful.NoDims
 ```
