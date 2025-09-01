@@ -139,11 +139,9 @@ julia> unit(1.0) == NoUnits
 true
 ```
 """
-@inline unit(x::Any) = NoUnits # In general, things do not have units.
 @inline unit(x::Number) = NoUnits
 @inline unit(x::Type{T}) where {T <: Number} = NoUnits
-@inline unit(x::Function) = NoUnits # Functions do not have units. Function values might.
-@inline unit(x::Type{Union{Missing, T}}) where {T <: Union{Number, FixedPeriod}} = unit(T) # Type restriction required here for T, or might result in infinite recursion.
+@inline unit(x::Type{Union{Missing, T}}) where {T <: Union{Number, Dates.FixedPeriod}} = unit(T) # Type restriction required here for T, or might result in infinite recursion.
 @inline unit(x::Type{Missing}) = missing
 @inline unit(x::Missing) = missing
 
