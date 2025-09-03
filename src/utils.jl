@@ -154,7 +154,7 @@ const MISSING_UNIT_DEFINITION_MESSAGE =
 @inline unit(x::Type{Any}) = throw( DomainError( x, MISSING_UNIT_DEFINITION_MESSAGE ) )
 @inline unit(x::Number) = NoUnits
 @inline unit(x::Type{T}) where {T <: Number} = NoUnits
-@inline unit(x::Type{Union{Missing, T}}) where T = unit(T) # Type restriction required here for T, or might result in infinite recursion.
+@inline unit(x::Type{Union{Missing, T}}) where T = unit(T)
 @inline unit(x::Type{Missing}) = missing
 @inline unit(x::Missing) = missing
 
