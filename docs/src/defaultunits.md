@@ -317,8 +317,6 @@ Unitful.sr
 
 ## Physical constants
 
-#### c0
-
 ```@docs
 Unitful.c0
 Unitful.G
