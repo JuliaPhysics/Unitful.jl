@@ -139,24 +139,24 @@ julia> unit(1.0) == NoUnits
 true
 ```
 """
-
-"""
-This is shown if a user has not defined units for their quantity type.
-"""
-const MISSING_UNIT_DEFINITION_MESSAGE =
-    """
-    You tried calling unit on an object that has none defined.
-    Not everything has (or should have) units.
-    If your type should have units, define a method of unit on them.
-    """
-
-@inline unit(x::Any) = throw( DomainError( x, MISSING_UNIT_DEFINITION_MESSAGE ) )
-@inline unit(x::Type{Any}) = throw( DomainError( x, MISSING_UNIT_DEFINITION_MESSAGE ) )
 @inline unit(x::Number) = NoUnits
 @inline unit(x::Type{T}) where {T <: Number} = NoUnits
 @inline unit(x::Type{Union{Missing, T}}) where T = unit(T)
 @inline unit(x::Type{Missing}) = missing
 @inline unit(x::Missing) = missing
+
+"""
+    unit(::Type{Any})
+
+This method is here to prevent infinite recursion and to provide a helpful error message in case it occurs.
+"""
+@inline unit(x::Type{Any}) = throw( ArgumentError(
+    """
+    The method unit(Any) was called, but this method has no meaningful result.
+    The call may be due to calling unit(eltype(…)) on a container,
+    since eltype has a generic fallback method that returns Any.
+    """
+) )
 
 """
     absoluteunit(::Units)
