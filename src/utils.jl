@@ -139,9 +139,22 @@ julia> unit(1.0) == NoUnits
 true
 ```
 """
+
+"""
+This is shown if a user has not defined units for their quantity type.
+"""
+const MISSING_UNIT_DEFINITION_MESSAGE =
+    """
+    You tried calling unit on an object that has none defined.
+    Not everything has (or should have) units.
+    If your type should have units, define a method of unit on them.
+    """
+
+@inline unit(x::Any) = throw( DomainError( x, MISSING_UNIT_DEFINITION_MESSAGE ) )
+@inline unit(x::Type{Any}) = throw( DomainError( x, MISSING_UNIT_DEFINITION_MESSAGE ) )
 @inline unit(x::Number) = NoUnits
 @inline unit(x::Type{T}) where {T <: Number} = NoUnits
-@inline unit(x::Type{Union{Missing, T}}) where {T <: Union{Number, Dates.FixedPeriod}} = unit(T) # Type restriction required here for T, or might result in infinite recursion.
+@inline unit(x::Type{Union{Missing, T}}) where T = unit(T) # Type restriction required here for T, or might result in infinite recursion.
 @inline unit(x::Type{Missing}) = missing
 @inline unit(x::Missing) = missing
 
