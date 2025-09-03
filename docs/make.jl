@@ -1,5 +1,8 @@
 using Documenter, Unitful, Dates
 
+@info "Generating latex images for documentation"
+include("generate_latex_images.jl")
+
 DocMeta.setdocmeta!(Unitful, :DocTestSetup, :(using Unitful))
 
 makedocs(
@@ -19,6 +22,7 @@ makedocs(
         "Logarithmic scales" => "logarithm.md"
         "Temperature scales" => "temperature.md"
         "Interoperability with `Dates`" => "dates.md"
+        "Latexifying units" => "latexify.md"
         "Extending Unitful" => "extending.md"
         "Troubleshooting" => "trouble.md"
         "Pre-defined dimensions, units, and constants" => "defaultunits.md"

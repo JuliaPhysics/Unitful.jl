@@ -13,12 +13,15 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 
 [extensions]
 ConstructionBaseUnitfulExt = "ConstructionBase"
 ForwardDiffExt = "ForwardDiff"
 InverseFunctionsUnitfulExt = "InverseFunctions"
+LatexifyExt = ["Latexify", "LaTeXStrings"]
 PrintfExt = "Printf"
 
 [compat]
@@ -27,6 +30,8 @@ ConstructionBase = "1"
 Dates = "<0.0.1, 1"
 ForwardDiff = "0.10, 1"
 InverseFunctions = "0.1"
+LaTeXStrings = "1.2.0"
+Latexify = "0.16.8"
 LinearAlgebra = "<0.0.1, 1"
 Printf = "<0.0.1, 1"
 REPL = "<0.0.1, 1"
@@ -39,6 +44,8 @@ Aqua = "4c88cf16-eb10-579e-8560-4a9242c79595"
 ConstructionBase = "187b0558-2788-49d3-abe0-74a17ed4e7c9"
 ForwardDiff = "f6369f11-7733-5829-9624-2563aa707210"
 InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
+Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
+LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 LinearAlgebra = "37e2e46d-f89d-539d-b4ee-838fcccc9c8e"
 Printf = "de0858da-6303-5e67-8744-51eddeeeb8d7"
 REPL = "3fa0cd96-eef1-5676-8a61-b3b8758bbffb"
@@ -46,4 +53,4 @@ Random = "9a3f8284-a2c9-5f02-9a11-845980a1fd5c"
 Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 
 [targets]
-test = ["Aqua", "ConstructionBase", "ForwardDiff", "InverseFunctions", "LinearAlgebra", "Test", "Random", "REPL", "Printf"]
+test = ["Aqua", "ConstructionBase", "ForwardDiff", "InverseFunctions", "Latexify", "LaTeXStrings", "LinearAlgebra", "Test", "Random", "REPL", "Printf"]
