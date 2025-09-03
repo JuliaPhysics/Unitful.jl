@@ -1,5 +1,5 @@
 using LaTeXStrings, Unitful, Latexify
-import tectonic_jll, Ghostscript_jll # needed for Latexify extensions that help render
+import tectonic_jll # needed for lightweight LaTeX render
 
 commands = [
     :(latexify(612.2u"nm")),

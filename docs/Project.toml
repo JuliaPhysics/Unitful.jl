@@ -1,7 +1,6 @@
 [deps]
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 Documenter = "e30172f5-a6a5-5a46-863b-614d45cd2de4"
-Ghostscript_jll = "61579ee1-b43e-5ca0-a5da-69d92c66a64b"
 InverseFunctions = "3587e190-3f89-42d0-90ee-14403ec27112"
 LaTeXStrings = "b964fa9f-0449-5b57-a5c2-d3ea65f4040f"
 Latexify = "23fbe1c1-3f47-55db-b15f-69d7ec21a316"
