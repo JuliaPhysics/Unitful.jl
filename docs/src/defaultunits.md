@@ -21,24 +21,24 @@ For prefixes, see [below](#Metric-(SI)-Prefixes).
 ### Amount
 
 ```@docs
-Unitful.Amount
 Unitful.𝐍
+Unitful.Amount
 Unitful.mol
 ```
 
 ### Current
 
 ```@docs
-Unitful.Current
 Unitful.𝐈
+Unitful.Current
 Unitful.A
 ```
 
 ### Length
 
 ```@docs
-Unitful.Length
 Unitful.𝐋
+Unitful.Length
 Unitful.angstrom
 Unitful.cm
 Unitful.fm
@@ -54,8 +54,8 @@ Unitful.yd
 ### Luminosity
 
 ```@docs
-Unitful.Luminosity
 Unitful.𝐉
+Unitful.Luminosity
 Unitful.cd
 Unitful.lm
 ```
@@ -63,8 +63,8 @@ Unitful.lm
 ### Mass
 
 ```@docs
-Unitful.Mass
 Unitful.𝐌
+Unitful.Mass
 Unitful.dr
 Unitful.g
 Unitful.gr
@@ -78,8 +78,8 @@ Unitful.u
 ### Temperature
 
 ```@docs
-Unitful.Temperature
 Unitful.𝚯
+Unitful.Temperature
 Unitful.K
 Unitful.Ra
 Unitful.°C
@@ -89,8 +89,8 @@ Unitful.°F
 ### Time
 
 ```@docs
-Unitful.Time
 Unitful.𝐓
+Unitful.Time
 Unitful.d
 Unitful.hr
 Unitful.minute
