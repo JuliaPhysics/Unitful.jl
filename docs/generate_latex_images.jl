@@ -1,4 +1,5 @@
-using LaTeXStrings, Unitful, Latexify, tectonic_jll
+using LaTeXStrings, Unitful, Latexify
+import tectonic_jll, Ghostscript_jll # needed for Latexify extensions that help render
 
 commands = [
     :(latexify(612.2u"nm")),
