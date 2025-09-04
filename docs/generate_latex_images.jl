@@ -1,5 +1,10 @@
 using LaTeXStrings, Unitful, Latexify
 import tectonic_jll # needed for lightweight LaTeX render
+using Fontconfig: format, match, Pattern
+
+# Since the docs can get built on different systems, we need to find a locally installed 
+# monospaced font that has enough Unicode coverage to handle π
+monofont = format(match(Pattern(spacing=100, charset="3c0")), "%{family}")
 
 commands = [
     :(latexify(612.2u"nm")),
@@ -20,11 +25,16 @@ end
 ltab1 = latextabular(tab1, adjustment=:l, transpose=true, latex=false, booktabs=true, 
     head=["julia", "\\LaTeX", "Result"])
 # Setting an explicit white background color results in transparent PDF, so go offwhite.
-ltab1 = LaTeXString("\\definecolor{offwhite}{rgb}{0.999,0.999,0.999}\n\\pagecolor{offwhite}\n\\color{black}\n" * ltab1)
+ltab1 = LaTeXString("""
+    \\setmonofont{$monofont}
+    \\definecolor{offwhite}{rgb}{0.999,0.999,0.999}
+    \\pagecolor{offwhite}
+    \\color{black}
+""" * ltab1)
 
 render(ltab1, MIME("image/png"); use_tectonic=true,
     name=(@__DIR__)*"/src/assets/latex-examples", 
-    packages=["booktabs", "color", "siunitx"], 
+    packages=["booktabs", "color", "siunitx", "fontspec"], 
     documentclass=("standalone"))
 
 functions = [
@@ -134,8 +144,7 @@ ltab2 = latextabular(tab2, adjustment=:l, transpose=true, latex=false, booktabs=
 # Set background to not-quite-white so it doesn't get treated as transparent
 ltab2 = LaTeXString(
     """
-    \\setmainfont{FreeSerif}
-    \\setmonofont{FreeMono}
+    \\setmonofont{$monofont}
     \\definecolor{offwhite}{rgb}{0.999,0.999,0.999}
     \\pagecolor{offwhite}
     \\color{black}
