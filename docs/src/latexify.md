@@ -72,7 +72,7 @@ print(ans) # hide
 
 Another thing that `siunitx` does uniquely is lists and ranges of quantities.
 To get `siunitx`'s list behavior, pass a tuple instead of an array;
-if you want a tuple to be written as an array instead, use `collect(x)` or `[x...]` to explicitly it into an array first.
+if you want a tuple to be written as an array instead, use `collect(x)` or `[x...]` to convert it into an array first.
 
 ```@example main
 latexify((1, 2, 3).*u"m")
