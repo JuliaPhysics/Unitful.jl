@@ -15,6 +15,6 @@ Unitful = {path = ".."}
 
 [compat]
 Documenter = "1"
-Latexify = "0.16.9"
+Latexify = "0.16.10"
 Plots = "1"
 Fontconfig = "0.4"
