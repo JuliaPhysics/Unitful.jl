@@ -193,7 +193,7 @@ function _transform(q::AbstractQuantity, ::AbstractNumberFormatter)
     Expr(
         :latexifymerge,
         NakedNumber(q.val),
-        has_unit_spacing(unit(q)) ? "\\;" : nothing,
+        has_unit_spacing(unit(q)) ? "\\," : nothing,
         NakedUnits(unit(q)),
     )
 end
@@ -243,7 +243,7 @@ end
         )
     end
     env --> :inline
-    return Expr(:latexifymerge, q.val, "\\;\\mathrm{", unitnames[(:mathrm, unitname)], "}")
+    return Expr(:latexifymerge, q.val, "\\,\\mathrm{", unitnames[(:mathrm, unitname)], "}")
 end
 
 # arrays ------------------------- 
@@ -253,7 +253,7 @@ end
     # Array of quantities with the same unit
     env --> :equation
     return Expr(
-        :latexifymerge, ustrip.(a), has_unit_spacing(first(a)) ? "\\;" : "", unit(first(a))
+        :latexifymerge, ustrip.(a), has_unit_spacing(first(a)) ? "\\," : "", unit(first(a))
     )
 end
 
