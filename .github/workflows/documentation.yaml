@@ -28,7 +28,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-      - run: sudo apt install -y ghostscript fonts-freefont-ttf
       - uses: julia-actions/setup-julia@v2
         with:
           version: 1
