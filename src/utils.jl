@@ -145,11 +145,8 @@ true
 @inline unit(x::Type{Missing}) = missing
 @inline unit(x::Missing) = missing
 
-"""
-    unit(::Type{Any})
+# Prevent infinite recursion, in case unit(Any) is called.
 
-This method is here to prevent infinite recursion and to provide a helpful error message in case it occurs.
-"""
 @inline unit(x::Type{Any}) = throw( ArgumentError(
     """
     unit(Any) was called, which has no meaningful result. \
