@@ -1816,7 +1816,7 @@ end
         2 \\
         3 \\
         \end{array}
-        \right]\,\mathrm{m}
+        \right]\mathrm{m}
         \end{equation}
         """,
         raw"""
@@ -1827,7 +1827,7 @@ end
         \num{2} \\
         \num{3} \\
         \end{array}
-        \right]\,\unit{\meter}
+        \right]\unit{\meter}
         \end{equation}
         """,
         raw"""
@@ -1838,7 +1838,7 @@ end
         \num{2} \\
         \num{3} \\
         \end{array}
-        \right]\,\unit{m}
+        \right]\unit{m}
         \end{equation}
         """,
     )
@@ -1851,7 +1851,7 @@ end
         2 \\
         3 \\
         \end{array}
-        \right]\,\mathrm{m}
+        \right]\mathrm{m}
         \end{equation}
         """,
         raw"\qtylist{1;2;3}{\meter}",
