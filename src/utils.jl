@@ -152,9 +152,9 @@ This method is here to prevent infinite recursion and to provide a helpful error
 """
 @inline unit(x::Type{Any}) = throw( ArgumentError(
     """
-    The method unit(Any) was called, but this method has no meaningful result.
-    The call may be due to calling unit(eltype(…)) on a container,
-    since eltype has a generic fallback method that returns Any.
+    unit(Any) was called, which has no meaningful result. \
+    This may be due to calling unit(eltype(…)), \
+    since eltype has a generic fallback method that returns Any.\
     """
 ) )
 
