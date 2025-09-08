@@ -32,7 +32,7 @@ ltab1 = LaTeXString("""
     \\color{black}
 """ * ltab1)
 
-render(ltab1, MIME("image/png"); use_tectonic=true,
+render(ltab1, MIME("image/png"); use_tectonic=true, open=false,
     name=(@__DIR__)*"/src/assets/latex-examples", 
     packages=["booktabs", "color", "siunitx", "fontspec"], 
     documentclass=("standalone"))
@@ -150,7 +150,7 @@ ltab2 = LaTeXString(
     \\color{black}
     """ * ltab2)
 
-render(ltab2, MIME("image/png"); use_tectonic=true, 
+render(ltab2, MIME("image/png"); use_tectonic=true, open=false,
     tectonic_flags=`-Z continue-on-errors`,
     name=(@__DIR__)*"/src/assets/latex-allunits", 
     packages=["booktabs", "color", "siunitx", "fontspec"], 
