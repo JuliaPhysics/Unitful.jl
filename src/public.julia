@@ -199,7 +199,8 @@ public AccelerationFreeUnits, AccelerationUnits, ActionFreeUnits, ActionUnits,
     MolarMassUnits, MolarityFreeUnits, MolarityUnits, MomentumFreeUnits, MomentumUnits, 
     PowerFreeUnits, PowerUnits, PressureFreeUnits, PressureUnits, ScalarUnits, 
     TemperatureFreeUnits, TemperatureUnits, TimeFreeUnits, TimeUnits, Units, 
-    VelocityFreeUnits, VelocityUnits, VoltageFreeUnits, VoltageUnits, 
+    VelocityFreeUnits, 
+    VelocityUnits, VoltageFreeUnits, VoltageUnits,
     VolumeFlowFreeUnits, VolumeFlowUnits, VolumeFreeUnits, VolumeUnits, 
     WavenumberFreeUnits, WavenumberUnits
 
