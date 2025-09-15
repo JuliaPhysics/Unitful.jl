@@ -253,7 +253,7 @@ end
     # Array of quantities with the same unit
     env --> :equation
     return Expr(
-        :latexifymerge, ustrip.(a), unit(first(a))
+        :latexifymerge, ustrip.(a), has_unit_spacing(first(a)) ? "\\," : "", unit(first(a))
     )
 end
 
