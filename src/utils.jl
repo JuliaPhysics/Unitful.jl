@@ -148,7 +148,7 @@ true
 # Prevent infinite recursion, in case unit(Any) is called.
 @inline unit(x::Type{Any}) = throw(ArgumentError(
     "unit(Any) was called, which has no meaningful result. This may be due to calling unit(eltype(…)), since eltype has a generic fallback method that returns Any."
-) )
+))
 
 """
     absoluteunit(::Units)
