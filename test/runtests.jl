@@ -60,6 +60,29 @@ end
 
 is_finite_nonzero(x) = isfinite(x) && !iszero(x)
 
+VERSION >= v"1.11.0-DEV.469" && @testset "public variables" begin
+        module_names = [:DefaultSymbols]
+        private_vars = [:BCAST_PROPAGATE_CALLS, :allowed_funcs, :basefactors, :prefixdict, :promotion, :si_no_prefix, :si_prefixes, :unitmodules]
+        private_fns = [:abbr, :abs2_fast, :abs_fast, :affinetranslation, :affineunit, :base, :basefactor, :basefactors_expr, :colon, 
+            :colonstartstop, :conj_fast, :convfact, :convfact_floattype, :dimtype, :expfn, :fp_overflow_underflow, :fromlog, 
+            :gaintype, :genericunit, :get_T, :has_unit_spacing, :inv_fast, :isrootpower, :isrootpower_dim, :isunitless, :leveltype, 
+            :logfn, :lookup_units, :name, :numtype, :power, :prefactor, :preferunits, :prefix, :print_closing_bracket, 
+            :print_opening_bracket, :printed_length, :promote_to_derived, :promote_unit, :quantitytype, :register, :showrep, :showval, 
+            :sign_fast, :sortexp, :superscript, :tens, :tensfactor, :tolog, :try_uconvert, :uconvert_affine, :unwrap, :ustrcheck_bool]
+
+        _basenames =  names(Base; all=true)
+        unitful_ids = filter(x -> !startswith(string(x), r"#|@"), names(Unitful; all=true))
+        base_overloaded_names = filter(x -> x in _basenames, unitful_ids)
+        undescored_names = filter(x -> startswith(string(x), "_"), unitful_ids)
+        private_names = vcat(module_names, private_fns, private_vars, undescored_names)
+        exported_names = filter(x -> Base.isexported(Unitful, x), unitful_ids)
+        public_names = filter(x -> Base.ispublic(Unitful, x), unitful_ids)
+        other_names = setdiff(unitful_ids, union(private_names, exported_names, base_overloaded_names, public_names))
+        isempty(other_names) ||
+            @warn """For variables in $(other_names): declare as public or exported, or prepend underscore, or add to a private variables list in testset "public variables" """ 
+
+        @test isempty(other_names)
+end
 @testset "Construction" begin
     @test isa(NoUnits, FreeUnits)
     @test typeof(𝐋) === Unitful.Dimensions{(Unitful.Dimension{:Length}(1),)}
@@ -2546,6 +2569,8 @@ using REPL # This is necessary to make `@doc` work correctly
         See also: [`$(@__MODULE__).DocUnits.dRefFoo`](@ref).
         """
 end
+
+
 
 # Test precompiled Unitful extension modules
 mktempdir() do load_path

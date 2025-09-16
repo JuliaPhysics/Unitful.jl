@@ -69,6 +69,10 @@ include("complex.jl")
 include("pkgdefaults.jl")
 include("dates.jl")
 
+if VERSION >= v"1.11.0-DEV.469"
+    include("public.julia")
+end
+
 if !isdefined(Base, :get_extension)
     include("../ext/ConstructionBaseUnitfulExt.jl")
     include("../ext/InverseFunctionsUnitfulExt.jl")
