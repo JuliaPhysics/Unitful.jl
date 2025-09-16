@@ -1,5 +1,7 @@
 # Convenient dictionary for mapping powers of ten to an SI prefix.
 const prefixdict = Dict(
+    -30 => "q",
+    -27 => "r",
     -24 => "y",
     -21 => "z",
     -18 => "a",
@@ -20,7 +22,9 @@ const prefixdict = Dict(
     15  => "P",
     18  => "E",
     21  => "Z",
-    24  => "Y"
+    24  => "Y",
+    27  => "R",
+    30  => "Q"    
 )
 
 """
