@@ -1,5 +1,10 @@
 # Unitful.jl changelog
 
+## v1.25.0 (2025-09-16)
+
+* ![Feature:](https://img.shields.io/badge/-feature-green) Quantities and units can now be converted to a LaTeX representation using [`Latexify.jl`](https://github.com/korsbo/Latexify.jl). This is provided via a package extension and replaces the [UnitfulLatexify.jl](https://github.com/gustaphe/UnitfulLatexify.jl) package ([#795](https://github.com/JuliaPhysics/Unitful.jl/pull/795)).
+* This package now requires Julia ≥ 1.6.
+
 ## v1.24.0 (2025-07-31)
 
 * ![Feature:](https://img.shields.io/badge/-feature-green) The alias `deg` for `°` is added ([#764](https://github.com/JuliaPhysics/Unitful.jl/pull/764)).
