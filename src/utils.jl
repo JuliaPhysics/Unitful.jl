@@ -69,17 +69,17 @@ the result to PyPlot, for example.
 
 ```jldoctest
 julia> a = [1u"m", 2u"m"]
-2-element Vector{Quantity{Int64, 𝐋, Unitful.FreeUnits{(m,), 𝐋, nothing}}}:
+2-element Vector{Quantity{Int64, 𝐋, Unitful.LengthFreeUnits{(m,), nothing}}}:
  1 m
  2 m
 
 julia> b = ustrip(a)
-2-element reinterpret(Int64, ::Vector{Quantity{Int64, 𝐋, Unitful.FreeUnits{(m,), 𝐋, nothing}}}):
+2-element reinterpret(Int64, ::Vector{Quantity{Int64, 𝐋, Unitful.LengthFreeUnits{(m,), nothing}}}):
  1
  2
 
 julia> a[1] = 3u"m"; b
-2-element reinterpret(Int64, ::Vector{Quantity{Int64, 𝐋, Unitful.FreeUnits{(m,), 𝐋, nothing}}}):
+2-element reinterpret(Int64, ::Vector{Quantity{Int64, 𝐋, Unitful.LengthFreeUnits{(m,), nothing}}}):
  3
  2
 ```
