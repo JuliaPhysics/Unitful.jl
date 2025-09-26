@@ -4,66 +4,66 @@
 # dimensions from units, and also helps prevent common namespace collisions.
 "    Unitful.𝐋
 \nA dimension representing length."
-@dimension 𝐋 "𝐋" Length      true
+@dimension 𝐋 "𝐋" Length      true true
 "    Unitful.𝐌
 \nA dimension representing mass."
-@dimension 𝐌 "𝐌" Mass       true
+@dimension 𝐌 "𝐌" Mass       true true
 "    Unitful.𝐓
 \nA dimension representing time."
-@dimension 𝐓 "𝐓" Time        true
+@dimension 𝐓 "𝐓" Time        true true
 "    Unitful.𝐈
 \nA dimension representing electric current."
-@dimension 𝐈 "𝐈" Current      true
+@dimension 𝐈 "𝐈" Current      true true
 "    Unitful.𝚯
 \nA dimension representing thermodynamic temperature."
-@dimension 𝚯 "𝚯" Temperature true   # This one is \bfTheta
+@dimension 𝚯 "𝚯" Temperature true true   # This one is \bfTheta
 "    Unitful.𝐉
 \nA dimension representing luminous intensity."
-@dimension 𝐉 "𝐉" Luminosity   true
+@dimension 𝐉 "𝐉" Luminosity   true true
 "    Unitful.𝐍
 \nA dimension representing amount of substance."
-@dimension 𝐍 "𝐍" Amount      true
+@dimension 𝐍 "𝐍" Amount      true true
 const RelativeScaleTemperature = Quantity{T, 𝚯, <:AffineUnits} where T
 const AbsoluteScaleTemperature = Quantity{T, 𝚯, <:ScalarUnits} where T
 
 # Define derived dimensions.
-@derived_dimension Area                     𝐋^2 true
-@derived_dimension Volume                   𝐋^3 true
-@derived_dimension Density                  𝐌/𝐋^3 true
-@derived_dimension Frequency                inv(𝐓) true
-@derived_dimension Velocity                 𝐋/𝐓 true
-@derived_dimension Acceleration             𝐋/𝐓^2 true
-@derived_dimension Force                    𝐌*𝐋/𝐓^2 true
-@derived_dimension Pressure                 𝐌*𝐋^-1*𝐓^-2 true
-@derived_dimension Energy                   𝐌*𝐋^2/𝐓^2 true
-@derived_dimension Momentum                 𝐌*𝐋/𝐓 true
-@derived_dimension Power                    𝐋^2*𝐌*𝐓^-3 true
-@derived_dimension Charge                   𝐈*𝐓 true
-@derived_dimension Voltage                  𝐈^-1*𝐋^2*𝐌*𝐓^-3 true
-@derived_dimension ElectricalResistance     𝐈^-2*𝐋^2*𝐌*𝐓^-3 true
-@derived_dimension ElectricalResistivity    𝐈^-2*𝐋^3*𝐌*𝐓^-3 true
-@derived_dimension ElectricalConductance    𝐈^2*𝐋^-2*𝐌^-1*𝐓^3 true
-@derived_dimension ElectricalConductivity   𝐈^2*𝐋^-3*𝐌^-1*𝐓^3 true
-@derived_dimension Capacitance              𝐈^2*𝐋^-2*𝐌^-1*𝐓^4 true
-@derived_dimension Inductance               𝐈^-2*𝐋^2*𝐌*𝐓^-2 true
-@derived_dimension MagneticFlux             𝐈^-1*𝐋^2*𝐌*𝐓^-2 true
-@derived_dimension DField                   𝐈*𝐓/𝐋^2 true
-@derived_dimension EField                   𝐋*𝐌*𝐓^-3*𝐈^-1 true
-@derived_dimension HField                   𝐈/𝐋 true
-@derived_dimension BField                   𝐈^-1*𝐌*𝐓^-2 true
-@derived_dimension Action                   𝐋^2*𝐌*𝐓^-1 true
-@derived_dimension DynamicViscosity         𝐌*𝐋^-1*𝐓^-1 true
-@derived_dimension KinematicViscosity       𝐋^2*𝐓^-1 true
-@derived_dimension Wavenumber               inv(𝐋) true
-@derived_dimension ElectricDipoleMoment     𝐋*𝐓*𝐈 true
-@derived_dimension ElectricQuadrupoleMoment 𝐋^2*𝐓*𝐈 true
-@derived_dimension MagneticDipoleMoment     𝐋^2*𝐈 true
-@derived_dimension Molarity                 𝐍/𝐋^3 true
-@derived_dimension Molality                 𝐍/𝐌 true
-@derived_dimension MolarMass                𝐌/𝐍 true
-@derived_dimension MassFlow                 𝐌/𝐓 true
-@derived_dimension MolarFlow                𝐍/𝐓 true
-@derived_dimension VolumeFlow               𝐋^3/𝐓 true
+@derived_dimension Area                     𝐋^2 true true
+@derived_dimension Volume                   𝐋^3 true true
+@derived_dimension Density                  𝐌/𝐋^3 true true
+@derived_dimension Frequency                inv(𝐓) true true
+@derived_dimension Velocity                 𝐋/𝐓 true true
+@derived_dimension Acceleration             𝐋/𝐓^2 true true
+@derived_dimension Force                    𝐌*𝐋/𝐓^2 true true
+@derived_dimension Pressure                 𝐌*𝐋^-1*𝐓^-2 true true
+@derived_dimension Energy                   𝐌*𝐋^2/𝐓^2 true true
+@derived_dimension Momentum                 𝐌*𝐋/𝐓 true true
+@derived_dimension Power                    𝐋^2*𝐌*𝐓^-3 true true
+@derived_dimension Charge                   𝐈*𝐓 true true
+@derived_dimension Voltage                  𝐈^-1*𝐋^2*𝐌*𝐓^-3 true true
+@derived_dimension ElectricalResistance     𝐈^-2*𝐋^2*𝐌*𝐓^-3 true true
+@derived_dimension ElectricalResistivity    𝐈^-2*𝐋^3*𝐌*𝐓^-3 true true
+@derived_dimension ElectricalConductance    𝐈^2*𝐋^-2*𝐌^-1*𝐓^3 true true
+@derived_dimension ElectricalConductivity   𝐈^2*𝐋^-3*𝐌^-1*𝐓^3 true true
+@derived_dimension Capacitance              𝐈^2*𝐋^-2*𝐌^-1*𝐓^4 true true
+@derived_dimension Inductance               𝐈^-2*𝐋^2*𝐌*𝐓^-2 true true
+@derived_dimension MagneticFlux             𝐈^-1*𝐋^2*𝐌*𝐓^-2 true true
+@derived_dimension DField                   𝐈*𝐓/𝐋^2 true true
+@derived_dimension EField                   𝐋*𝐌*𝐓^-3*𝐈^-1 true true
+@derived_dimension HField                   𝐈/𝐋 true true
+@derived_dimension BField                   𝐈^-1*𝐌*𝐓^-2 true true
+@derived_dimension Action                   𝐋^2*𝐌*𝐓^-1 true true
+@derived_dimension DynamicViscosity         𝐌*𝐋^-1*𝐓^-1 true true
+@derived_dimension KinematicViscosity       𝐋^2*𝐓^-1 true true
+@derived_dimension Wavenumber               inv(𝐋) true true
+@derived_dimension ElectricDipoleMoment     𝐋*𝐓*𝐈 true true
+@derived_dimension ElectricQuadrupoleMoment 𝐋^2*𝐓*𝐈 true true
+@derived_dimension MagneticDipoleMoment     𝐋^2*𝐈 true true
+@derived_dimension Molarity                 𝐍/𝐋^3 true true
+@derived_dimension Molality                 𝐍/𝐌 true true
+@derived_dimension MolarMass                𝐌/𝐍 true true
+@derived_dimension MassFlow                 𝐌/𝐓 true true
+@derived_dimension MolarFlow                𝐍/𝐓 true true
+@derived_dimension VolumeFlow               𝐋^3/𝐓 true true
 
 # Define base units. This is not to imply g is the base SI unit instead of kg.
 # See the documentation for further details.
@@ -71,39 +71,39 @@ const AbsoluteScaleTemperature = Quantity{T, 𝚯, <:ScalarUnits} where T
 "    Unitful.m
 \nThe meter, the SI base unit of length.
 \nDimension: [`Unitful.𝐋`](@ref)."
-@refunit  m       "m"      Meter     𝐋           true true
+@refunit  m       "m"      Meter     𝐋           true true true
 "    Unitful.s
 \nThe second, the SI base unit of time.
 \nDimension: [`Unitful.𝐓`](@ref)."
-@refunit  s       "s"      Second    𝐓           true true
+@refunit  s       "s"      Second    𝐓           true true true
 "    Unitful.A
 \nThe ampere, the SI base unit of electric current.
 \nDimension: [`Unitful.𝐈`](@ref)."
-@refunit  A       "A"      Ampere    𝐈            true true
+@refunit  A       "A"      Ampere    𝐈            true true true
 "    Unitful.K
 \nThe kelvin, the SI base unit of thermodynamic temperature.
 \nDimension: [`Unitful.𝚯`](@ref)."
-@refunit  K       "K"      Kelvin    𝚯           true true
+@refunit  K       "K"      Kelvin    𝚯           true true true
 "    Unitful.cd
 \nThe candela, the SI base unit of luminous intensity.
 \nDimension: [`Unitful.𝐉`](@ref)."
-@refunit  cd      "cd"     Candela   𝐉            true true
+@refunit  cd      "cd"     Candela   𝐉            true true true
 # the docs for all gram-based units are defined later, to ensure kg is the base unit.
 @refunit  g       "g"      Gram      𝐌           true false true
 "    Unitful.mol
 \nThe mole, the SI base unit for amount of substance.
 \nDimension: [`Unitful.𝐍`](@ref)."
-@refunit  mol     "mol"    Mole      𝐍           true true
+@refunit  mol     "mol"    Mole      𝐍           true true true
 
 # Angles and solid angles
 "    Unitful.sr
 \nThe steradian, a unit of spherical angle. There are 4π sr in a sphere.
 \nDimension: [`Unitful.NoDims`](@ref)."
-@unit sr      "sr"      Steradian   1                       true true
+@unit sr      "sr"      Steradian   1                       true true true
 "    Unitful.rad
 \nThe radian, a unit of angle. There are 2π rad in a circle.
 \nDimension: [`Unitful.NoDims`](@ref)."
-@unit rad     "rad"     Radian      1                       true true
+@unit rad     "rad"     Radian      1                       true true true
 "    Unitful.°
     Unitful.deg
 \nThe degree, a unit of angle. There are 360° in a circle.
@@ -133,99 +133,99 @@ rad2deg(r::Quantity{T, NoDims, typeof(rad)}) where {T} = rad2deg(ustrip(rad, r))
 \nThe hertz, an SI unit of frequency, defined as 1 s^-1.
 \nDimension: 𝐓^-1.
 \nSee also: [`Unitful.s`](@ref)."
-@unit Hz              "Hz"   Hertz           1/s                true true
+@unit Hz              "Hz"   Hertz           1/s                true true true
 "    Unitful.N
 \nThe newton, an SI unit of force, defined as 1 kg × m / s^2.
 \nDimension: 𝐋 𝐌 𝐓^-2.
 \nSee also: [`Unitful.kg`](@ref), [`Unitful.m`](@ref), [`Unitful.s`](@ref)."
-@unit N               "N"    Newton          1kg*m/s^2          true true
+@unit N               "N"    Newton          1kg*m/s^2          true true true
 "    Unitful.Pa
 \nThe pascal, an SI unit of pressure, defined as 1 N / m^2.
 \nDimension: 𝐌 𝐋^-1 𝐓^-2.
 \nSee also: [`Unitful.N`](@ref), [`Unitful.m`](@ref)."
-@unit Pa              "Pa"   Pascal          1N/m^2             true true
+@unit Pa              "Pa"   Pascal          1N/m^2             true true true
 "    Unitful.J
 \nThe joule, an SI unit of energy, defined as 1 N × m.
 \nDimension: 𝐋^2 𝐌 𝐓^-2.
 \nSee also: [`Unitful.N`](@ref), [`Unitful.m`](@ref)."
-@unit J               "J"    Joule           1N*m               true true
+@unit J               "J"    Joule           1N*m               true true true
 "    Unitful.W
 \nThe watt, an SI unit of power, defined as 1 J / s.
 \nDimension: 𝐋^2 𝐌 𝐓^-3.
 \nSee also: [`Unitful.J`](@ref), [`Unitful.s`](@ref)."
-@unit W               "W"    Watt            1J/s               true true
+@unit W               "W"    Watt            1J/s               true true true
 "    Unitful.C
 \nThe coulomb, an SI unit of electric charge, defined as 1 A × s.
 \nDimension: 𝐈 𝐓.
 \nSee also: [`Unitful.A`](@ref), [`Unitful.s`](@ref)."
-@unit C               "C"    Coulomb         1A*s               true true
+@unit C               "C"    Coulomb         1A*s               true true true
 "    Unitful.V
 \nThe volt, an SI unit of electric potential, defined as 1 W / A.
 \nDimension: 𝐋^2 𝐌 𝐈^-1 𝐓^-3.
 \nSee also: [`Unitful.W`](@ref), [`Unitful.A`](@ref)"
-@unit V               "V"    Volt            1W/A               true true
+@unit V               "V"    Volt            1W/A               true true true
 "    Unitful.Ω
 \nThe ohm, an SI unit of electrical resistance, defined as 1 V / A.
 \nDimension: 𝐋^2 𝐌 𝐈^-2 𝐓^-3.
 \nSee also: [`Unitful.V`](@ref), [`Unitful.A`](@ref)."
-@unit Ω               "Ω"    Ohm             1V/A               true true
+@unit Ω               "Ω"    Ohm             1V/A               true true true
 "    Unitful.S
 \nThe siemens, an SI unit of electrical conductance, defined as 1 Ω^-1.
 \nDimension: 𝐈^2 𝐓^3 𝐋^-2 𝐌^-1.
 \nSee also: [`Unitful.Ω`](@ref)"
-@unit S               "S"    Siemens         1/Ω                true true
+@unit S               "S"    Siemens         1/Ω                true true true
 "    Unitful.F
 \nThe farad, an SI unit of electrical capacitance, defined as 1 s^4 × A^2 / (kg × m^2).
 \nDimension: 𝐈^2 𝐓^4 𝐋^-2 𝐌^-1.
 \nSee also: [`Unitful.s`](@ref), [`Unitful.A`](@ref), [`Unitful.kg`](@ref), [`Unitful.m`](@ref)."
-@unit F               "F"    Farad           1s^4*A^2/(kg*m^2)  true true
+@unit F               "F"    Farad           1s^4*A^2/(kg*m^2)  true true true
 "    Unitful.H
 \nThe henry, an SI unit of electrical inductance, defined as 1 J / A^2.
 \nDimension: 𝐋^2 𝐌 𝐈^-2 𝐓^-2.
 \nSee also: [`Unitful.J`](@ref), [`Unitful.A`](@ref)."
-@unit H               "H"    Henry           1J/(A^2)           true true
+@unit H               "H"    Henry           1J/(A^2)           true true true
 "    Unitful.T
 \nThe tesla, an SI unit of magnetic B-field strength, defined as 1 kg / (A × s^2).
 \nDimension: 𝐌 𝐈^-1 𝐓^-2.
 \nSee also: [`Unitful.kg`](@ref), [`Unitful.A`](@ref), [`Unitful.s`](@ref)."
-@unit T               "T"    Tesla           1kg/(A*s^2)        true true
+@unit T               "T"    Tesla           1kg/(A*s^2)        true true true
 "    Unitful.Wb
 \nThe weber, an SI unit of magnetic flux, defined as 1 kg × m^2 / (A × s^2).
 \nDimension: 𝐋^2 𝐌 𝐈^-1 𝐓^-2.
 \nSee also: [`Unitful.kg`](@ref), [`Unitful.m`](@ref), [`Unitful.A`](@ref), [`Unitful.s`](@ref)."
-@unit Wb              "Wb"   Weber           1kg*m^2/(A*s^2)    true true
+@unit Wb              "Wb"   Weber           1kg*m^2/(A*s^2)    true true true
 "    Unitful.lm
 \nThe lumen, an SI unit of luminous flux, defined as 1 cd × sr.
 \nDimension: [`Unitful.𝐉`](@ref).
 \nSee also: [`Unitful.cd`](@ref), [`Unitful.sr`](@ref)."
-@unit lm              "lm"   Lumen           1cd*sr             true true
+@unit lm              "lm"   Lumen           1cd*sr             true true true
 "    Unitful.lx
 \nThe lux, an SI unit of illuminance, defined as 1 lm / m^2.
 \nDimension: 𝐉 𝐋^-2.
 \nSee also: [`Unitful.lm`](@ref), [`Unitful.m`](@ref)."
-@unit lx              "lx"   Lux             1lm/m^2            true true
+@unit lx              "lx"   Lux             1lm/m^2            true true true
 "    Unitful.Bq
 \nThe becquerel, an SI unit of radioactivity, defined as 1 nuclear decay per s.
 \nDimension: 𝐓^-1.
 \nSee also: [`Unitful.s`](@ref)."
-@unit Bq              "Bq"   Becquerel       1/s                true true
+@unit Bq              "Bq"   Becquerel       1/s                true true true
 "    Unitful.Gy
 \nThe gray, an SI unit of ionizing radiation dose, defined as the absorption of 1 J per kg of matter.
 \nDimension: 𝐋^2 𝐓^-2.
 \nSee also: [`Unitful.lm`](@ref), [`Unitful.m`](@ref)."
-@unit Gy              "Gy"   Gray            1J/kg              true true
+@unit Gy              "Gy"   Gray            1J/kg              true true true
 "    Unitful.Sv
 \nThe sievert, an SI unit of the biological effect of an ionizing radiation dose.
 Defined as the health effect of 1 Gy of radiation, scaled by a quality factor.
 \nDimension: 𝐋^2 𝐓^-2.
 \nSee also: [`Unitful.Gy`](@ref)."
-@unit Sv              "Sv"   Sievert         1J/kg              true true
+@unit Sv              "Sv"   Sievert         1J/kg              true true true
 "    Unitful.kat
 \nThe katal, an SI unit of catalytic activity, defined as 1 mol of catalyzed
 substrate per s.
 \nDimension: 𝐍 𝐓^-1.
 \nSee also: [`Unitful.mol`](@ref), [`Unitful.s`](@ref)."
-@unit kat             "kat"  Katal           1mol/s             true true
+@unit kat             "kat"  Katal           1mol/s             true true true
 "    Unitful.percent
 \nPercent, a unit meaning parts per hundred. Printed as \"%\".
 \nDimension: [`Unitful.NoDims`](@ref)."
@@ -264,7 +264,7 @@ substrate per s.
 \nThe degree Celsius, an SI unit of temperature, defined such that 0 °C = 273.15 K.
 \nDimension: [`Unitful.𝚯`](@ref).
 \nSee also: [`Unitful.K`](@ref)."
-@affineunit °C "°C"     (27315//100)K
+@affineunit °C "°C"     (27315//100)K true
 
 # Common units of time
 "    Unitful.minute
@@ -292,7 +292,7 @@ to avoid confusion with the Julia function `min`.
 \nThe year, a unit of time, defined as 365.25 d.
 \nDimension: [`Unitful.𝐓`](@ref).
 \nSee Also: [`Unitful.hr`](@ref)."
-@unit yr     "yr"       Year                  31557600s     true true
+@unit yr     "yr"       Year                  31557600s     true true true
 "    Unitful.rps
 \nRevolutions per second, a unit of rotational speed, defined as 2π rad / s.
 \nDimension: 𝐓^-1.
@@ -321,7 +321,7 @@ const ha = Unitful.FreeUnits{(Unitful.Unit{:Are, 𝐋^2}(2, 1//1),), 𝐋^2}()
 \nThe barn, a metric unit of area, defined as 100 fm^2.
 \nDimension: 𝐋^2.
 \nSee Also: [`Unitful.fm`](@ref)."
-@unit b      "b"        Barn        100fm^2                 true true
+@unit b      "b"        Barn        100fm^2                 true true true
 
 # Volume
 # `l` is also an acceptable symbol for liters
@@ -362,7 +362,7 @@ end
 \nA unit for measuring molar concentration, equal to 1 mol/L.
 \nDimension: 𝐍 𝐋^-3.
 \nSee Also: [`Unitful.L`](@ref), [`Unitful.mol`](@ref)."
-@unit M      "M"        Molar       1mol/L                  true true
+@unit M      "M"        Molar       1mol/L                  true true true
 
 # Energy
 "    Unitful.q
@@ -377,29 +377,29 @@ const q = 1.602_176_634e-19*C        # CODATA 2018; `e` means 2.718...
 \nThe electron-volt, a unit of energy, defined as q*V.
 \nDimension: 𝐋^2 𝐌 𝐓^-2.
 \nSee also: [`Unitful.q`](@ref), [`Unitful.V`](@ref)."
-@unit eV     "eV"       eV          q*V                     true true
+@unit eV     "eV"       eV          q*V                     true true true
 
 # For convenience
 "    Unitful.Hz2π
 \nA unit for convenience in angular frequency, equal to 2π Hz.
 \nDimension: 𝐓^-1.
 \nSee also: [`Unitful.Hz`](@ref)."
-@unit Hz2π   "Hz2π"     AngHertz    2π/s                    true true
+@unit Hz2π   "Hz2π"     AngHertz    2π/s                    true true true
 "    Unitful.bar
 \nThe bar, a metric unit of pressure, defined as 100 kPa.
 \nDimension: 𝐌 𝐋^-1 𝐓^-2.
 \nSee also: [`Unitful.kPa`](@ref)."
-@unit bar    "bar"      Bar         100000Pa                true true
+@unit bar    "bar"      Bar         100000Pa                true true true
 "    Unitful.atm
 \nThe standard atmosphere, a unit of pressure, defined as 101,325 Pa.
 \nDimension: 𝐌 𝐋^-1 𝐓^-2.
 \nSee also: [`Unitful.Pa`](@ref)."
-@unit atm    "atm"      Atmosphere  101325Pa                true true
+@unit atm    "atm"      Atmosphere  101325Pa                true true true
 "    Unitful.Torr
 \nThe torr, a unit of pressure, defined as 1/760 atm.
 \nDimension: 𝐌 𝐋^-1 𝐓^-2.
 \nSee also: [`Unitful.atm`](@ref)."
-@unit Torr   "Torr"     Torr        101325Pa//760           true true
+@unit Torr   "Torr"     Torr        101325Pa//760           true true true
 
 # Constants (2018 CODATA values)        (uncertainties in final digits)
 "    Unitful.c0
@@ -557,47 +557,47 @@ earth, a unit of acceleration, defined by standard to be exactly 9.806,65 m / s^
 \nThe gal, a CGS unit of acceleration, defined as 1 cm / s^2.
 \nDimension: 𝐋 𝐓^-2.
 \nSee also: [`Unitful.cm`](@ref), [`Unitful.s`](@ref)."
-@unit Gal    "Gal"      Gal         1cm/s^2                 true true
+@unit Gal    "Gal"      Gal         1cm/s^2                 true true true
 "    Unitful.dyn
 \nThe dyne, a CGS unit of force, defined as 1 g × cm / s^2.
 \nDimension: 𝐋 𝐌 𝐓^-2.
 \nSee also: [`Unitful.cm`](@ref), [`Unitful.s`](@ref), [`Unitful.g`](@ref)."
-@unit dyn    "dyn"      Dyne        1g*cm/s^2               true true
+@unit dyn    "dyn"      Dyne        1g*cm/s^2               true true true
 "    Unitful.erg
 \nThe erg, a CGS unit of energy, defined as 1 dyn × cm.
 \nDimension: 𝐋^2 𝐌 𝐓^-2.
 \nSee also: [`Unitful.cm`](@ref), [`Unitful.dyn`](@ref)"
-@unit erg    "erg"      Erg         1g*cm^2/s^2             true true
+@unit erg    "erg"      Erg         1g*cm^2/s^2             true true true
 "    Unitful.Ba
 \nThe barye, a CGS unit of pressure, defined as 1 dyn / cm^2.
 \nDimension: 𝐌 𝐋^-1 𝐓^-2.
 \nSee also: [`Unitful.cm`](@ref), [`Unitful.dyn`](@ref)"
-@unit Ba     "Ba"       Barye       1g/cm/s^2               true true
+@unit Ba     "Ba"       Barye       1g/cm/s^2               true true true
 "    Unitful.P
 \nThe poise, a CGS unit of dynamic viscosity, defined as 1 dyn × s / cm^2.
 \nDimension: 𝐌 𝐋^-1 𝐓^-1.
 \nSee also: [`Unitful.cm`](@ref), [`Unitful.dyn`](@ref), [`Unitful.s`](@ref)"
-@unit P      "P"        Poise       1g/cm/s                 true true
+@unit P      "P"        Poise       1g/cm/s                 true true true
 "    Unitful.St
 \nThe stokes, a CGS unit of kinematic viscosity, defined as 1 cm^2 / s.
 \nDimension: 𝐌^2 𝐓^-1.
 \nSee also: [`Unitful.cm`](@ref), [`Unitful.s`](@ref)"
-@unit St     "St"       Stokes      1cm^2/s                 true true
+@unit St     "St"       Stokes      1cm^2/s                 true true true
 "    Unitful.Gauss
 \nThe gauss, a CGS unit of magnetic B-field strength, defined as 1 Mx / cm^2.
 \nDimension: 𝐌 𝐈^-1 𝐓^-2.
 \nSee also: [`Unitful.cm`](@ref), [`Unitful.Mx`](@ref)"
-@unit Gauss  "Gauss"    Gauss       (1//10_000)*T           true true
+@unit Gauss  "Gauss"    Gauss       (1//10_000)*T           true true true
 "    Unitful.Oe
 \nThe oersted, a CGS unit of magnetic H-field strength, defined as 1000 A / (4π × m).
 \nDimension: 𝐈 𝐋^-1.
 \nSee also: [`Unitful.A`](@ref), [`Unitful.m`](@ref)"
-@unit Oe     "Oe"       Oersted     (1_000/4π)*A/m          true true
+@unit Oe     "Oe"       Oersted     (1_000/4π)*A/m          true true true
 "    Unitful.Mx
 \nThe maxwell, a CGS unit of magnetic flux, defined as 1 Gauss × cm^2.
 \nDimension: 𝐋^2 𝐌 𝐈^-1 𝐓^-2.
 \nSee also: [`Unitful.cm`](@ref), [`Unitful.Gauss`](@ref)"
-@unit Mx     "Mx"       Maxwell     (1//100_000_000)*Wb     true true
+@unit Mx     "Mx"       Maxwell     (1//100_000_000)*Wb     true true true
 
 
 #########
@@ -655,7 +655,7 @@ earth, a unit of acceleration, defined by standard to be exactly 9.806,65 m / s^
 \nThe degree Fahrenheit, a US customary unit of temperature, defined such that 0 °F = 459.67 Ra.
 \nDimension: [`Unitful.𝚯`](@ref).
 \nSee also: [`Unitful.Ra`](@ref)."
-@affineunit °F  "°F"      (45967//100)Ra
+@affineunit °F  "°F"      (45967//100)Ra true
 
 # Masses
 "    Unitful.lb
@@ -697,7 +697,7 @@ earth, a unit of acceleration, defined by standard to be exactly 9.806,65 m / s^
 \nThe calorie, a unit of energy defined as exactly 4.184 J.
 \nDimension: 𝐋^2 𝐌 𝐓^-2.
 \nSee Also: [`Unitful.J`](@ref)."
-@unit cal       "cal"      Calorie              4.184J                  true true
+@unit cal       "cal"      Calorie              4.184J                  true true true
 "    Unitful.btu
 \nThe British thermal unit, a US customary unit of heat defined by ISO 31-4 as exactly 1055.06 J.
 \nDimension: 𝐋^2 𝐌 𝐓^-2.
