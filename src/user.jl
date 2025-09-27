@@ -293,7 +293,7 @@ macro unit(symb, abbr, name, equals, tf, autodocs=false, makepublic=false)
 end
 
 """
-    @affineunit(symb, abbr, offset, makepublic=true)
+    @affineunit(symb, abbr, offset, makepublic=false)
 Macro for easily defining affine units. `offset` gives the zero of the relative scale
 in terms of an absolute scale; the scaling is the same as the absolute scale. Example:
 `@affineunit °C "°C" (27315//100)K` is used internally to define degrees Celsius.
@@ -303,7 +303,7 @@ If `makepublic=true`, makes the unit name public when running on Julia ≥ 1.11.
     Documenting the resulting unit by adding a docstring before the `@affineunit` call
     requires Unitful 1.10 or later.
 """
-macro affineunit(symb, abbr, offset, makepublic=true)
+macro affineunit(symb, abbr, offset, makepublic=false)
     s = Symbol(symb)
     expr1 = quote
         Base.@__doc__ const global $s = $affineunit($offset)
