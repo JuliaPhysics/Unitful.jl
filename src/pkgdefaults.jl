@@ -539,8 +539,7 @@ mass of an unbound neutral atom of carbon-12, equal to 1.660,539,066,60 × 10^-2
 (the CODATA 2018 recommended value).
 \nDimension: [`Unitful.𝐌`](@ref).
 \nSee Also: [`Unitful.kg`](@ref)."
-@unit u      "u" UnifiedAtomicMassUnit 1.660_539_066_60e-27*kg false # (50)
-@public u
+@unit u      "u" UnifiedAtomicMassUnit 1.660_539_066_60e-27*kg false false true# (50)
 
 # Acceleration
 "    Unitful.ge
