@@ -40,7 +40,16 @@ jobs:
           - macos-latest
           - windows-latest
         julia-arch:
-          - x64
+          - "default"
+        # Until minimum supported version is v1.6, we can't test on Apple
+        # Silicon macOS for that version and we need to use Julia v1.8 instead
+        exclude:
+          - julia-version: "min"
+            os: macos-latest
+        include:
+          - julia-version: "1.8"
+            os: macos-latest
+            julia-arch: "default"
     steps:
       - uses: actions/checkout@v5
       - uses: julia-actions/setup-julia@v2
