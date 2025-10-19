@@ -45,7 +45,7 @@ function _basefactors(m::Module)
     if isdefined(m, basefactors_name)
         # It's not guaranteed that a world age update happened since the hidden
         # symbol was added to another module, so use `invokelatest` to avoid #781.
-        invokelatest(getproperty, m, basefactors_name)
+        Base.invokelatest(getproperty, m, basefactors_name)
     else
         Core.eval(m, :(const $basefactors_name = Dict{Symbol,Tuple{Float64,Rational{Int}}}()))
     end
