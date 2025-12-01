@@ -263,7 +263,7 @@ substrate per s.
 \nThe degree Celsius, an SI unit of temperature, defined such that 0 °C = 273.15 K.
 \nDimension: [`Unitful.𝚯`](@ref).
 \nSee also: [`Unitful.K`](@ref)."
-@affineunit °C "°C"     (27315//100)K
+((@affineunit °C "°C"     (27315//100)K), const degC = °C)
 
 # Common units of time
 "    Unitful.minute
@@ -625,7 +625,7 @@ earth, a unit of acceleration, defined by standard to be exactly 9.806,65 m / s^
 \nThe degree Fahrenheit, a US customary unit of temperature, defined such that 0 °F = 459.67 Ra.
 \nDimension: [`Unitful.𝚯`](@ref).
 \nSee also: [`Unitful.Ra`](@ref)."
-@affineunit °F  "°F"      (45967//100)Ra
+((@affineunit °F  "°F"      (45967//100)Ra), const degF = °F)
 
 # Masses
 "    Unitful.lb
