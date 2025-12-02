@@ -83,9 +83,7 @@ Unitful.Temperature
 Unitful.K
 Unitful.Ra
 Unitful.°C
-Unitful.degC
 Unitful.°F
-Unitful.degF
 ```
 
 ### Time
