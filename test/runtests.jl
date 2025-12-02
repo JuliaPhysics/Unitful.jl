@@ -1895,6 +1895,9 @@ end
     Latexify.set_default(labelformat=:square)
     @test latexify("x", m) == raw"$x\;\left[\mathrm{m}\right]$"
     @test_throws "Unknown labelformat" latexify("x", m; labelformat=:wrong)
+    # Issue 816
+    @test latexify("T", u"°C"; labelformat=:slash) == raw"$T\;\left/\;\mathrm{^\circ C}\right.$"
+    @test latexify("T", u"°F"; labelformat=:slash) == raw"$T\;\left/\;\mathrm{^\circ F}\right.$"
 end
 
 @testset "Parentheses" begin
