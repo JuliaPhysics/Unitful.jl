@@ -71,6 +71,8 @@ include("complex.jl")
 include("pkgdefaults.jl")
 include("dates.jl")
 
+@public AbstractQuantity
+
 if !isdefined(Base, :get_extension)
     include("../ext/ConstructionBaseUnitfulExt.jl")
     include("../ext/InverseFunctionsUnitfulExt.jl")
