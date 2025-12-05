@@ -2449,6 +2449,12 @@ end
     @test 2Unitful.° === 2Unitful.deg
     @test u"deg" === u"°"
     @test uparse("deg") === uparse("°")
+    @test Unitful.degC === Unitful.°C
+    @test 2Unitful.°C === 2Unitful.degC
+    @test u"degC" === u"°C"
+    @test Unitful.degF === Unitful.°F
+    @test 2Unitful.°F === 2Unitful.degF
+    @test u"degF" === u"°F"
 end
 
 module DocUnits
