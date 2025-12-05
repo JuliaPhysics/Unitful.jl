@@ -1,5 +1,15 @@
 # Unitful.jl changelog
 
+## v1.26.0 (2025-12-05)
+
+* ![Feature:](https://img.shields.io/badge/-feature-green) The aliases `degC` and `degF` for `°C` and `°F` are added ([#826](https://github.com/JuliaPhysics/Unitful.jl/pull/826)).
+* ![Bugfix:](https://img.shields.io/badge/-bugfix-purple) Correct LaTeX printing of affine units ([#825](https://github.com/JuliaPhysics/Unitful.jl/pull/825)).
+* ![Maintenance:](https://img.shields.io/badge/-maintenance-grey) Fix a world-age warning on Julia 1.12 ([#819](https://github.com/JuliaPhysics/Unitful.jl/issues/819)).
+
+## v1.25.1 (2025-10-18)
+
+* ![Maintenance:](https://img.shields.io/badge/-maintenance-grey) Fix a parsing error on Julia 1.13 ([#817](https://github.com/JuliaPhysics/Unitful.jl/issues/817)).
+
 ## v1.25.0 (2025-09-16)
 
 * ![Feature:](https://img.shields.io/badge/-feature-green) Quantities and units can now be converted to a LaTeX representation using [`Latexify.jl`](https://github.com/korsbo/Latexify.jl). This is provided via a package extension and replaces the [UnitfulLatexify.jl](https://github.com/gustaphe/UnitfulLatexify.jl) package ([#795](https://github.com/JuliaPhysics/Unitful.jl/pull/795)).
