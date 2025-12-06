@@ -2382,6 +2382,8 @@ if isdefined(Base, :get_extension)
     @testset "NaNMath extension" begin
         @test isnan(NaNMath.sqrt(-1u"m"))
         @test isnan(NaNMath.pow(-1u"m", 0.5))
+        @test NaNMath.sqrt(u"m") === Base.sqrt(u"m")
+        @test NaNMath.pow(u"m", 2) === u"m"^2
     end
 end
 
