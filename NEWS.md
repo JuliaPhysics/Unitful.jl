@@ -1,5 +1,9 @@
 # Unitful.jl changelog
 
+## v1.27.0 (2025-12-08)
+
+* ![Feature:](https://img.shields.io/badge/-feature-green) `NaNMath.pow` and `NaNMath.sqrt` from [NaNMath.jl](https://github.com/JuliaMath/NaNMath.jl) are supported via a package extension ([#824](https://github.com/JuliaPhysics/Unitful.jl/pull/824)).
+
 ## v1.26.0 (2025-12-05)
 
 * ![Feature:](https://img.shields.io/badge/-feature-green) The aliases `degC` and `degF` for `°C` and `°F` are added ([#826](https://github.com/JuliaPhysics/Unitful.jl/pull/826)).
