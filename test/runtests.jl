@@ -4,6 +4,7 @@ import Unitful: DimensionError, AffineError
 import Unitful: LogScaled, LogInfo, Level, Gain, MixedUnits, Decibel
 import Unitful: FreeUnits, ContextUnits, FixedUnits, AffineUnits, AffineQuantity
 import ForwardDiff
+import NaNMath
 import Latexify: Latexify, latexify, @latexify, FancyNumberFormatter, SiunitxNumberFormatter
 import LaTeXStrings: LaTeXString, @L_str
 
@@ -2379,6 +2380,15 @@ if isdefined(Base, :get_extension)
     @testset "ForwardDiff extension, solving Issue 682" begin
         @test ForwardDiff.Dual(1.0)*u"cm/m" + ForwardDiff.Dual(1.0) == 1.01
         @test ForwardDiff.Dual(1.0)*u"cm/m" == ForwardDiff.Dual(0.01)
+    end
+
+    @testset "NaNMath extension" begin
+        @test isnan(NaNMath.sqrt(-1m))
+        @test unit(NaNMath.sqrt(-1m)) == m^(1//2)
+        @test isnan(NaNMath.pow(-1m, 0.5))
+        @test unit(NaNMath.pow(-1m, 0.5)) == m^(1//2)
+        @test NaNMath.sqrt(m) === Base.sqrt(m)
+        @test NaNMath.pow(m, 2) === m^2
     end
 end
 
