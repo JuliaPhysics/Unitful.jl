@@ -1330,6 +1330,22 @@ end
             @test @inferred(last(range(1m, step=2mm, length=4))) === (503//500)m
             @test_throws DimensionError(1m, 2V) range(1m, step=2V, length=5)
             @test_throws ArgumentError 1m:0m:5m
+            @test_throws ArgumentError StepRange(1.0m, 1mm, 2.0m)
+            @test_throws ArgumentError StepRange(1m, 1f3mm, 2m)
+            @test_throws ArgumentError StepRange(1, 1e3mm/m, 2)
+            @test_throws ArgumentError StepRange(1f3mm/m, 1, 2f3mm/m)
+            @test_throws ArgumentError StepRange{typeof(1.0m),typeof(1mm)}(1m, 1mm, 2m)
+            @test_throws ArgumentError StepRange{typeof(1.0m),typeof(1.0mm)}(1m, 1mm, 2m)
+            @test_throws ArgumentError StepRange{typeof(1.0mm/m),Int}(1000mm/m, 1, 2000mm/m)
+            @test_throws ArgumentError StepRange{Rational{Int},typeof(1f0mm/m)}(1//1, 1f3mm/m, 2//1)
+            @test_throws ArgumentError StepRange{typeof(1m),typeof((1//1)mm)}(1m, 1mm, 2m)
+            @test_throws ArgumentError StepRange{typeof(1m),typeof(1mm)}(1m, 1mm, 2m)
+            @test_throws ArgumentError StepRange{typeof(1m/mm),Int}(1m/mm, 1, 2m/mm)
+            @test_throws ArgumentError StepRange{Int,typeof(1mm/m)}(1, 1mm/m, 2)
+            @test @inferred(StepRange(1m, (1000//1)mm, 2m)) isa StepRange{typeof(1m), typeof((1000//1)mm)}
+            @test @inferred(StepRange(1m, 1000mm, 2m)) isa StepRange{typeof(1m), typeof(1000mm)}
+            @test @inferred(StepRange(1m/mm, 1000, 2m/mm)) isa StepRange{typeof(1m/mm), Int}
+            @test @inferred(StepRange(1, 1000mm/m, 2)) isa StepRange{Int, typeof(1000mm/m)}
         end
         @testset ">> StepRangeLen" begin
             @test isa(@inferred(colon(1.0m, 1m, 5m)), StepRangeLen{typeof(1.0m)})
@@ -1747,9 +1763,9 @@ Base.show(io::IO, ::MIME"text/plain", ::Foo) = print(io, "42.0")
 
         # Concise printing of affine ranges with mixed step unit
         @test repr(StepRange(1u"°C", 1u"K", 3u"°C")) == "(1:3) °C"
-        @test repr(StepRange(1u"°C", 1.0u"K", 3u"°C")) == "(1:3) °C"
-        @test repr(StepRange(1.0u"°C", 1u"K", 3.0u"°C")) == "(1.0:1.0:3.0) °C"
-        @test repr(StepRange(1.0u"°C", 1.0u"K", 3.0u"°C")) == "(1.0:1.0:3.0) °C"
+        @test repr(StepRange(1u"°C", (1//1)u"K", 3u"°C")) == "(1:3) °C"
+        @test repr(StepRange((1//1)u"°C", 1u"K", (3//1)u"°C")) == "(1//1:3//1) °C"
+        @test repr(StepRange((1//1)u"°C", (1//1)u"K", (3//1)u"°C")) == "(1//1:3//1) °C"
         @test repr(StepRange((0//1)u"°F", 1u"K", (9//1)u"°F")) == "(0//1:9//5:9//1) °F"
         @test repr(StepRangeLen{typeof(1.0u"°C"),typeof(1.0u"°C"),typeof(1u"K")}(1.0u"°C", 1u"K", 3, 1)) == "(1.0:1.0:3.0) °C"
         @test repr(StepRangeLen{typeof(1u"°C"),typeof(1u"°C"),typeof(1u"K")}(1u"°C", 1u"K", 3, 1)) == "(1:1:3) °C"
