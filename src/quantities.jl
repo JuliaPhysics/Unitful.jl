@@ -314,8 +314,10 @@ end
 _dimerr(f) = error("$f can only be well-defined for dimensionless ",
         "numbers. For dimensionful numbers, different input units yield physically ",
         "different results.")
-isinteger(x::AbstractQuantity) = _dimerr(isinteger)
-isinteger(x::DimensionlessQuantity) = isinteger(uconvert(NoUnits, x))
+for f in [:isinteger, :iseven, :isodd]
+    @eval $f(x::AbstractQuantity) = _dimerr($f)
+    @eval $f(x::DimensionlessQuantity) = $f(uconvert(NoUnits, x))
+end
 
 _rounderr() = error("specify the type of the quantity to convert to ",
     "when rounding quantities. Example: round(typeof(1u\"m\"), 137u\"cm\").")
