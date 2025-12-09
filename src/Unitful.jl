@@ -10,6 +10,7 @@ import Base: sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, at
              sinpi, cospi, sinc, cosc, cis, cispi, sincos
 import Base: eps, mod, rem, div, fld, cld, divrem, trunc, round, sign, signbit
 import Base: isless, isapprox, isinteger, isreal, isinf, isfinite, isnan
+import Base: iseven, isodd
 import Base: copysign, flipsign
 import Base: prevfloat, nextfloat, maxintfloat, rat, step
 import Base: length, float, last, one, oneunit, zero, range
