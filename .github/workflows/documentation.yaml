@@ -35,7 +35,7 @@ jobs:
       - uses: julia-actions/julia-docdeploy@v1
         env:
           DOCUMENTER_KEY: ${{ secrets.DOCUMENTER_KEY }}
-      - uses: actions/upload-artifact@v5
+      - uses: actions/upload-artifact@v6
         with:
           name: documentation-build
           path: docs/build
