@@ -311,6 +311,11 @@ for cmp in [:(==), :isequal]
     @eval $cmp(x::Number, y::AbstractQuantity) = $cmp(y,x)
 end
 
+# For now, hashes of quantities that are equal but have different units are not equal
+function hash(x::AbstractQuantity, h::UInt)
+    hash(x.val, hash(FreeUnits(unit(x)), h))
+end
+
 _dimerr(f) = error("$f can only be well-defined for dimensionless ",
         "numbers. For dimensionful numbers, different input units yield physically ",
         "different results.")
