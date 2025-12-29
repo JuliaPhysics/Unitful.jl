@@ -619,6 +619,7 @@
         @test !isequal(Day(4), 4u"hr")
         @test !isequal(4u"cm", Day(4))
 
+        @test isequal(CompoundPeriod(), 0s)
         @test isequal(CompoundPeriod(Day(365), Hour(6)), 1u"yr")
         @test isequal(1u"yr", CompoundPeriod(Day(365), Hour(6)))
         @test !isequal(CompoundPeriod(), -0.0u"s") # !isequal(0.0, -0.0)
@@ -628,6 +629,12 @@
         @test !isequal(1u"yr", CompoundPeriod(Month(12)))
         @test !isequal(CompoundPeriod(Year(1)), 1u"yr")
         @test !isequal(CompoundPeriod(Month(12)), 1u"yr")
+
+        # hash
+        @test_broken hash(Second(2)) === hash(2.0s)
+        @test_broken hash(72hr) === hash(Day(3))
+        @test_broken hash(CompoundPeriod()) === hash(0s)
+        @test_broken hash(CompoundPeriod(Hour(6))) === hash(6hr)
 
         # <
         @test Second(1) < 1001u"ms"

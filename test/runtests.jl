@@ -571,6 +571,16 @@ Unitful.uconvert(U::Unitful.Units, q::QQQ) = uconvert(U, Quantity(q.val, cm))
     end
 end
 
+@testset "Hashing" begin
+    @test hash(big(1.0)m) === hash(big(1.0)m)
+    @test hash(1.0m) === hash(1m)
+    @test hash(0.5m) === hash((1//2)m)
+    @test hash(2.0m) === hash(2.0ContextUnits(m, cm))
+    @test hash(3.0m) === hash(3.0FixedUnits(m))
+    @test_broken hash(0.5m) === hash(500mm)
+    @test_broken hash(1rad) === hash(1)
+end
+
 @testset "Unit string parsing" begin
     @test uparse("m") == m
     @test uparse("m,s") == (m,s)
@@ -2114,11 +2124,11 @@ end
         @testset ">> Level" begin
             @test big(3.0)dBm == big(3.0)dBm
             @test isequal(big(3.0)dBm, big(3.0)dBm)
-            @test_broken hash(big(3.0)dBm) == hash(big(3.0)dBm)
+            @test hash(big(3.0)dBm) == hash(big(3.0)dBm)
 
             @test @dB(3.0V/2.0V) == @dB(3V/V)
             @test isequal(@dB(3.0V/2.0V), @dB(3V/V))
-            @test_broken hash(@dB(3.0V/2.0V)) == hash(@dB(3V/V))
+            @test hash(@dB(3.0V/2.0V)) == hash(@dB(3V/V))
         end
 
         @testset ">> Gain" begin
