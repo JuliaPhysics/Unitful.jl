@@ -2359,9 +2359,21 @@ end
 
 # Tests for unit extension modules in unit parsing
 @test_throws ArgumentError uparse("foo", unit_context=Unitful)
+@test uparse("foo") === u"foo"  #This work, because default `unit_context` is now `vcat(Unitful, Unitful.unitmodules)`
 @test uparse("foo", unit_context=FooUnits) === u"foo"
 @test uparse("foo", unit_context=[Unitful, FooUnits]) === u"foo"
 @test uparse("foo", unit_context=[FooUnits, Unitful]) === u"foo"
+
+module BazUnits
+    using Unitful
+    @unit baz "baz" MyBaz 1u"m" false
+end
+# Tests unit parsing for unit extension modules in which  Unitful.register(BazUnits) was not done
+@test_throws ArgumentError uparse("baz", unit_context=Unitful)
+@test_throws ArgumentError uparse("baz") #This not work, because BazUnits is not registered to Unitful.unitmodules ( and default `unit_context` argument )
+@test uparse("baz", unit_context=BazUnits) === BazUnits.baz
+@test uparse("baz", unit_context=[Unitful, BazUnits]) === BazUnits.baz
+@test uparse("baz", unit_context=[BazUnits, Unitful]) === BazUnits.baz
 
 # Test for #272
 module OnlyUstrImported
