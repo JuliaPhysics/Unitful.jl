@@ -84,7 +84,7 @@ julia> a[1] = 3u"m"; b
  2
 ```
 """
-@inline ustrip(A::Array{Q}) where {Q <: Quantity} = reinterpret(numtype(Q), A)
+@inline ustrip(A::StridedArray{Q}) where {Q <: Quantity} = reinterpret(numtype(Q), A)
 
 @deprecate(ustrip(A::AbstractArray{T}) where {T<:Number}, ustrip.(A))
 
