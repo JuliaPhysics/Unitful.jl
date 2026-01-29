@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   width="28.056118mm"
+   height="43.346497mm"
+   viewBox="0 0 28.056118 43.346497"
+   version="1.1"
+   id="svg5"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs2">
+    <marker
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="DotM"
+       style="overflow:visible">
+      <path
+         id="path992"
+         d="m -2.5,-1 c 0,2.76 -2.24,5 -5,5 -2.76,0 -5,-2.24 -5,-5 0,-2.76 2.24,-5 5,-5 2.76,0 5,2.24 5,5 z"
+         style="fill:#264653;fill-rule:evenodd;stroke:#264653;stroke-width:1pt"
+         transform="matrix(0.4,0,0,0.4,2.96,0.4)" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="marker5401"
+       refX="0"
+       refY="0"
+       orient="auto">
+      <path
+         transform="scale(-0.6)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill:#264653;fill-rule:evenodd;stroke:#264653;stroke-width:0.625;stroke-linejoin:round"
+         id="path5399" />
+    </marker>
+  </defs>
+  <path
+     id="rect1480"
+     style="fill:#adb1b3;fill-opacity:0.00902297;stroke:#000000;stroke-width:0.475789"
+     d="M 12.30167,9.647231 C 5.6184,9.647231 0.2379,15.02759 0.2379,21.710855 v 19.06976 c 9.32696,3.073352 18.46178,3.148843 27.58032,-0.03421 v -19.03555 c 0,-6.683265 -5.38036,-12.063624 -12.06362,-12.063624 z" />
+  <circle
+     style="fill:#cb392e;stroke:#000000;stroke-width:0.475789"
+     id="path972"
+     cx="14.028058"
+     cy="4.8167992"
+     r="4.5789037" />
+  <circle
+     style="fill:#369844;stroke:#000000;stroke-width:0.475789"
+     id="circle1054"
+     cx="14.028058"
+     cy="14.753242"
+     r="3.2553825" />
+  <path
+     id="rect1581"
+     style="fill:#adb1b3;fill-opacity:0.040089;stroke:#000000;stroke-width:0.475789"
+     d="m 13.26805,18.354517 c -3.51218,0 -6.33973,2.82754 -6.33973,6.339725 v 15.205607 c 5.81004,1.283045 9.02471,1.386981 14.19948,0 V 24.694242 c 0,-3.512185 -2.82755,-6.339725 -6.33973,-6.339725 z" />
+  <path
+     id="rect1352"
+     style="fill:#4c64b0;stroke:#000000;stroke-width:0.475789"
+     d="m 9.24249,28.573675 v 8.124379 c 2.25446,1.652616 7.61814,1.700468 9.55,0 v -8.124379 z" />
+  <ellipse
+     style="fill:#4c64b0;stroke:#000000;stroke-width:0.489202"
+     id="path1078"
+     cx="14.017499"
+     cy="28.401054"
+     rx="4.7707381"
+     ry="0.98553467" />
+</svg>
