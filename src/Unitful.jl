@@ -1,6 +1,6 @@
 module Unitful
 
-import Base: ==, <, <=, +, -, *, /, //, ^, isequal
+import Base: ==, <, <=, +, -, *, /, //, ^, isequal, hash
 import Base: show, convert
 import Base: abs, abs2, angle, big, float, fma, muladd, inv, sqrt, cbrt
 import Base: min, max, floor, ceil, real, imag, conj
