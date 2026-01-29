@@ -1,5 +1,10 @@
 # Unitful.jl changelog
 
+## v1.28.0 (2026-01-29)
+
+* ![Feature:](https://img.shields.io/badge/-feature-green) Dimensionless quantities now support `iseven` and `isodd` ([#829](https://github.com/JuliaPhysics/Unitful.jl/pull/829)).
+* ![Bugfix:](https://img.shields.io/badge/-bugfix-purple) Quantities that have equal values and equal units now have the same hash ([#833](https://github.com/JuliaPhysics/Unitful.jl/pull/833)). For now, quantities that are equal (`isequal`) but have different units still have different hashes, see [#379](https://github.com/JuliaPhysics/Unitful.jl/issues/379).
+
 ## v1.27.0 (2025-12-08)
 
 * ![Feature:](https://img.shields.io/badge/-feature-green) `NaNMath.pow` and `NaNMath.sqrt` from [NaNMath.jl](https://github.com/JuliaMath/NaNMath.jl) are supported via a package extension ([#824](https://github.com/JuliaPhysics/Unitful.jl/pull/824)).
