@@ -790,6 +790,10 @@ Base.:(<=)(x::Issue399, y::Issue399) = x.num <= y.num
         @test (m//s) === m/s                 # Unit // Unit
         @test m / missing === missing        # Unit / missing
         @test missing / m === missing        # Missing / Unit (// is not defined for Missing)
+        @test missing * u"dB" === missing   # Missing * MixedUnits
+        @test u"dB" * missing === missing   # MixedUnits * Missing
+        @test missing / u"dB" === missing   # Missing / MixedUnits
+        @test u"dB" / missing === missing   # MixedUnits / Missing
         @test @inferred(div(10m, -3cm)) === -333
         @test @inferred(div(10m, 3)) === 3m
         @test @inferred(div(10, 3m)) === 3/m
