@@ -34,7 +34,7 @@ mathematical operations and collections that are found in Julia base.
 - [UnitfulBuckinghamPi.jl](https://github.com/rmsrosa/UnitfulBuckinghamPi.jl): Solves for the adimensional Pi groups in a list of Unitful parameters, according to the Buckingham-Pi Theorem.
 - [NaturallyUnitful.jl](https://github.com/MasonProtter/NaturallyUnitful.jl): Convert to and from natural units in physics.
 - [UnitfulChainRules.jl](https://github.com/SBuercklin/UnitfulChainRules.jl): Enables use of Unitful quantities with [ChainRules.jl](https://github.com/JuliaDiff/ChainRules.jl)-compatible autodifferentiation systems.
-- [DimensionfulAngles.jl](https://github.com/cmichelenstrofer/DimensionfulAngles.jl): Adds angle as a dimension. This allows dispatching on angles and derived quantities.
+- [DimensionfulAngles.jl](https://github.com/JuliaOceanWaves/DimensionfulAngles.jl): Adds angle as a dimension. This allows dispatching on angles and derived quantities.
 - [Dimensionless.jl](https://github.com/martinkosch/Dimensionless.jl): Contains tools to switch between dimensional bases, conduct dimensional analysis and solve similitude problems.
 - [UnitfulRecipes.jl](https://github.com/jw3126/UnitfulRecipes.jl) (deprecated): Adds automatic labels and supports plot axes with units for [Plots.jl](https://github.com/JuliaPlots/Plots.jl). (UnitfulRecipes.jl is now included in Plots.jl.)
 - [UnitfulLatexify.jl](https://github.com/gustaphe/UnitfulLatexify.jl) (deprecated): Pretty print units and quantities in LaTeX format. (This package is now an extension to Unitful, so that loading both Unitful and [Latexify.jl](https://github.com/korsbo/Latexify.jl) loads this functionality.)
