@@ -378,7 +378,6 @@ macro prefixed_unit_symbols(symb, name, user_dimension, basefactor, autodocs=fal
     esc(expr)
 end
 
-# TODO update example in the docstring
 """
     @unit_symbols(symb, name, user_dimension, basefactor, makepublic=false)
 Not called directly by the user. Given a unit symbol and a unit's name,
@@ -389,7 +388,7 @@ If `makepublic=true`, makes the unit name public when running on Julia ≥ 1.11.
     Documenting the resulting unit by adding a docstring before the `@unit_symbols` call
     requires Unitful 1.10 or later.
 
-Example: `@unit_symbols ft Foot 𝐋` results in `ft` getting defined but not `kft`.
+Example: `@unit_symbols hp Horsepower 𝐋^2*𝐌*𝐓^-3 (7457//10, 1) true` results in `hp` getting defined but not `khp`.
 """
 macro unit_symbols(symb, name, user_dimension, basefactor, makepublic=false)
     s = Symbol(symb)
