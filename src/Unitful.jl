@@ -70,6 +70,7 @@ include("pkgdefaults.jl")
 include("dates.jl")
 
 @public AbstractQuantity
+@public DefaultSymbols
 
 if !isdefined(Base, :get_extension)
     include("../ext/ConstructionBaseUnitfulExt.jl")
