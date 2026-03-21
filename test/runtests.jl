@@ -2562,7 +2562,7 @@ VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
 	:ActionUnits, :Amount, :AmountFreeUnits, :AmountUnits, :Area, :AreaFreeUnits, :AreaUnits, :BField,
 	:BFieldFreeUnits, :BFieldUnits, :Ba, :Bq, :C, :Capacitance, :CapacitanceFreeUnits, :CapacitanceUnits, :Charge,
 	:ChargeFreeUnits, :ChargeUnits, :Current, :CurrentFreeUnits, :CurrentUnits, :DField, :DFieldFreeUnits,
-	:DFieldUnits, :Density, :DensityFreeUnits, :DensityUnits, :DynamicViscosity, :DynamicViscosityFreeUnits,
+	:DFieldUnits, :DefaultSymbols, :Density, :DensityFreeUnits, :DensityUnits, :DynamicViscosity, :DynamicViscosityFreeUnits,
 	:DynamicViscosityUnits, :EA, :EBa, :EBq, :EC, :EF, :EField, :EFieldFreeUnits, :EFieldUnits, :EGal, :EGauss, :EGy,
 	:EH, :EHz, :EHz2π, :EJ, :EK, :EL, :EM, :EMx, :EN, :EOe, :EP, :EPa, :ES, :ESt, :ESv, :ET, :ETorr, :EV, :EW, :EWb,
 	:Eatm, :Eb, :Ebar, :Ecal, :Ecd, :Edyn, :EeV, :Eerg, :Eg, :Ekat, :El, :ElectricDipoleMoment,

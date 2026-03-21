@@ -744,18 +744,21 @@ isrootpower_dim(::typeof(dimension(J)))         = false
 
 #########
 
-# `using Unitful.DefaultSymbols` will bring the following into the calling namespace:
-# - Dimensions 𝐋,𝐌,𝐓,𝐈,𝚯,𝐉,𝐍
-# - Base and derived SI units, with SI prefixes
-#   - Candela conflicts with `Base.cd` so it is not brought in (issue #102)
-# - Degrees: °
-
 const si_prefixes = (:y, :z, :a, :f, :p, :n, :μ, :m, :c, :d,
     Symbol(""), :da, :h, :k, :M, :G, :T, :P, :E, :Z, :Y)
 
 const si_no_prefix = (:m, :s, :A, :K, :g, :mol, :rad, :sr, :Hz, :N, :Pa, #:cd,
     :J, :W, :C, :V, :F, :Ω, :S, :Wb, :T, :H, :lm, :lx, :Bq, :Gy, :Sv, :kat)
 
+"""
+    baremodule DefaultSymbols
+
+`using Unitful.DefaultSymbols` will bring the following symbols into the calling namespace:
+
+- Dimensions `𝐋`, `𝐌`, `𝐓`, `𝐈`, `𝚯`, `𝐉`, `𝐍` for length, mass, time, current, temperature, luminosity, and amount, respectively.
+- Base and derived SI units, with SI prefixes (except for `cd`, which conflicts with `Base.cd`)
+- `°` (degrees)
+"""
 baremodule DefaultSymbols
     import Unitful
 
