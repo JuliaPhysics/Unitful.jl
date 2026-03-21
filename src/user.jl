@@ -100,7 +100,6 @@ macro dimension(symb, abbr, name, autodocs=false, makepublic=false)
             $Level{L,S,$Quantity{T,$s,U}} where {L,S}}
         const global ($uname){U} = $Units{U,$s}
         const global ($funame){U} = $FreeUnits{U,$s}
-
         if $autodocs
             @doc $name_doc $name
             @doc $unit_doc $uname
