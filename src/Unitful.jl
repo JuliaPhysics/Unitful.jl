@@ -1,6 +1,6 @@
 module Unitful
 
-import Base: ==, <, <=, +, -, *, /, //, ^, isequal
+import Base: ==, <, <=, +, -, *, /, //, ^, isequal, hash
 import Base: show, convert
 import Base: abs, abs2, angle, big, float, fma, muladd, inv, sqrt, cbrt
 import Base: min, max, floor, ceil, real, imag, conj
@@ -10,6 +10,7 @@ import Base: sin, cos, tan, asin, acos, atan, sinh, cosh, tanh, asinh, acosh, at
              sinpi, cospi, sinc, cosc, cis, cispi, sincos
 import Base: eps, mod, rem, div, fld, cld, divrem, trunc, round, sign, signbit
 import Base: isless, isapprox, isinteger, isreal, isinf, isfinite, isnan
+import Base: iseven, isodd
 import Base: copysign, flipsign
 import Base: prevfloat, nextfloat, maxintfloat, rat, step
 import Base: length, float, last, one, oneunit, zero, range
@@ -43,7 +44,9 @@ function _basefactors(m::Module)
     # that module.
     basefactors_name = Symbol("#Unitful_basefactors")
     if isdefined(m, basefactors_name)
-        getproperty(m, basefactors_name)
+        # It's not guaranteed that a world age update happened since the hidden
+        # symbol was added to another module, so use `invokelatest` to avoid #781.
+        Base.invokelatest(getproperty, m, basefactors_name)
     else
         Core.eval(m, :(const $basefactors_name = Dict{Symbol,Tuple{Float64,Rational{Int}}}()))
     end

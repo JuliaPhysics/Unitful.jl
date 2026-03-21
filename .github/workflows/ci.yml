@@ -40,14 +40,23 @@ jobs:
           - macos-latest
           - windows-latest
         julia-arch:
-          - x64
+          - "default"
+        # Until minimum supported version is v1.6, we can't test on Apple
+        # Silicon macOS for that version and we need to use Julia v1.8 instead
+        exclude:
+          - julia-version: "min"
+            os: macos-latest
+        include:
+          - julia-version: "1.8"
+            os: macos-latest
+            julia-arch: "default"
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
       - uses: julia-actions/setup-julia@v2
         with:
           version: ${{ matrix.julia-version }}
           arch: ${{ matrix.julia-arch }}
-      - uses: julia-actions/cache@v2
+      - uses: julia-actions/cache@v3
       - uses: julia-actions/julia-buildpkg@v1
       - uses: julia-actions/julia-runtest@v1
       - uses: julia-actions/julia-processcoverage@v1

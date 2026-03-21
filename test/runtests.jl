@@ -4,6 +4,7 @@ import Unitful: DimensionError, AffineError
 import Unitful: LogScaled, LogInfo, Level, Gain, MixedUnits, Decibel
 import Unitful: FreeUnits, ContextUnits, FixedUnits, AffineUnits, AffineQuantity
 import ForwardDiff
+import NaNMath
 import Latexify: Latexify, latexify, @latexify, FancyNumberFormatter, SiunitxNumberFormatter
 import LaTeXStrings: LaTeXString, @L_str
 
@@ -570,6 +571,16 @@ Unitful.uconvert(U::Unitful.Units, q::QQQ) = uconvert(U, Quantity(q.val, cm))
     end
 end
 
+@testset "Hashing" begin
+    @test hash(big(1.0)m) === hash(big(1.0)m)
+    @test hash(1.0m) === hash(1m)
+    @test hash(0.5m) === hash((1//2)m)
+    @test hash(2.0m) === hash(2.0ContextUnits(m, cm))
+    @test hash(3.0m) === hash(3.0FixedUnits(m))
+    @test_broken hash(0.5m) === hash(500mm)
+    @test_broken hash(1rad) === hash(1)
+end
+
 @testset "Unit string parsing" begin
     @test uparse("m") == m
     @test uparse("m,s") == (m,s)
@@ -779,6 +790,10 @@ Base.:(<=)(x::Issue399, y::Issue399) = x.num <= y.num
         @test (m//s) === m/s                 # Unit // Unit
         @test m / missing === missing        # Unit / missing
         @test missing / m === missing        # Missing / Unit (// is not defined for Missing)
+        @test missing * u"dB" === missing   # Missing * MixedUnits
+        @test u"dB" * missing === missing   # MixedUnits * Missing
+        @test missing / u"dB" === missing   # Missing / MixedUnits
+        @test u"dB" / missing === missing   # MixedUnits / Missing
         @test @inferred(div(10m, -3cm)) === -333
         @test @inferred(div(10m, 3)) === 3m
         @test @inferred(div(10, 3m)) === 3/m
@@ -910,6 +925,20 @@ Base.:(<=)(x::Issue399, y::Issue399) = x.num <= y.num
         @test_throws ErrorException isinteger(1.0m)
         @test isinteger(1.4m/mm)
         @test !isinteger(1.4mm/m)
+        @test_throws ErrorException iseven(1.0m)
+        @test iseven(2rad)
+        @test !iseven(1rad)
+        if hasmethod(iseven, (Float64,))
+            @test iseven(0.5m/mm)
+            @test !iseven(0.125m/mm)
+        end
+        @test_throws ErrorException isodd(1.0m)
+        @test isodd(1rad)
+        @test !isodd(2rad)
+        if hasmethod(isodd, (Float64,))
+            @test isodd(0.125m/mm)
+            @test !isodd(0.5m/mm)
+        end
         @test isfinite(1.0m)
         @test !isfinite(Inf*m)
         @test isnan(NaN*m)
@@ -1904,6 +1933,9 @@ end
     Latexify.set_default(labelformat=:square)
     @test latexify("x", m) == raw"$x\;\left[\mathrm{m}\right]$"
     @test_throws "Unknown labelformat" latexify("x", m; labelformat=:wrong)
+    # Issue 816
+    @test latexify("T", u"°C"; labelformat=:slash) == raw"$T\;\left/\;\mathrm{^\circ C}\right.$"
+    @test latexify("T", u"°F"; labelformat=:slash) == raw"$T\;\left/\;\mathrm{^\circ F}\right.$"
 end
 
 @testset "Parentheses" begin
@@ -2105,11 +2137,11 @@ end
         @testset ">> Level" begin
             @test big(3.0)dBm == big(3.0)dBm
             @test isequal(big(3.0)dBm, big(3.0)dBm)
-            @test_broken hash(big(3.0)dBm) == hash(big(3.0)dBm)
+            @test hash(big(3.0)dBm) == hash(big(3.0)dBm)
 
             @test @dB(3.0V/2.0V) == @dB(3V/V)
             @test isequal(@dB(3.0V/2.0V), @dB(3V/V))
-            @test_broken hash(@dB(3.0V/2.0V)) == hash(@dB(3V/V))
+            @test hash(@dB(3.0V/2.0V)) == hash(@dB(3V/V))
         end
 
         @testset ">> Gain" begin
@@ -2386,6 +2418,15 @@ if isdefined(Base, :get_extension)
         @test ForwardDiff.Dual(1.0)*u"cm/m" + ForwardDiff.Dual(1.0) == 1.01
         @test ForwardDiff.Dual(1.0)*u"cm/m" == ForwardDiff.Dual(0.01)
     end
+
+    @testset "NaNMath extension" begin
+        @test isnan(NaNMath.sqrt(-1m))
+        @test unit(NaNMath.sqrt(-1m)) == m^(1//2)
+        @test isnan(NaNMath.pow(-1m, 0.5))
+        @test unit(NaNMath.pow(-1m, 0.5)) == m^(1//2)
+        @test NaNMath.sqrt(m) === Base.sqrt(m)
+        @test NaNMath.pow(m, 2) === m^2
+    end
 end
 
 struct Num <: Real
@@ -2455,6 +2496,12 @@ end
     @test 2Unitful.° === 2Unitful.deg
     @test u"deg" === u"°"
     @test uparse("deg") === uparse("°")
+    @test Unitful.degC === Unitful.°C
+    @test 2Unitful.°C === 2Unitful.degC
+    @test u"degC" === u"°C"
+    @test Unitful.degF === Unitful.°F
+    @test 2Unitful.°F === 2Unitful.degF
+    @test u"degF" === u"°F"
 end
 
 module DocUnits
@@ -2611,7 +2658,7 @@ VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
 	:daA, :daBa, :daBq, :daC, :daF, :daGal, :daGauss, :daGy, :daH, :daHz, :daHz2π, :daJ, :daK, :daL, :daM, :daMx,
 	:daN, :daOe, :daP, :daPa, :daS, :daSt, :daSv, :daT, :daTorr, :daV, :daW, :daWb, :daatm, :dab, :dabar, :dacal,
 	:dacd, :dadyn, :daeV, :daerg, :dag, :dakat, :dal, :dalm, :dalx, :dam, :damol, :darad, :das, :dasr, :datm, :dayr,
-	:daΩ, :db, :dbar, :dcal, :dcd, :ddyn, :deV, :deg, :derg, :dg, :dkat, :dl, :dlm, :dlx, :dm, :dmol, :dr, :drad,
+	:daΩ, :db, :dbar, :dcal, :dcd, :ddyn, :deV, :deg, :degC, :degF, :derg, :dg, :dkat, :dl, :dlm, :dlx, :dm, :dmol, :dr, :drad,
 	:ds, :dsr, :dyn, :dyr, :dΩ, :eV, :erg, :fA, :fBa, :fBq, :fC, :fF, :fGal, :fGauss, :fGy, :fH, :fHz, :fHz2π, :fJ,
 	:fK, :fL, :fM, :fMx, :fN, :fOe, :fP, :fPa, :fS, :fSt, :fSv, :fT, :fTorr, :fV, :fW, :fWb, :fatm, :fb, :fbar,
 	:fcal, :fcd, :fdyn, :feV, :ferg, :fg, :fkat, :fl, :flm, :flx, :fm, :fmol, :frad, :fs, :fsr, :ft, :fyr, :fΩ, :g,
