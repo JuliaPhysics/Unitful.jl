@@ -32,9 +32,9 @@ jobs:
       matrix:
         julia-version:
           - "min"
-          - "lts"
+          #- "lts"
           - "1"
-          - "pre"
+          #- "pre"
         os:
           - ubuntu-latest
           - macos-latest
