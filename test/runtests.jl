@@ -545,6 +545,9 @@ Unitful.uconvert(U::Unitful.Units, q::QQQ) = uconvert(U, Quantity(q.val, cm))
             (1.0μm2μm, 1.0nm2μm, 1.0s)
         # Context disagreement: fall back to free units
         @test @inferred(promote(1.0nm2μm, 1.0μm2mm)) === (1e-9m, 1e-6m)
+        # Same units, context disagreement
+        μm2m = ContextUnits(μm, m)
+        @test @inferred(promote(1.0μm2μm, 1.0μm2mm)) === (1.0μm2m, 1.0μm2m)
     end
     @testset "> Promotion during array creation" begin
         @test typeof([1.0m,1.0m]) == Array{typeof(1.0m),1}

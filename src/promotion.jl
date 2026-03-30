@@ -28,7 +28,7 @@ promote_unit(x::Units, y::Units, z::Units, t::Units...) =
 @inline _promote_unit(x::ContextUnits{N,D,P,A}, y::ContextUnits{N,D,P,A}) where {N,D,P,A} = x  #ambiguity reasons
 # same units, but promotion context disagrees
 @inline _promote_unit(x::ContextUnits{N,D,P1,A}, y::ContextUnits{N,D,P2,A}) where {N,D,P1,P2,A} =
-    ContextUnits{N,D,promote_unit(P1(), P2()),A}()
+    ContextUnits{N,D,typeof(promote_unit(P1(), P2())),A}()
 # different units, but promotion context agrees
 @inline _promote_unit(x::ContextUnits{N1,D,P}, y::ContextUnits{N2,D,P}) where {N1,N2,D,P} =
     ContextUnits(P(), P())
