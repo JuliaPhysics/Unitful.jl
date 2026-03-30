@@ -11,6 +11,7 @@ Unitful = "1986cc42-f94f-5a68-af5c-568840ba703d"
 tectonic_jll = "d7dd28d6-a5e6-559c-9131-7eb760cdacc5"
 
 [sources]
+NestedNumbers = {url = "https://github.com/JuliaMath/NestedNumbers.jl"}
 Unitful = {path = ".."}
 
 [compat]
@@ -18,3 +19,6 @@ Documenter = "1"
 Latexify = "0.16.10"
 Plots = "1"
 Fontconfig = "0.4"
+
+[extras]
+NestedNumbers = "1f6363f3-4ba7-41a3-bcac-d685ef427933"
