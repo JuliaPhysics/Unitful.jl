@@ -659,7 +659,10 @@ julia> uparse("1.0*dB")
 """
 function uparse(str; unit_context=Unitful)
     ex = Meta.parse(str)
-    eval(lookup_units(unit_context, ex))
+    # Since eval breaks precompilation, avoid it in simple cases
+    isa(ex, Symbol) && return lookup_units(unit_context, ex)
+    isa(ex, Number) && return lookup_units(unit_context, ex)
+    return eval(lookup_units(unit_context, ex))
 end
 
 const allowed_funcs = [:*, :/, :^, :sqrt, :√, :+, :-, ://]
