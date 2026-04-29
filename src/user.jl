@@ -657,7 +657,7 @@ julia> uparse("1.0*dB")
 1.0 dB
 ```
 """
-function uparse(str; unit_context=Unitful)
+function uparse(str; unit_context=vcat(Unitful, Unitful.unitmodules))
     ex = Meta.parse(str)
     eval(lookup_units(unit_context, ex))
 end
