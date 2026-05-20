@@ -1751,6 +1751,10 @@ end
         @test sprint(io -> show(IOContext(io, :fancy_exponent => true), u"m/s")) == "m s⁻¹"
         @test sprint(io -> show(IOContext(io, :fancy_exponent => false), u"m/s")) == "m s^-1"
     end
+    @testset "no Core.Box in show(::IO, ::Unitlike)" begin
+        # Regression: the old implementation used a closure that reassigned an outer local, forcing the variable to be wrapped in a `Core.Box`. That hurt inference (variable inferred as `Core.Box` instead of `String`) and triggered "local variable `first` is not defined" reports from static analyzers like JET.
+        @test !any(==(Core.Box), only(code_typed(show, Tuple{IO, typeof(u"m")}; optimize=false)).first.slottypes)
+    end
 end
 
 struct Foo <: Number end
