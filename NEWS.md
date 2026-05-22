@@ -1,5 +1,9 @@
 # Unitful.jl changelog
 
+## Unreleased
+
+* ![Feature:](https://img.shields.io/badge/-feature-green) `Unitful.numtype` is now part of the public API. It returns the underlying numeric type of a quantity (e.g. `Float64` for `1.0u"m"`), of any `Number` (where it just returns its type), or of a `Base.Enum` (the backing integer type). On Julia ≥ 1.11 the name is declared `public`.
+
 ## v1.28.0 (2026-01-29)
 
 * ![Feature:](https://img.shields.io/badge/-feature-green) Dimensionless quantities now support `iseven` and `isodd` ([#829](https://github.com/JuliaPhysics/Unitful.jl/pull/829)).
