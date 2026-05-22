@@ -562,12 +562,34 @@ Unitful.uconvert(U::Unitful.Units, q::QQQ) = uconvert(U, Quantity(q.val, cm))
         # promoting the second time should not change the types
         @test_throws ErrorException promote(px, py)
     end
-    @testset "> Some internal behaviors" begin
+    @testset "> numtype" begin
         # quantities
         @test Unitful.numtype(Quantity{Float64}) <: Float64
         @test Unitful.numtype(Quantity{Float64, 𝐋}) <: Float64
         @test Unitful.numtype(typeof(1.0kg)) <: Float64
         @test Unitful.numtype(1.0kg) <: Float64
+        # plain numbers (public API fallback)
+        @test Unitful.numtype(1) === Int
+        @test Unitful.numtype(1.0) === Float64
+        @test Unitful.numtype(1 + 2im) === Complex{Int}
+        @test Unitful.numtype(1 // 2) === Rational{Int}
+        @test Unitful.numtype(Float64) === Float64
+        @test Unitful.numtype(Complex{Float32}) === Complex{Float32}
+        # Bool is a Number, so it hits the generic fallback
+        @test Unitful.numtype(true) === Bool
+        @test Unitful.numtype(Bool) === Bool
+        # Enums carry their backing integer type as a parameter
+        @eval @enum NumtypeEnum::Int32 numtype_a numtype_b
+        @test Unitful.numtype(numtype_a) === Int32
+        @test Unitful.numtype(NumtypeEnum) === Int32
+        # Do not accidentally support `Union{}`
+        @test_throws MethodError Unitful.numtype(Union{})
+        # not a Number → MethodError
+        @test_throws MethodError Unitful.numtype("not a number")
+        @test_throws MethodError Unitful.numtype(String)
+        if VERSION >= v"1.11.0-DEV.469"
+            @test Base.ispublic(Unitful, :numtype)
+        end
     end
 end
 
