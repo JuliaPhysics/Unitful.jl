@@ -26,13 +26,10 @@ promote_unit(x::Units, y::Units, z::Units, t::Units...) =
     upreferred(dimension(x))
 
 @inline _promote_unit(x::ContextUnits{N,D,P,A}, y::ContextUnits{N,D,P,A}) where {N,D,P,A} = x  #ambiguity reasons
-# same units, but promotion context disagrees
-@inline _promote_unit(x::ContextUnits{N,D,P1,A}, y::ContextUnits{N,D,P2,A}) where {N,D,P1,P2,A} =
-    ContextUnits{N,D,typeof(promote_unit(P1(), P2())),A}()
 # different units, but promotion context agrees
 @inline _promote_unit(x::ContextUnits{N1,D,P}, y::ContextUnits{N2,D,P}) where {N1,N2,D,P} =
     ContextUnits(P(), P())
-# different units, promotion context disagrees, fall back to FreeUnits
+# same or different units, promotion context disagrees, fall back to FreeUnits
 @inline _promote_unit(x::ContextUnits{N1,D,P1}, y::ContextUnits{N2,D,P2}) where {N1,N2,D,P1,P2} =
     promote_unit(FreeUnits(x), FreeUnits(y))
 
