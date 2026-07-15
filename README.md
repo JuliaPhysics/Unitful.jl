@@ -26,6 +26,7 @@ mathematical operations and collections that are found in Julia base.
 - [UnitfulAtomic.jl](https://github.com/sostock/UnitfulAtomic.jl): Easy conversion from and to atomic units.
 - [PowerSystemsUnits.jl](https://github.com/invenia/PowerSystemsUnits.jl): Common units for dealing with power systems.
 - [UnitfulMoles.jl](https://github.com/rafaqz/UnitfulMoles.jl) for defining mol units of chemical elements and compounds.
+- [UnitfulGauss.jl](https://github.com/Gregstrq/UnitfulGauss.jl): Gaussian electromagnetic units with proper gaussian physical dimensions.
 
 ### Feature additions
 
