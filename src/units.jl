@@ -92,11 +92,15 @@ true
 
 *(a0::Units, a::Missing) = missing
 *(a0::Missing, a::Units) = missing
+*(a0::MixedUnits, a::Missing) = missing
+*(a0::Missing, a::MixedUnits) = missing
 
 /(x::Units, y::Units) = *(x,inv(y))
 
 /(x::Units, y::Missing) = missing
 /(x::Missing, y::Units) = missing
+/(x::MixedUnits, y::Missing) = missing
+/(x::Missing, y::MixedUnits) = missing
 
 //(x::Units, y::Units)  = x/y
 

@@ -217,7 +217,7 @@ _transform(n::NakedNumber, ::SiunitxNumberFormatter) = PlainNumberFormatter(n.n)
         return Expr(:latexifymerge, "\\unit{", unitnames[(:siunitx, unitname)], "}")
     end
     env --> :inline
-    return LaTeXString(unitnames[(:mathrm, unitname)])
+    return Expr(:latexifymerge, "\\mathrm{", unitnames[(:mathrm, unitname)], "}")
 end
 
 @latexrecipe function f(q::AffineQuantity)
