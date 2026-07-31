@@ -2700,23 +2700,24 @@ VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
 	:μyr, :μΩ, :σ, :ϵ0, :𝐈, :𝐉, :𝐋, :𝐌, :𝐍, :𝐓, :𝚯]
 
     private_vars_list = Symbol[
-    :AbsoluteScaleTemperature, :Affine, :AffineError, :AffineQuantity, :AffineUnits, :B, :B_p, :B_rp, :Bel,
-    :BracketStyle, :Centineper, :ContextUnits, :Decibel, :Dimension, :DimensionError, :DimensionlessUnits, :Dimensions,
-    :FixedUnits, :FreeOrContextUnits, :FreeUnits, :IsRootPowerRatio, :LogInfo, :LogScaled, :MixedUnits, :Neper,
-    :NoBrackets, :Np, :Np_p, :Np_rp, :PowerRatio, :RealOrRealQuantity, :ReferenceQuantity, :RelativeScaleTemperature,
-    :RootPowerRatio, :RoundBrackets, :ScalarQuantity, :ScalarUnits, :SquareBrackets, :Unit, :Unitlike, :Units, :abbr,
-    :abs2_fast, :abs_fast, :affinetranslation, :affineunit, :base, :basefactor, :basefactors_expr, :cNp, :cNp_p,
-    :cNp_rp, :colon, :colonstartstop, :conj_fast, :convfact, :convfact_floattype, :dB, :dBFS, :dBHz, :dBS, :dBSPL, :dBV,
-    :dB_p, :dB_rp, :dBm, :dBu, :dBΩ, :dBμV, :dimtype, :expfn, :fp_overflow_underflow, :fromlog, :gaintype, :genericunit,
-    :get_T, :has_unit_spacing, :inv_fast, :isrootpower, :isrootpower_dim, :isunitless, :leveltype, :logfn,
-    :lookup_units, :name, :numtype, :power, :prefactor, :preferunits, :prefix, :print_closing_bracket,
-    :print_opening_bracket, :printed_length, :promote_to_derived, :promote_unit, :quantitytype, :register, :showrep,
-    :showval, :sign_fast, :sortexp, :superscript, :tens, :tensfactor, :tolog, :try_uconvert, :uconvert_affine, :unwrap,
-    :ustrcheck_bool] ∪ 
-    [Symbol("@prefixed_unit_symbols"), Symbol("@public"), Symbol("@unit_symbols"), :BCAST_PROPAGATE_CALLS, :allowed_funcs, 
-    :basefactors, :prefixdict, :promotion, :si_no_prefix, :si_prefixes, :unitmodules] ∪ [:myfun]
+    :abbr, :abs_fast, :abs2_fast, :AbsoluteScaleTemperature, :Affine, :AffineError, :AffineQuantity,
+    :affinetranslation, :affineunit, :AffineUnits, :allowed_funcs, :B_p, :B_rp, :B, :base, :basefactor,
+    :basefactors_expr, :basefactors, :BCAST_PROPAGATE_CALLS, :Bel, :BracketStyle, :Centineper, :cNp_p,
+    :cNp_rp, :cNp, :colon, :colonstartstop, :conj_fast, :ContextUnits, :convfact_floattype, :convfact,
+    :dB_p, :dB_rp, :dB, :dBFS, :dBHz, :dBm, :dBS, :dBSPL, :dBu, :dBV, :dBμV, :dBΩ, :Decibel, :Dimension,
+    :DimensionError, :DimensionlessUnits, :Dimensions, :dimtype, :expfn, :FixedUnits,
+    :fp_overflow_underflow, :FreeOrContextUnits, :FreeUnits, :fromlog, :gaintype, :genericunit, :get_T,
+    :has_unit_spacing, :inv_fast, :isrootpower_dim, :isrootpower, :IsRootPowerRatio, :isunitless,
+    :leveltype, :logfn, :LogInfo, :LogScaled, :lookup_units, :MixedUnits, :name, :Neper, :NoBrackets,
+    :Np_p, :Np_rp, :Np, :numtype, :power, :PowerRatio, :prefactor, :preferunits, :prefix, :prefixdict,
+    :print_closing_bracket, :print_opening_bracket, :printed_length, :promote_to_derived, :promote_unit,
+    :promotion, :quantitytype, :RealOrRealQuantity, :ReferenceQuantity, :register,
+    :RelativeScaleTemperature, :RootPowerRatio, :RoundBrackets, :ScalarQuantity, :ScalarUnits, :showrep,
+    :showval, :si_no_prefix, :si_prefixes, :sign_fast, :sortexp, :SquareBrackets, :superscript, :tens,
+    :tensfactor, :tolog, :try_uconvert, :uconvert_affine, :Unit, :Unitlike, :unitmodules, :Units,
+    :unwrap, :ustrcheck_bool, Symbol("@prefixed_unit_symbols"), Symbol("@public"), Symbol("@unit_symbols")]
 
-    # 1. Define the actual groups from the Unitful module
+    # Define the actual groups from the Unitful module
     actual_all = filter(x -> 
         !(startswith(string(x), "#") ||
         startswith(string(x), "_") ||
@@ -2727,7 +2728,7 @@ VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
     actual_public   = setdiff(filter(x -> Base.ispublic(Unitful, x), actual_all), actual_exported)
     actual_private  = setdiff(actual_all, actual_exported, actual_public)
 
-    # 2. Checks on the lists themselves
+    # Checks on the lists themselves
     overlap = public_vars_list ∩ private_vars_list
     if !isempty(overlap)
         println("Error: Symbols listed in both `public_vars_list` and `private_vars_list`: $overlap")
@@ -2746,7 +2747,7 @@ VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
     end
     @test isempty(typos_private)
 
-    # 3. Checks against exported symbols
+    # Checks against exported symbols
     exported_in_public = public_vars_list ∩ actual_exported
     if !isempty(exported_in_public)
         println("Error: These symbols in `public_vars_list` are already exported (remove them from the list): $exported_in_public")
@@ -2759,7 +2760,7 @@ VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
     end
     @test isempty(exported_in_private)
 
-    # 4. Checks against public symbols
+    # Checks against public symbols
     public_in_private = private_vars_list ∩ actual_public
     if !isempty(public_in_private)
         println("Error: These symbols in `private_vars_list` are actually declared `public`. Remove the `public` declaration in code or move them to `public_vars_list`: $public_in_private")
@@ -2772,7 +2773,7 @@ VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
     end
     @test isempty(missing_public)
 
-    # 5. Checks against private symbols
+    # Checks against private symbols
     private_in_public = public_vars_list ∩ actual_private
     if !isempty(private_in_public)
         println("Error: These symbols in `public_vars_list` are actually private. Did you forget to declare them as `public` in the code?: $private_in_public")
