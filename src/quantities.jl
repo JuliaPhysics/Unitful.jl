@@ -263,7 +263,13 @@ function isapprox(x::AbstractQuantity, y::AbstractQuantity; kwargs...)
     return isapprox(promote(x,y)...; kwargs...)
 end
 
-isapprox(x::AbstractQuantity, y::Number; kwargs...) = isapprox(promote(x,y)...; kwargs...)
+function isapprox(x::AbstractQuantity, y::Number; atol=nothing, kwargs...)
+    if atol === nothing
+        return isapprox(promote(x, y)...; kwargs...)
+    end
+    xp, yp, atolp = promote(x, y, atol)
+    return isapprox(xp, yp; atol=atolp, kwargs...)
+end
 isapprox(x::Number, y::AbstractQuantity; kwargs...) = isapprox(y, x; kwargs...)
 
 function isapprox(
@@ -287,9 +293,13 @@ isapprox(x::AbstractArray{S}, y::AbstractArray{T};
     kwargs...) where {S <: AbstractQuantity,T <: AbstractQuantity} = false
 
 function isapprox(x::AbstractArray{S}, y::AbstractArray{N};
-    kwargs...) where {S <: AbstractQuantity,N <: Number}
+    atol=nothing, kwargs...) where {S <: AbstractQuantity,N <: Number}
     if dimension(N) == dimension(S)
-        isapprox(map(x->uconvert(NoUnits,x),x),y; kwargs...)
+        if atol === nothing
+            isapprox(map(x->uconvert(NoUnits,x),x), y; kwargs...)
+        else
+            isapprox(map(x->uconvert(NoUnits,x),x), y; atol = ustrip(NoUnits, atol), kwargs...)
+        end
     else
         false
     end

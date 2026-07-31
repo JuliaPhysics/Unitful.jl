@@ -973,6 +973,13 @@ Base.:(<=)(x::Issue399, y::Issue399) = x.num <= y.num
         @test isapprox(1.0u"m", 1.1u"m"; rtol=0.2)
         @test !isapprox(1.0u"m", 1.1u"m"; rtol=0.05)
 
+        # isapprox with dimensionless Quantity vs Number and atol
+        @test isapprox(1u"rad", 1.1; atol=0.5u"rad")
+        @test !isapprox(1u"rad", 1.1; atol=0.01u"rad")
+        @test isapprox(1.1, 1u"rad"; atol=0.5u"rad")
+        @test isapprox(1.0u"rad", 1.1; atol=0.5)
+        @test isapprox(1.0u"rad", 1.01; rtol=0.1)
+
         # Issue 465:
         z = fill((1+im)m, 2, 3)
         @test !isapprox(z, 2z)
@@ -1661,6 +1668,7 @@ end
             @test !isapprox([1.0m, NaN*m], [nextfloat(1.0)*m, NaN*m], nans=false)
             @test !isapprox([1.0m, 2.0m], [1.1m, 2.2m], rtol=0.05, atol=0.2m)
             @test !isapprox([1.0m], [nextfloat(1.0)*m], atol=eps(0.1)*m)
+            @test isapprox([1.0u"rad"], [1.1]; atol=0.5u"rad")
         end
         @testset ">> Unit stripping" begin
             @test @inferred(ustrip([1u"m", 2u"m"])) == [1,2]
@@ -1751,6 +1759,10 @@ end
     @testset ":fancy_exponent IOContext property" begin
         @test sprint(io -> show(IOContext(io, :fancy_exponent => true), u"m/s")) == "m s⁻¹"
         @test sprint(io -> show(IOContext(io, :fancy_exponent => false), u"m/s")) == "m s^-1"
+    end
+    @testset "no Core.Box in show(::IO, ::Unitlike)" begin
+        # Regression: the old implementation used a closure that reassigned an outer local, forcing the variable to be wrapped in a `Core.Box`. That hurt inference (variable inferred as `Core.Box` instead of `String`) and triggered "local variable `first` is not defined" reports from static analyzers like JET.
+        @test !any(==(Core.Box), only(code_typed(show, Tuple{IO, typeof(u"m")}; optimize=false)).first.slottypes)
     end
 end
 

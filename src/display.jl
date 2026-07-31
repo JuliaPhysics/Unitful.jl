@@ -169,12 +169,12 @@ variable of a [`Unitful.Units`](@ref) or [`Unitful.Dimensions`](@ref) object.
 """
 function show(io::IO, x::Unitlike)
     showoperators = get(io, :showoperators, false)
-    first = ""
     sep = showoperators ? "*" : " "
-    foreach(sortexp(x)) do y
-        print(io,first)
-        showrep(io,y)
-        first = sep
+    isfirst = true
+    for y in sortexp(x)
+        isfirst || print(io, sep)
+        showrep(io, y)
+        isfirst = false
     end
     nothing
 end
