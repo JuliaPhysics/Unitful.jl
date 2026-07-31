@@ -2616,7 +2616,7 @@ using REPL # This is necessary to make `@doc` work correctly
 end
 
 VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
-    all_public_vars = Symbol[
+    public_vars_list = Symbol[
     :A, :AbstractQuantity, :Acceleration, :AccelerationFreeUnits, :AccelerationUnits, :Action, :ActionFreeUnits,
 	:ActionUnits, :Amount, :AmountFreeUnits, :AmountUnits, :Area, :AreaFreeUnits, :AreaUnits, :BField,
 	:BFieldFreeUnits, :BFieldUnits, :Ba, :Bq, :C, :Capacitance, :CapacitanceFreeUnits, :CapacitanceUnits, :Charge,
@@ -2699,7 +2699,7 @@ VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
 	:μatm, :μb, :μbar, :μcal, :μcd, :μdyn, :μeV, :μerg, :μg, :μkat, :μl, :μlm, :μlx, :μm, :μmol, :μrad, :μs, :μsr,
 	:μyr, :μΩ, :σ, :ϵ0, :𝐈, :𝐉, :𝐋, :𝐌, :𝐍, :𝐓, :𝚯]
 
-    private_vars = Symbol[
+    private_vars_list = Symbol[
     :AbsoluteScaleTemperature, :Affine, :AffineError, :AffineQuantity, :AffineUnits, :B, :B_p, :B_rp, :Bel,
     :BracketStyle, :Centineper, :ContextUnits, :Decibel, :Dimension, :DimensionError, :DimensionlessUnits, :Dimensions,
     :FixedUnits, :FreeOrContextUnits, :FreeUnits, :IsRootPowerRatio, :LogInfo, :LogScaled, :MixedUnits, :Neper,
@@ -2712,10 +2712,78 @@ VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
     :lookup_units, :name, :numtype, :power, :prefactor, :preferunits, :prefix, :print_closing_bracket,
     :print_opening_bracket, :printed_length, :promote_to_derived, :promote_unit, :quantitytype, :register, :showrep,
     :showval, :sign_fast, :sortexp, :superscript, :tens, :tensfactor, :tolog, :try_uconvert, :uconvert_affine, :unwrap,
-    :ustrcheck_bool]
+    :ustrcheck_bool] ∪ 
+    [Symbol("@prefixed_unit_symbols"), Symbol("@public"), Symbol("@unit_symbols"), :BCAST_PROPAGATE_CALLS, :allowed_funcs, 
+    :basefactors, :prefixdict, :promotion, :si_no_prefix, :si_prefixes, :unitmodules] ∪ [:myfun]
 
-    @test Base.ispublic.(Ref(Unitful), all_public_vars) |> all
-    @test Base.ispublic.(Ref(Unitful), private_vars) |> any |> !
+    # 1. Define the actual groups from the Unitful module
+    actual_all = filter(x -> 
+        !(startswith(string(x), "#") ||
+        startswith(string(x), "_") ||
+        isdefined(Base, x)),
+        names(Unitful, all=true))
+
+    actual_exported = filter(x -> Base.isexported(Unitful, x), actual_all)
+    actual_public   = setdiff(filter(x -> Base.ispublic(Unitful, x), actual_all), actual_exported)
+    actual_private  = setdiff(actual_all, actual_exported, actual_public)
+
+    # 2. Checks on the lists themselves
+    overlap = public_vars_list ∩ private_vars_list
+    if !isempty(overlap)
+        println("Error: Symbols listed in both `public_vars_list` and `private_vars_list`: $overlap")
+    end
+    @test isempty(overlap)
+
+    typos_public = setdiff(public_vars_list, actual_all)
+    if !isempty(typos_public)
+        println("Error: These symbols in `public_vars_list` are not defined in Unitful (typo or from Base): $typos_public")
+    end
+    @test isempty(typos_public)
+
+    typos_private = setdiff(private_vars_list, actual_all)
+    if !isempty(typos_private)
+        println("Error: These symbols in `private_vars_list` are not defined in Unitful (typo or from Base): $typos_private")
+    end
+    @test isempty(typos_private)
+
+    # 3. Checks against exported symbols
+    exported_in_public = public_vars_list ∩ actual_exported
+    if !isempty(exported_in_public)
+        println("Error: These symbols in `public_vars_list` are already exported (remove them from the list): $exported_in_public")
+    end
+    @test isempty(exported_in_public)
+
+    exported_in_private = private_vars_list ∩ actual_exported
+    if !isempty(exported_in_private)
+        println("Error: These symbols in `private_vars_list` are already exported (remove them from the list): $exported_in_private")
+    end
+    @test isempty(exported_in_private)
+
+    # 4. Checks against public symbols
+    public_in_private = private_vars_list ∩ actual_public
+    if !isempty(public_in_private)
+        println("Error: These symbols in `private_vars_list` are actually declared `public`. Remove the `public` declaration in code or move them to `public_vars_list`: $public_in_private")
+    end
+    @test isempty(public_in_private)
+
+    missing_public = setdiff(actual_public, public_vars_list)
+    if !isempty(missing_public)
+        println("Error: These symbols are declared `public` in code, but missing from `public_vars_list`: $missing_public")
+    end
+    @test isempty(missing_public)
+
+    # 5. Checks against private symbols
+    private_in_public = public_vars_list ∩ actual_private
+    if !isempty(private_in_public)
+        println("Error: These symbols in `public_vars_list` are actually private. Did you forget to declare them as `public` in the code?: $private_in_public")
+    end
+    @test isempty(private_in_public)
+
+    missing_private = setdiff(actual_private, private_vars_list)
+    if !isempty(missing_private)
+        println("Error: These internal symbols are undocumented in the test. Add them to `private_vars_list`, or rename them to start with an underscore: $missing_private")
+    end
+    @test isempty(missing_private)
 end
 
 # Test precompiled Unitful extension modules
