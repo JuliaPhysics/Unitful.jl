@@ -186,6 +186,7 @@ end
 
 ustrip(x::Level{L,S}) where {L<:LogInfo,S} = tolog(L,S,x.val/reflevel(x))
 ustrip(x::Gain) = x.val
+ustrip(u::MixedUnits, x) = ustrip(uconvert(u, x))
 
 isrootpower(y::IsRootPowerRatio{T}) where {T} = T
 isrootpower(y) = isrootpower_dim(dimension(y))
