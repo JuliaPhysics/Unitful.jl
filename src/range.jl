@@ -80,6 +80,20 @@ end
         Base._range(nothing, one(stop), stop, len)
 end
 
+Base.steprange_last(start::AbstractQuantity, step, stop::AbstractQuantity) =
+    _unitful_steprange_last(start, step, stop)
+Base.steprange_last(start, step::AbstractQuantity, stop) =
+    _unitful_steprange_last(start, step, stop)
+Base.steprange_last(start::AbstractQuantity, step::AbstractQuantity, stop::AbstractQuantity) =
+    _unitful_steprange_last(start, step, stop)
+
+function _unitful_steprange_last(start, step, stop)::typeof(stop)
+    unitless_start = ustrip(start)
+    unitless_step = ustrip(absoluteunit(unit(start)), step)
+    unitless_stop = ustrip(stop)
+    Base.steprange_last(unitless_start, unitless_step, unitless_stop) * unit(stop)
+end
+
 *(r::AbstractRange, y::Units) = range(first(r)*y, step=step(r)*y, length=length(r))
 
 # first promote start and stop, leaving step alone
