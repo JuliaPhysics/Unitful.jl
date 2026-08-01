@@ -356,20 +356,6 @@ end
 \nSee Also: [`Unitful.L`](@ref), [`Unitful.mol`](@ref)."
 @unit M      "M"        Molar       1mol/L                  true true
 
-# Energy
-"    Unitful.q
-\nA quantity equal to the elementary charge, the charge of a single electron,
-with a value of exactly 1.602,176,634 × 10^-19 C. The letter `q` is used instead of `e` to avoid
-confusion with Euler's number.
-\nDimension: 𝐈 𝐓.
-\nSee Also: [`Unitful.C`](@ref)."
-const q = 1.602_176_634e-19*C        # CODATA 2018; `e` means 2.718...
-"    Unitful.eV
-\nThe electron-volt, a unit of energy, defined as q*V.
-\nDimension: 𝐋^2 𝐌 𝐓^-2.
-\nSee also: [`Unitful.q`](@ref), [`Unitful.V`](@ref)."
-@unit eV     "eV"       eV          q*V                     true true
-
 # For convenience
 "    Unitful.Hz2π
 \nA unit for convenience in angular frequency, equal to 2π Hz.
@@ -453,6 +439,13 @@ h / (2 × q).
 \nDimension: 𝐋^2 𝐌 𝐈^-1 𝐓^-2.
 \nSee also: [`Unitful.h`](@ref), [`Unitful.q`](@ref)."
 const Φ0 = h/(2q)                   # Superconducting magnetic flux quantum
+"    Unitful.q
+\nA quantity equal to the elementary charge, the charge of a single electron,
+with a value of exactly 1.602,176,634 × 10^-19 C. The letter `q` is used instead of `e` to avoid
+confusion with Euler's number.
+\nDimension: 𝐈 𝐓.
+\nSee Also: [`Unitful.C`](@ref)."
+const q = 1.602_176_634e-19*C        # CODATA 2018; avoids naming conflict with `e`
 "    Unitful.me
 \nA quantity representing the rest mass of an electron, equal to 9.109,383,7015
 × 10^-31 kg (the CODATA 2018 recommended value).
@@ -514,6 +507,13 @@ mass of an unbound neutral atom of carbon-12, equal to 1.660,539,066,60 × 10^-2
 \nSee Also: [`Unitful.kg`](@ref)."
 @unit u      "u" UnifiedAtomicMassUnit 1.660_539_066_60e-27*kg false # (50)
 
+# Energy
+"    Unitful.eV
+\nThe electron-volt, a unit of energy, defined as q*V.
+\nDimension: 𝐋^2 𝐌 𝐓^-2.
+\nSee also: [`Unitful.q`](@ref), [`Unitful.V`](@ref)."
+@unit eV     "eV"       eV          q*V                     true true
+
 # Acceleration
 "    Unitful.ge
 \nThe nominal acceleration due to gravity in a vacuum near the surface of the
@@ -522,7 +522,6 @@ earth, a unit of acceleration, defined by standard to be exactly 9.806,65 m / s^
 \nDimension: 𝐋 𝐓^-2.
 \nSee also: [`Unitful.m`](@ref), [`Unitful.s`](@ref)."
 @unit ge     "ge"       EarthGravity gn                     false
-
 
 # CGS units
 "    Unitful.Gal
