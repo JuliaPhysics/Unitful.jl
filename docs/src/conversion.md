@@ -351,6 +351,24 @@ The restriction reads the whole unit, not just the dimensionless case, so it app
 compound units too: `uconvert(u"percent/s", 1u"rad/s")` is rejected while
 `uconvert(u"°/s", 1u"rad/s")` is not.
 
+Promotion follows. Ordinarily two dimensionless quantities promote to a bare number, but
+that would discard the kind, so quantities that carry one promote to the better-ranked of
+their two units instead — radians for angles, steradians for solid angles:
+
+```julia
+julia> 1u"rad" + 1u"°"
+1.0174532925199433 rad
+
+julia> 1u"sr" + 1.0u"°"^2
+1.0003046174197867 sr
+
+julia> 1u"rad" + 1u"percent"
+ERROR: KindError: rad and % are not compatible in kind.
+```
+
+The preference is set by [`Unitful.kindrank`](@ref), and the result does not depend on
+the order of the operands.
+
 Only the angular units are classified. Proportion units are deliberately left alone,
 because `percent` really is a pure number — `uconvert(NoUnits, 50u"percent")` and
 `uconvert(u"ppm", 1u"percent")` behave exactly as before. Operations that need the
@@ -369,6 +387,7 @@ methods, either with the kinds Unitful provides or with your own subtype of
 ```@docs
 Unitful.restrict_unit_kinds
 Unitful.unitkinds
+Unitful.kindrank
 Unitful.kindscompatible
 Unitful.AbstractUnitKind
 Unitful.AngleKind

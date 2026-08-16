@@ -92,6 +92,37 @@ _kindsagree(ps::Tuple, qs::Tuple) =
     _kindsagree(Base.tail(ps), qs)
 
 """
+    kindrank(x::Unit)
+Return the promotion preference of a single [`Unitful.Unit`](@ref) within its kind,
+lowest first.
+
+When two units of the same kind are promoted, the better-ranked one wins, so ranking
+`rad` above `°` is what makes `1u"rad" + 1u"°"` come out in radians. The default is
+`typemax(Int)`, which leaves unranked units to be chosen between by SI prefix and name.
+"""
+kindrank(::Unit) = typemax(Int)
+
+# Best (lowest) rank among the units making up a `Units` object.
+_kindrank(u::Units) = minimum((kindrank(v) for v in _unittuple(u)), init = typemax(Int))
+
+# Total, symmetric ordering used to choose between two kind-carrying units during
+# promotion. Rank decides first; ties are settled by preferring the unprefixed unit and
+# then by name, so that the choice never depends on the order of the operands.
+_kindkey(u::Units) =
+    (_kindrank(u), map(v -> (abs(tens(v)), tens(v), name(v)), _unittuple(u)))
+
+# True if this unit carries any kind at all.
+_haskind(u::Units) = !isempty(_kindpairs(_unittuple(u)))
+
+# Choose the units that two same-dimension units should promote to. Units carrying no
+# kind fall back to the dimension's preferred unit, exactly as before. Units that do
+# carry one must not, since the preferred unit for `NoDims` is `NoUnits` and promoting
+# an angle to a bare number is precisely what kinds forbid — that would make even
+# `1u"rad" + 1u"°"` impossible. Keep the better-ranked operand instead.
+_kindpromote(x::Units, y::Units) =
+    _haskind(x) ? (_kindkey(x) <= _kindkey(y) ? x : y) : upreferred(dimension(x))
+
+"""
     kindscompatible(a::Units, b::Units)
 Return `true` if units `a` and `b` agree on kind and may therefore be converted between.
 
@@ -140,6 +171,12 @@ function restrict_unit_kinds()
          Unitful.unitkinds(::Unitful.Unit{:Radian}) = (Unitful.AngleKind() => 1//1,)
          Unitful.unitkinds(::Unitful.Unit{:Degree}) = (Unitful.AngleKind() => 1//1,)
          Unitful.unitkinds(::Unitful.Unit{:Steradian}) = (Unitful.AngleKind() => 2//1,)
+
+         # Promotion preference within the angle kind: radians for angles and
+         # steradians for solid angles, both being the SI choice.
+         Unitful.kindrank(::Unitful.Unit{:Radian}) = 1
+         Unitful.kindrank(::Unitful.Unit{:Steradian}) = 2
+         Unitful.kindrank(::Unitful.Unit{:Degree}) = 3
         end)
     nothing
 end

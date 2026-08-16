@@ -17,6 +17,9 @@ using Unitful: KindError, NoUnits, kindscompatible
         @test uconvert(NoUnits, 1.0u"°") ≈ 0.017453292519943295
         @test kindscompatible(u"rad", u"percent")
         @test kindscompatible(u"m", u"km")
+        # Dimensionless addition still collapses to a bare number.
+        @test 1.0u"rad" + 1.0u"°" === 1.0174532925199433
+        @test 1.0u"rad" + 1.0u"percent" === 1.01
     end
 
     Unitful.restrict_unit_kinds()
@@ -28,11 +31,17 @@ using Unitful: KindError, NoUnits, kindscompatible
         @test uconvert(u"°"^2, 1.0u"sr") ≈ 3282.806350011744 * u"°"^2
         @test uconvert(u"rad", 1000.0u"mrad") == 1.0u"rad"
         @test uconvert(u"sr", 1000.0u"msr") == 1.0u"sr"
-        # Proportion units are left unclassified, so they remain plain numbers.
+        # Proportion units are left unclassified, so they remain plain numbers and
+        # convert freely among themselves and with bare numbers.
         @test uconvert(u"ppm", 1.0u"percent") == 10000.0u"ppm"
+        @test uconvert(u"permille", 1u"percent") == 10u"permille"
+        @test uconvert(u"percent", 1u"permille") == 1//10 * u"percent"
         @test uconvert(NoUnits, 1.0u"μm/m") ≈ 1.0e-6
-        @test uconvert(NoUnits, 50.0u"percent") == 0.5
+        @test uconvert(NoUnits, 50u"percent") == 1//2
         @test uconvert(u"percent", 0.5) == 50.0u"percent"
+        @test convert(Float64, 1.0u"percent") == 0.01
+        @test ustrip(NoUnits, 1.0u"percent") == 0.01
+        @test (1.0u"percent" |> NoUnits) == 0.01
         # Angle over a dimensionful unit is still an angle.
         @test uconvert(u"°/s", 1.0u"rad/s") ≈ 57.29577951308232u"°/s"
     end
@@ -77,6 +86,42 @@ using Unitful: KindError, NoUnits, kindscompatible
         # `ustrip` with no target unit just reads the field, so it never converts.
         @test ustrip(1.0u"°") == 1.0
         @test ustrip(u"rad", 2.0u"rad") == 2.0
+    end
+
+    @testset "> Promotion keeps the kind" begin
+        # An angle must not promote to `NoUnits`, which would discard its kind; the
+        # better-ranked operand is kept instead, so radians beat degrees.
+        @test 1.0u"rad" + 1.0u"°" ≈ 1.0174532925199433u"rad"
+        @test 1.0u"°" + 1.0u"rad" ≈ 1.0174532925199433u"rad"
+        @test 1.0u"sr" + 1.0u"°"^2 ≈ 1.0003046174197867u"sr"
+        @test 1.0u"°"^2 + 1.0u"sr" ≈ 1.0003046174197867u"sr"
+        @test 1.0u"mrad" + 1.0u"rad" ≈ 1.001u"rad"      # unprefixed wins the tie
+        @test 1.0u"rad" + 1.0u"rad" === 2.0u"rad"
+        @test eltype([1.0u"rad", 1.0u"°"]) === typeof(1.0u"rad")
+
+        # The choice must not depend on the order of the operands.
+        for (a, b) in ((u"rad", u"°"), (u"sr", u"°"^2), (u"mrad", u"rad"), (u"m", u"cm"))
+            A, B = typeof(1.0 * a), typeof(1.0 * b)
+            @test promote_type(A, B) === promote_type(B, A)
+        end
+
+        # Mixing kinds in arithmetic is rejected, and says why.
+        @test_throws KindError 1.0u"rad" + 1.0u"percent"
+        @test_throws KindError 1.0u"rad" + 1.0u"sr"
+
+        # Units without a kind promote exactly as they always did — proportions still
+        # collapse to a bare number, and still mix with bare numbers.
+        @test 1.0u"percent" + 1.0u"ppm" === 0.010001
+        @test 1.0u"percent" + 1.0u"permille" === 0.011
+        @test 1.0u"permille" + 1.0u"percent" === 0.011
+        @test 1.0u"percent" + 0.5 === 0.51
+        @test 0.5 + 1.0u"percent" === 0.51
+        @test promote(1.0u"percent", 1.0u"permille") === (0.01, 0.001)
+        @test [1.0u"percent", 1.0u"permille"] == [0.01, 0.001]
+        @test 1.0u"percent" == 0.01
+        @test !(1.0u"percent" < 1.0u"permille")
+        @test 1.0u"m" + 1.0u"cm" === 1.01u"m"
+        @test 1.0u"J" + 1.0u"kg*m^2/s^2" === 2.0u"kg*m^2/s^2"
     end
 
     @testset "> Dimensionful conversion unaffected" begin
