@@ -120,10 +120,10 @@ for f = (:div, :cld, :fld, :rem, :mod)
     end
 end
 
-Base.mod2pi(x::DimensionlessQuantity) = mod2pi(uconvert(NoUnits, x))
+Base.mod2pi(x::DimensionlessQuantity) = mod2pi(_uconvert(NoUnits, x))
 Base.mod2pi(x::AbstractQuantity{S, NoDims, <:Units{(Unitful.Unit{:Degree, NoDims}(0, 1//1),),
     NoDims}}) where S = mod(x, 360°)
-Base.modf(x::DimensionlessQuantity) = modf(uconvert(NoUnits, x))
+Base.modf(x::DimensionlessQuantity) = modf(_uconvert(NoUnits, x))
 
 # Addition / subtraction
 for op in [:+, :-]
@@ -208,7 +208,7 @@ cbrt(x::AbstractQuantity) = Quantity(cbrt(x.val), cbrt(unit(x)))
 for _y in (:sin, :cos, :tan, :asin, :acos, :atan, :sinh, :cosh, :tanh, :asinh, :acosh, :atanh,
            :sinpi, :cospi, :tanpi, :sinc, :cosc, :sincos, :sincospi)
     if isdefined(Base, _y)
-        @eval Base.$(_y)(x::DimensionlessQuantity) = Base.$(_y)(uconvert(NoUnits, x))
+        @eval Base.$(_y)(x::DimensionlessQuantity) = Base.$(_y)(_uconvert(NoUnits, x))
     end
 end
 cis(x::DimensionlessQuantity{<:Real}) = Complex(reverse(sincos(x))...)
@@ -294,11 +294,13 @@ isapprox(x::AbstractArray{S}, y::AbstractArray{T};
 
 function isapprox(x::AbstractArray{S}, y::AbstractArray{N};
     atol=nothing, kwargs...) where {S <: AbstractQuantity,N <: Number}
-    if dimension(N) == dimension(S)
+    # A kind mismatch is reported the same way as a dimension mismatch, by returning
+    # `false` rather than throwing: comparing incomparable things is not an error here.
+    if dimension(N) == dimension(S) && kindscompatible(NoUnits, unit(S))
         if atol === nothing
-            isapprox(map(x->uconvert(NoUnits,x),x), y; kwargs...)
+            isapprox(map(x->_uconvert(NoUnits,x),x), y; kwargs...)
         else
-            isapprox(map(x->uconvert(NoUnits,x),x), y; atol = ustrip(NoUnits, atol), kwargs...)
+            isapprox(map(x->_uconvert(NoUnits,x),x), y; atol = ustrip(NoUnits, atol), kwargs...)
         end
     else
         false
@@ -331,7 +333,7 @@ _dimerr(f) = error("$f can only be well-defined for dimensionless ",
         "different results.")
 for f in [:isinteger, :iseven, :isodd]
     @eval $f(x::AbstractQuantity) = _dimerr($f)
-    @eval $f(x::DimensionlessQuantity) = $f(uconvert(NoUnits, x))
+    @eval $f(x::DimensionlessQuantity) = $f(_uconvert(NoUnits, x))
 end
 
 _rounderr() = error("specify the type of the quantity to convert to ",
@@ -347,13 +349,13 @@ round(::Type{T}, u::Units, q::AbstractQuantity, r::RoundingMode=RoundNearest;
 # workhorse methods
 round(x::AbstractQuantity, r::RoundingMode=RoundNearest; kwargs...) =
     _rounderr()
-round(x::DimensionlessQuantity; kwargs...) = round(uconvert(NoUnits, x); kwargs...)
+round(x::DimensionlessQuantity; kwargs...) = round(_uconvert(NoUnits, x); kwargs...)
 round(x::DimensionlessQuantity, r::RoundingMode; kwargs...) =
-    round(uconvert(NoUnits, x), r; kwargs...)
+    round(_uconvert(NoUnits, x), r; kwargs...)
 round(::Type{T}, x::AbstractQuantity, r::RoundingMode=RoundNearest;
     kwargs...) where {T<:Number} = _dimerr(:round)
 round(::Type{T}, x::DimensionlessQuantity, r::RoundingMode=RoundNearest;
-    kwargs...) where {T<:Number} = round(T, uconvert(NoUnits, x), r; kwargs...)
+    kwargs...) where {T<:Number} = round(T, _uconvert(NoUnits, x), r; kwargs...)
 function round(::Type{T}, x::AbstractQuantity;
         kwargs...) where {S, T <: Quantity{S}}
     u = unit(T)
@@ -436,7 +438,7 @@ eps(x::Type{T}) where {T<:AbstractQuantity} = eps(Unitful.numtype(T))
 unsigned(x::AbstractQuantity) = Quantity(unsigned(x.val), unit(x))
 
 for f in (:exp, :exp10, :exp2, :expm1, :log, :log10, :log1p, :log2)
-    @eval ($f)(x::DimensionlessQuantity) = ($f)(uconvert(NoUnits, x))
+    @eval ($f)(x::DimensionlessQuantity) = ($f)(_uconvert(NoUnits, x))
 end
 
 real(x::AbstractQuantity) = Quantity(real(x.val), unit(x))

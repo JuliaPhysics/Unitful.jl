@@ -311,3 +311,66 @@ julia> using Unitful
 julia> 1u"kN*m"/4u"J" |> NoUnits
 250.0
 ```
+
+## Restricting conversions between dimensionless units
+
+Several units share the `NoDims` dimension while measuring quite unrelated things.
+Angles (`rad`, `°`), solid angles (`sr`) and proportions (`percent`, `ppm`) are all
+dimensionless, and since dimension is the only compatibility test [`uconvert`](@ref)
+applies, by default it will convert freely between any of them:
+
+```jldoctest
+julia> uconvert(u"percent", 1u"°")
+1.7453292519943295 %
+```
+
+If that is not what you want, [`Unitful.restrict_unit_kinds`](@ref) assigns angular
+units a *kind*, a classification running alongside dimension that conversion must also
+preserve:
+
+```julia
+julia> Unitful.restrict_unit_kinds();
+
+julia> uconvert(u"rad", 180u"°")          # angle to angle: fine
+3.141592653589793 rad
+
+julia> uconvert(u"sr", 1.0u"°"^2)         # solid angle is angle squared: fine
+0.00030461741978670857 sr
+
+julia> uconvert(u"percent", 1u"°")        # angle to proportion: not fine
+ERROR: KindError: % and ° are not compatible in kind.
+
+julia> uconvert(u"sr", 1u"rad")           # angle is not solid angle
+ERROR: KindError: sr and rad are not compatible in kind.
+
+julia> uconvert(NoUnits, 1u"°")           # nor does an angle strip to a number
+ERROR: KindError:  and ° are not compatible in kind.
+```
+
+The restriction reads the whole unit, not just the dimensionless case, so it applies to
+compound units too: `uconvert(u"percent/s", 1u"rad/s")` is rejected while
+`uconvert(u"°/s", 1u"rad/s")` is not.
+
+Only the angular units are classified. Proportion units are deliberately left alone,
+because `percent` really is a pure number — `uconvert(NoUnits, 50u"percent")` and
+`uconvert(u"ppm", 1u"percent")` behave exactly as before. Operations that need the
+numeric value of a dimensionless quantity for its own sake, such as `sin` and `round`,
+also continue to accept angles.
+
+!!! note
+    Like [`Unitful.promote_to_derived`](@ref), this function has a global effect that
+    cannot be undone, and Unitful does not call it for you. Invoke it in your
+    `startup.jl`, or at load time in a package that wants the stricter behaviour.
+
+You can classify your own units the same way by adding [`Unitful.unitkinds`](@ref)
+methods, either with the kinds Unitful provides or with your own subtype of
+[`Unitful.AbstractUnitKind`](@ref).
+
+```@docs
+Unitful.restrict_unit_kinds
+Unitful.unitkinds
+Unitful.kindscompatible
+Unitful.AbstractUnitKind
+Unitful.AngleKind
+Unitful.KindError
+```

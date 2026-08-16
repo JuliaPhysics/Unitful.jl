@@ -58,6 +58,7 @@ include("types.jl")
 const promotion = Dict{Symbol,FreeUnits}()
 
 include("user.jl")
+include("kinds.jl")
 include("utils.jl")
 include("dimensions.jl")
 include("units.jl")

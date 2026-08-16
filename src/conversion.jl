@@ -94,6 +94,15 @@ julia> uconvert(u"J",1.0u"N*m")
 ```
 """
 function uconvert(a::Units, x::Quantity{T,D,U}) where {T,D,U}
+    assert_kind_convertible(a, U())
+    return _uconvert(a, x)
+end
+
+# Convert without consulting unit kinds. Used internally by operations that legitimately
+# need the numeric value of a dimensionless quantity for its own sake — `sin`, `round`,
+# and friends — where an angle is a perfectly sensible argument even once kinds forbid
+# converting it to a bare number.
+function _uconvert(a::Units, x::Quantity{T,D,U}) where {T,D,U}
     if typeof(a) == U
         return Quantity(x.val, a)    # preserves numeric type if convfact is 1
     elseif (a isa AffineUnits) || (x isa AffineQuantity)
@@ -104,6 +113,11 @@ function uconvert(a::Units, x::Quantity{T,D,U}) where {T,D,U}
 end
 
 function uconvert(a::Units, x::Number)
+    assert_kind_convertible(a, NoUnits)
+    return _uconvert(a, x)
+end
+
+function _uconvert(a::Units, x::Number)
     if dimension(a) == NoDims
         Quantity(x * convfact(a, NoUnits), a)
     else

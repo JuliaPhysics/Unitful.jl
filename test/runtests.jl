@@ -2629,6 +2629,15 @@ mktempdir() do load_path
     end
 end
 
+@testset "Unit kinds" begin
+    # Run in a separate process: `Unitful.restrict_unit_kinds()` adds methods globally
+    # and cannot be undone, so including this file here would leave every subsequent
+    # testset — and Aqua below — running under the restriction.
+    script = joinpath(@__DIR__, "kinds.jl")
+    cmd = `$(Base.julia_cmd()) --project=$(Base.active_project()) --startup-file=no $script`
+    @test success(pipeline(cmd, stdout=stdout, stderr=stderr))
+end
+
 using Aqua
 
 Aqua.test_all(Unitful, ambiguities=VERSION≥v"1.1", unbound_args=false, piracies=VERSION≥v"1.8")
