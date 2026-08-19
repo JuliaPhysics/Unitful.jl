@@ -380,6 +380,11 @@ also continue to accept angles.
     cannot be undone, and Unitful does not call it for you. Invoke it in your
     `startup.jl`, or at load time in a package that wants the stricter behaviour.
 
+    It takes effect by defining methods, so the usual world-age rule applies: call it as
+    its own top-level statement. A function or `begin` block that calls it and then
+    performs a conversion was compiled before the methods existed, and will still see
+    the old, unrestricted behaviour.
+
 You can classify your own units the same way by adding [`Unitful.unitkinds`](@ref)
 methods, either with the kinds Unitful provides or with your own subtype of
 [`Unitful.AbstractUnitKind`](@ref).

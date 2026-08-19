@@ -33,7 +33,7 @@ struct AngleKind <: AbstractUnitKind end
     struct KindError <: Exception
 Units are of incompatible kinds for the attempted conversion.
 
-This is distinct from a [`Unitful.DimensionError`](@ref): the dimensions of the two
+This is distinct from a `Unitful.DimensionError`: the dimensions of the two
 units agree, but their kinds do not.
 """
 struct KindError <: Exception
@@ -165,6 +165,12 @@ such as `sin` and `round`, are unaffected and continue to accept angles.
 The effect is global and cannot be undone, in the same way as
 [`Unitful.promote_to_derived`](@ref). Consider calling it in your `startup.jl`, or at
 load time in a package that wants the stricter behaviour. This function is not exported.
+
+Because it works by defining methods, the usual world-age rule applies: code that was
+already compiled when it is called only picks the restriction up once it is recompiled,
+which does not happen for a function that is currently running. So call it as its own
+top-level statement, not from inside the same function or `begin` block as the
+conversions it is meant to restrict.
 """
 function restrict_unit_kinds()
     eval(quote
