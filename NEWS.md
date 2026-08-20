@@ -2,7 +2,7 @@
 
 ## v1.29.0
 
-* ![Feature:](https://img.shields.io/badge/-feature-green) Units can now carry a *kind*, a classification running alongside dimension that `uconvert` must also preserve. Calling the new `Unitful.restrict_unit_kinds()` assigns a kind to the angular units, so that `rad`, `°` and `sr` stop being interconvertible with proportions such as `percent` and with bare numbers, while `rad ↔ °` and `sr ↔ °^2` keep working. Promotion follows suit, so `1u"rad" + 1u"°"` gives a result in radians rather than collapsing to a bare number, while `1u"rad" + 1u"percent"` is rejected. The mechanism is extensible via `Unitful.unitkinds` and `Unitful.kindrank`, and nothing changes unless `Unitful.restrict_unit_kinds()` is called.
+* ![Feature:](https://img.shields.io/badge/-feature-green) Units can now carry a *kind*, a classification running alongside dimension that `uconvert` must also preserve ([#856](https://github.com/JuliaPhysics/Unitful.jl/pull/856)). Calling the new `Unitful.restrict_unit_kinds()` assigns a kind to the angular units, so that `rad`, `°` and `sr` stop being interconvertible with proportions such as `percent` and with bare numbers, while `rad ↔ °` and `sr ↔ °^2` keep working. Promotion follows suit, so `1u"rad" + 1u"°"` gives a result in radians rather than collapsing to a bare number, while `1u"rad" + 1u"percent"` is rejected. The mechanism is extensible via `Unitful.unitkinds` and `Unitful.kindrank`, and nothing changes unless `Unitful.restrict_unit_kinds()` is called.
 
 ## v1.28.0 (2026-01-29)
 
