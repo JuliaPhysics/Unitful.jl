@@ -21,9 +21,13 @@ promote_unit(x::Units, y::Units, z::Units, t::Units...) =
     promote_unit(_promote_unit(x,y), z, t...)
 
 @inline _promote_unit(x::T, y::T) where {T <: FreeUnits} = T()
-# Use configurable fall-back mechanism for FreeUnits
-@inline _promote_unit(x::FreeUnits{N1,D}, y::FreeUnits{N2,D}) where {N1,N2,D} =
-    upreferred(dimension(x))
+# Use configurable fall-back mechanism for FreeUnits. `_kindpromote` is that fall-back
+# unless the units carry a kind, in which case promoting to the dimension's preferred
+# unit would discard it; see `Unitful.restrict_unit_kinds`.
+@inline function _promote_unit(x::FreeUnits{N1,D}, y::FreeUnits{N2,D}) where {N1,N2,D}
+    kindscompatible(x, y) || throw(KindError(x, y))
+    return _kindpromote(x, y)
+end
 
 @inline _promote_unit(x::ContextUnits{N,D,P,A}, y::ContextUnits{N,D,P,A}) where {N,D,P,A} = x  #ambiguity reasons
 # same units, but promotion context disagrees
