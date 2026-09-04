@@ -138,7 +138,7 @@ FixedUnits(::Units{N,D,A}) where {N,D,A} = FixedUnits{N,D,A}()
 
 
 """
-    abstract type AbstractQuantity{T,D,U} <: Number end
+    abstract type AbstractQuantity{T,D,U} <: NestedNumbers.QuantityNumber{T} end
 Represents a generic quantity type, whose dimensions and units are specified in
 the type signature.  The dimensions and units are allowed to be the empty set,
 in which case a dimensionless, unitless number results.
@@ -148,7 +148,7 @@ The type parameter `T` represents the numeric backing type. The type parameters
 Of course, the dimensions follow from the units, but the type parameters are
 kept separate to permit convenient dispatch on dimensions.
 """
-abstract type AbstractQuantity{T,D,U} <: Number end
+abstract type AbstractQuantity{T,D,U} <: NestedNumbers.QuantityNumber{T} end
 
 """
     struct Quantity{T,D,U} <: AbstractQuantity{T,D,U}
