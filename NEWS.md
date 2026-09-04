@@ -1,5 +1,12 @@
 # Unitful.jl changelog
 
+## v1.29.0 (2026-09-04)
+
+* ![Feature:](https://img.shields.io/badge/-feature-green) `MixedUnits` now supports `missing` ([#839](https://github.com/JuliaPhysics/Unitful.jl/pull/839)).
+* ![Feature:](https://img.shields.io/badge/-feature-green) When calling `isapprox` with a dimensionless quantity as one argument and a unitless number as the other, `atol` can now have (dimensionless) units ([#838](https://github.com/JuliaPhysics/Unitful.jl/pull/838)). Note that the case where both arguments are unitless numbers only supports `atol::Real`, since allowing quantities here would require overwriting the method in `Base`.
+* ![Bugfix:](https://img.shields.io/badge/-bugfix-purple) Promoting `ContextUnits` quantities with the same units but different promotion contexts no longer errors. It behaves as if the quantities had `FreeUnits` ([#845](https://github.com/JuliaPhysics/Unitful.jl/pull/845)).
+* ![Enhancement:](https://img.shields.io/badge/-enhancement-blue)  Performance of the `show` method for units and dimensions is improved by avoiding a boxed variable ([#848](https://github.com/JuliaPhysics/Unitful.jl/pull/848)).
+
 ## v1.28.0 (2026-01-29)
 
 * ![Feature:](https://img.shields.io/badge/-feature-green) Dimensionless quantities now support `iseven` and `isodd` ([#829](https://github.com/JuliaPhysics/Unitful.jl/pull/829)).
