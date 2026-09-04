@@ -1744,8 +1744,17 @@ end
 
 @testset "Display" begin
     withenv("UNITFUL_FANCY_EXPONENTS" => false) do
-        @test string(typeof(1.0m/s)) == "Quantity{Float64, 𝐋 𝐓^-1, FreeUnits{(m, s^-1), 𝐋 𝐓^-1, nothing}}"
-        @test string(typeof(m/s)) == "FreeUnits{(m, s^-1), 𝐋 𝐓^-1, nothing}"
+    # Declaring VelocityFreeUnits as public (or exported) results in change of displayed velocity type from FreeUnits to VelocityFreeUnits
+    # The same with other units, e.g. typeof(Unitful.L) would be displayed, if VolumeFreeUnits is declared as public, as 
+    # VolumeFreeUnits{(L,), nothing} (alias for Unitful.FreeUnits{(L,), 𝐋³, nothing})
+    # vs. Unitful.FreeUnits{(L,), 𝐋³, nothing}
+        if VERSION >= v"1.11.0-DEV.469" && Base.ispublic(Unitful, :VelocityFreeUnits)  
+            @test string(typeof(1.0m/s)) == "Quantity{Float64, 𝐋 𝐓^-1, Unitful.VelocityFreeUnits{(m, s^-1), nothing}}"
+            @test string(typeof(m/s)) == "Unitful.VelocityFreeUnits{(m, s^-1), nothing}"
+        else
+            @test string(typeof(1.0m/s)) == "Quantity{Float64, 𝐋 𝐓^-1, FreeUnits{(m, s^-1), 𝐋 𝐓^-1, nothing}}"
+            @test string(typeof(m/s)) == "FreeUnits{(m, s^-1), 𝐋 𝐓^-1, nothing}"
+        end
         @test string(dimension(1u"m/s")) == "𝐋 𝐓^-1"
         @test string(NoDims) == "NoDims"
     end
@@ -2606,6 +2615,178 @@ using REPL # This is necessary to make `@doc` work correctly
 
         See also: [`$(@__MODULE__).DocUnits.dRefFoo`](@ref).
         """
+end
+
+VERSION >= v"1.11.0-DEV.469" && @testset "Declare Public" begin
+    public_vars_list = Symbol[
+    :A, :AbstractQuantity, :Acceleration, :AccelerationFreeUnits, :AccelerationUnits, :Action, :ActionFreeUnits,
+	:ActionUnits, :Amount, :AmountFreeUnits, :AmountUnits, :Area, :AreaFreeUnits, :AreaUnits, :BField,
+	:BFieldFreeUnits, :BFieldUnits, :Ba, :Bq, :C, :Capacitance, :CapacitanceFreeUnits, :CapacitanceUnits, :Charge,
+	:ChargeFreeUnits, :ChargeUnits, :Current, :CurrentFreeUnits, :CurrentUnits, :DField, :DFieldFreeUnits,
+	:DFieldUnits, :DefaultSymbols, :Density, :DensityFreeUnits, :DensityUnits, :DynamicViscosity, :DynamicViscosityFreeUnits,
+	:DynamicViscosityUnits, :EA, :EBa, :EBq, :EC, :EF, :EField, :EFieldFreeUnits, :EFieldUnits, :EGal, :EGauss, :EGy,
+	:EH, :EHz, :EHz2π, :EJ, :EK, :EL, :EM, :EMx, :EN, :EOe, :EP, :EPa, :ES, :ESt, :ESv, :ET, :ETorr, :EV, :EW, :EWb,
+	:Eatm, :Eb, :Ebar, :Ecal, :Ecd, :Edyn, :EeV, :Eerg, :Eg, :Ekat, :El, :ElectricDipoleMoment,
+	:ElectricDipoleMomentFreeUnits, :ElectricDipoleMomentUnits, :ElectricQuadrupoleMoment,
+	:ElectricQuadrupoleMomentFreeUnits, :ElectricQuadrupoleMomentUnits, :ElectricalConductance,
+	:ElectricalConductanceFreeUnits, :ElectricalConductanceUnits, :ElectricalConductivity,
+	:ElectricalConductivityFreeUnits, :ElectricalConductivityUnits, :ElectricalResistance,
+	:ElectricalResistanceFreeUnits, :ElectricalResistanceUnits, :ElectricalResistivity,
+	:ElectricalResistivityFreeUnits, :ElectricalResistivityUnits, :Elm, :Elx, :Em, :Emol, :Energy, :EnergyFreeUnits,
+	:EnergyUnits, :Erad, :Es, :Esr, :Eyr, :EΩ, :F, :Force, :ForceFreeUnits, :ForceUnits, :Frequency,
+	:FrequencyFreeUnits, :FrequencyUnits, :G, :GA, :GBa, :GBq, :GF, :GGal, :GGauss, :GGy, :GH, :GHz, :GHz2π, :GJ,
+	:GK, :GL, :GM, :GMx, :GN, :GOe, :GP, :GPa, :GS, :GSt, :GSv, :GT, :GTorr, :GV, :GW, :GWb, :Gal, :Gatm, :Gauss,
+	:Gb, :Gbar, :Gcal, :Gcd, :Gdyn, :GeV, :Gerg, :Gg, :Gkat, :Gl, :Glm, :Glx, :Gm, :Gmol, :Grad, :Gs, :Gsr, :Gy,
+	:Gyr, :GΩ, :H, :HField, :HFieldFreeUnits, :HFieldUnits, :Hz, :Hz2π, :Inductance, :InductanceFreeUnits,
+	:InductanceUnits, :J, :K, :KinematicViscosity, :KinematicViscosityFreeUnits, :KinematicViscosityUnits, :L,
+	:Length, :LengthFreeUnits, :LengthUnits, :Luminosity, :LuminosityFreeUnits, :LuminosityUnits, :M, :MA, :MBa,
+	:MBq, :MC, :MF, :MGal, :MGauss, :MGy, :MH, :MHz, :MHz2π, :MJ, :MK, :ML, :MM, :MMx, :MN, :MOe, :MP, :MPa, :MS,
+	:MSt, :MSv, :MT, :MTorr, :MV, :MW, :MWb, :MagneticDipoleMoment, :MagneticDipoleMomentFreeUnits,
+	:MagneticDipoleMomentUnits, :MagneticFlux, :MagneticFluxFreeUnits, :MagneticFluxUnits, :Mass, :MassFlow,
+	:MassFlowFreeUnits, :MassFlowUnits, :MassFreeUnits, :MassUnits, :Matm, :Mb, :Mbar, :Mcal, :Mcd, :Mdyn, :MeV,
+	:Merg, :Mg, :Mkat, :Ml, :Mlm, :Mlx, :Mm, :Mmol, :Molality, :MolalityFreeUnits, :MolalityUnits, :MolarFlow,
+	:MolarFlowFreeUnits, :MolarFlowUnits, :MolarMass, :MolarMassFreeUnits, :MolarMassUnits, :Molarity,
+	:MolarityFreeUnits, :MolarityUnits, :Momentum, :MomentumFreeUnits, :MomentumUnits, :Mrad, :Ms, :Msr, :Mx, :Myr,
+	:MΩ, :N, :Na, :Oe, :P, :PA, :PBa, :PBq, :PC, :PF, :PGal, :PGauss, :PGy, :PH, :PHz, :PHz2π, :PJ, :PK, :PL, :PM,
+	:PMx, :PN, :POe, :PP, :PPa, :PS, :PSt, :PSv, :PT, :PTorr, :PV, :PW, :PWb, :Pa, :Patm, :Pb, :Pbar, :Pcal, :Pcd,
+	:Pdyn, :PeV, :Perg, :Pg, :Pkat, :Pl, :Plm, :Plx, :Pm, :Pmol, :Power, :PowerFreeUnits, :PowerUnits, :Prad,
+	:Pressure, :PressureFreeUnits, :PressureUnits, :Ps, :Psr, :Pyr, :PΩ, :R, :Ra, :R∞, :S, :St, :Sv, :T, :TA, :TBa,
+	:TBq, :TC, :TF, :TGal, :TGauss, :TGy, :TH, :THz, :THz2π, :TJ, :TK, :TL, :TM, :TMx, :TN, :TOe, :TPa, :TS, :TSt,
+	:TSv, :TT, :TTorr, :TV, :TW, :TWb, :Tatm, :Tb, :Tbar, :Tcal, :Tcd, :Tdyn, :TeV, :Temperature,
+	:TemperatureFreeUnits, :TemperatureUnits, :Terg, :Tg, :Time, :TimeFreeUnits, :TimeUnits, :Tkat, :Tl, :Tlm, :Tlx,
+	:Tm, :Tmol, :Torr, :Trad, :Ts, :Tsr, :Tyr, :TΩ, :V, :Velocity, :VelocityFreeUnits, :VelocityUnits, :Voltage,
+	:VoltageFreeUnits, :VoltageUnits, :Volume, :VolumeFlow, :VolumeFlowFreeUnits, :VolumeFlowUnits, :VolumeFreeUnits,
+	:VolumeUnits, :W, :Wavenumber, :WavenumberFreeUnits, :WavenumberUnits, :Wb, :YA, :YBa, :YBq, :YC, :YF, :YGal,
+	:YGauss, :YGy, :YH, :YHz, :YHz2π, :YJ, :YK, :YL, :YM, :YMx, :YN, :YOe, :YP, :YPa, :YS, :YSt, :YSv, :YT, :YTorr,
+	:YV, :YW, :YWb, :Yatm, :Yb, :Ybar, :Ycal, :Ycd, :Ydyn, :YeV, :Yerg, :Yg, :Ykat, :Yl, :Ylm, :Ylx, :Ym, :Ymol,
+	:Yrad, :Ys, :Ysr, :Yyr, :YΩ, :Z0, :ZA, :ZBa, :ZBq, :ZC, :ZF, :ZGal, :ZGauss, :ZGy, :ZH, :ZHz, :ZHz2π, :ZJ, :ZK,
+	:ZL, :ZM, :ZMx, :ZN, :ZOe, :ZP, :ZPa, :ZS, :ZSt, :ZSv, :ZT, :ZTorr, :ZV, :ZW, :ZWb, :Zatm, :Zb, :Zbar, :Zcal,
+	:Zcd, :Zdyn, :ZeV, :Zerg, :Zg, :Zkat, :Zl, :Zlm, :Zlx, :Zm, :Zmol, :Zrad, :Zs, :Zsr, :Zyr, :ZΩ, :a, :aA, :aBa,
+	:aBq, :aC, :aF, :aGal, :aGauss, :aGy, :aH, :aHz, :aHz2π, :aJ, :aK, :aL, :aM, :aMx, :aN, :aOe, :aP, :aPa, :aS,
+	:aSt, :aSv, :aT, :aTorr, :aV, :aW, :aWb, :aatm, :ab, :abar, :ac, :acal, :acd, :adyn, :aeV, :aerg, :ag, :akat,
+	:al, :alm, :alx, :am, :amol, :angstrom, :arad, :as, :asr, :atm, :ayr, :aΩ, :b, :bar, :btu, :c, :c0, :cA, :cBa,
+	:cBq, :cC, :cF, :cGal, :cGauss, :cGy, :cH, :cHz, :cHz2π, :cJ, :cK, :cL, :cM, :cMx, :cN, :cOe, :cP, :cPa, :cS,
+	:cSt, :cSv, :cT, :cTorr, :cV, :cW, :cWb, :cal, :catm, :cb, :cbar, :ccal, :ccd, :cdyn, :ceV, :cerg, :cg, :ckat,
+	:cl, :clm, :clx, :cm, :cmol, :crad, :cs, :csr, :cyr, :cΩ, :d, :dA, :dBa, :dBq, :dC, :dF, :dGal, :dGauss, :dGy,
+	:dH, :dHz, :dHz2π, :dJ, :dK, :dL, :dM, :dMx, :dN, :dOe, :dP, :dPa, :dS, :dSt, :dSv, :dT, :dTorr, :dV, :dW, :dWb,
+	:daA, :daBa, :daBq, :daC, :daF, :daGal, :daGauss, :daGy, :daH, :daHz, :daHz2π, :daJ, :daK, :daL, :daM, :daMx,
+	:daN, :daOe, :daP, :daPa, :daS, :daSt, :daSv, :daT, :daTorr, :daV, :daW, :daWb, :daatm, :dab, :dabar, :dacal,
+	:dacd, :dadyn, :daeV, :daerg, :dag, :dakat, :dal, :dalm, :dalx, :dam, :damol, :darad, :das, :dasr, :datm, :dayr,
+	:daΩ, :db, :dbar, :dcal, :dcd, :ddyn, :deV, :deg, :degC, :degF, :derg, :dg, :dkat, :dl, :dlm, :dlx, :dm, :dmol, :dr, :drad,
+	:ds, :dsr, :dyn, :dyr, :dΩ, :eV, :erg, :fA, :fBa, :fBq, :fC, :fF, :fGal, :fGauss, :fGy, :fH, :fHz, :fHz2π, :fJ,
+	:fK, :fL, :fM, :fMx, :fN, :fOe, :fP, :fPa, :fS, :fSt, :fSv, :fT, :fTorr, :fV, :fW, :fWb, :fatm, :fb, :fbar,
+	:fcal, :fcd, :fdyn, :feV, :ferg, :fg, :fkat, :fl, :flm, :flx, :fm, :fmol, :frad, :fs, :fsr, :ft, :fyr, :fΩ, :g,
+	:ge, :gn, :gr, :h, :hA, :hBa, :hBq, :hC, :hF, :hGal, :hGauss, :hGy, :hH, :hHz, :hHz2π, :hJ, :hK, :hL, :hM, :hMx,
+	:hN, :hOe, :hP, :hPa, :hS, :hSt, :hSv, :hT, :hTorr, :hV, :hW, :hWb, :ha, :hatm, :hb, :hbar, :hcal, :hcd, :hdyn,
+	:heV, :herg, :hg, :hkat, :hl, :hlm, :hlx, :hm, :hmol, :hr, :hrad, :hs, :hsr, :hyr, :hΩ, :inch, :k, :kA, :kBa,
+	:kBq, :kC, :kF, :kGal, :kGauss, :kGy, :kH, :kHz, :kHz2π, :kJ, :kK, :kL, :kM, :kMx, :kN, :kOe, :kP, :kPa, :kS,
+	:kSt, :kSv, :kT, :kTorr, :kV, :kW, :kWb, :kat, :katm, :kb, :kbar, :kcal, :kcd, :kdyn, :keV, :kerg, :kg, :kkat,
+	:kl, :klm, :klx, :km, :kmol, :krad, :ks, :ksr, :kyr, :kΩ, :l, :lb, :lbf, :lm, :lx, :m, :mA, :mBa, :mBq, :mC, :mF,
+	:mGal, :mGauss, :mGy, :mH, :mHz, :mHz2π, :mJ, :mK, :mL, :mM, :mMx, :mN, :mOe, :mP, :mPa, :mS, :mSt, :mSv, :mT,
+	:mTorr, :mV, :mW, :mWb, :matm, :mb, :mbar, :mcal, :mcd, :mdyn, :me, :meV, :merg, :mg, :mi, :mil, :minute, :mkat,
+	:ml, :mlm, :mlx, :mm, :mmol, :mn, :mol, :mp, :mrad, :ms, :msr, :myr, :mΩ, :nA, :nBa, :nBq, :nC, :nF, :nGal,
+	:nGauss, :nGy, :nH, :nHz, :nHz2π, :nJ, :nK, :nL, :nM, :nMx, :nN, :nOe, :nP, :nPa, :nS, :nSt, :nSv, :nT, :nTorr,
+	:nV, :nW, :nWb, :natm, :nb, :nbar, :ncal, :ncd, :ndyn, :neV, :nerg, :ng, :nkat, :nl, :nlm, :nlx, :nm, :nmol,
+	:nrad, :ns, :nsr, :nyr, :nΩ, :oz, :pA, :pBa, :pBq, :pC, :pF, :pGal, :pGauss, :pGy, :pH, :pHz, :pHz2π, :pJ, :pK,
+	:pL, :pM, :pMx, :pN, :pOe, :pP, :pPa, :pS, :pSt, :pSv, :pT, :pTorr, :pV, :pW, :pWb, :patm, :pb, :pbar, :pcal,
+	:pcd, :pcm, :pdyn, :peV, :percent, :perg, :permille, :pertenthousand, :pg, :pkat, :pl, :plm, :plx, :pm, :pmol,
+	:ppb, :ppm, :ppq, :ppt, :prad, :ps, :psi, :psr, :pyr, :pΩ, :q, :rad, :rpm, :rps, :s, :sr, :u, :wk, :yA, :yBa,
+	:yBq, :yC, :yF, :yGal, :yGauss, :yGy, :yH, :yHz, :yHz2π, :yJ, :yK, :yL, :yM, :yMx, :yN, :yOe, :yP, :yPa, :yS,
+	:ySt, :ySv, :yT, :yTorr, :yV, :yW, :yWb, :yatm, :yb, :ybar, :ycal, :ycd, :yd, :ydyn, :yeV, :yerg, :yg, :ykat,
+	:yl, :ylm, :ylx, :ym, :ymol, :yr, :yrad, :ys, :ysr, :yyr, :yΩ, :zA, :zBa, :zBq, :zC, :zF, :zGal, :zGauss, :zGy,
+	:zH, :zHz, :zHz2π, :zJ, :zK, :zL, :zM, :zMx, :zN, :zOe, :zP, :zPa, :zS, :zSt, :zSv, :zT, :zTorr, :zV, :zW, :zWb,
+	:zatm, :zb, :zbar, :zcal, :zcd, :zdyn, :zeV, :zerg, :zg, :zkat, :zl, :zlm, :zlx, :zm, :zmol, :zrad, :zs, :zsr,
+	:zyr, :zΩ, :°, :°C, :°F, :Å, :ħ, :Φ0, :Ω, :ε0, :μ0, :μA, :μB, :μBa, :μBq, :μC, :μF, :μGal, :μGauss, :μGy, :μH,
+	:μHz, :μHz2π, :μJ, :μK, :μL, :μM, :μMx, :μN, :μOe, :μP, :μPa, :μS, :μSt, :μSv, :μT, :μTorr, :μV, :μW, :μWb,
+	:μatm, :μb, :μbar, :μcal, :μcd, :μdyn, :μeV, :μerg, :μg, :μkat, :μl, :μlm, :μlx, :μm, :μmol, :μrad, :μs, :μsr,
+	:μyr, :μΩ, :σ, :ϵ0, :𝐈, :𝐉, :𝐋, :𝐌, :𝐍, :𝐓, :𝚯]
+
+    private_vars_list = Symbol[
+    :abbr, :abs_fast, :abs2_fast, :AbsoluteScaleTemperature, :Affine, :AffineError, :AffineQuantity,
+    :affinetranslation, :affineunit, :AffineUnits, :allowed_funcs, :B_p, :B_rp, :B, :base, :basefactor,
+    :basefactors_expr, :basefactors, :BCAST_PROPAGATE_CALLS, :Bel, :BracketStyle, :Centineper, :cNp_p,
+    :cNp_rp, :cNp, :colon, :colonstartstop, :conj_fast, :ContextUnits, :convfact_floattype, :convfact,
+    :dB_p, :dB_rp, :dB, :dBFS, :dBHz, :dBm, :dBS, :dBSPL, :dBu, :dBV, :dBμV, :dBΩ, :Decibel, :Dimension,
+    :DimensionError, :DimensionlessUnits, :Dimensions, :dimtype, :expfn, :FixedUnits,
+    :fp_overflow_underflow, :FreeOrContextUnits, :FreeUnits, :fromlog, :gaintype, :genericunit, :get_T,
+    :has_unit_spacing, :inv_fast, :isrootpower_dim, :isrootpower, :IsRootPowerRatio, :isunitless,
+    :leveltype, :logfn, :LogInfo, :LogScaled, :lookup_units, :MixedUnits, :name, :Neper, :NoBrackets,
+    :Np_p, :Np_rp, :Np, :numtype, :power, :PowerRatio, :prefactor, :preferunits, :prefix, :prefixdict,
+    :print_closing_bracket, :print_opening_bracket, :printed_length, :promote_to_derived, :promote_unit,
+    :promotion, :quantitytype, :RealOrRealQuantity, :ReferenceQuantity, :register,
+    :RelativeScaleTemperature, :RootPowerRatio, :RoundBrackets, :ScalarQuantity, :ScalarUnits, :showrep,
+    :showval, :si_no_prefix, :si_prefixes, :sign_fast, :sortexp, :SquareBrackets, :superscript, :tens,
+    :tensfactor, :tolog, :try_uconvert, :uconvert_affine, :Unit, :Unitlike, :unitmodules, :Units,
+    :unwrap, :ustrcheck_bool, Symbol("@prefixed_unit_symbols"), Symbol("@public"), Symbol("@unit_symbols")]
+
+    # Define the actual groups from the Unitful module
+    actual_all = filter(x -> 
+        !(startswith(string(x), "#") ||
+        startswith(string(x), "_") ||
+        isdefined(Base, x)),
+        names(Unitful, all=true))
+
+    actual_exported = filter(x -> Base.isexported(Unitful, x), actual_all)
+    actual_public   = setdiff(filter(x -> Base.ispublic(Unitful, x), actual_all), actual_exported)
+    actual_private  = setdiff(actual_all, actual_exported, actual_public)
+
+    # Checks on the lists themselves
+    overlap = public_vars_list ∩ private_vars_list
+    if !isempty(overlap)
+        println("Error: Symbols listed in both `public_vars_list` and `private_vars_list`: $overlap")
+    end
+    @test isempty(overlap)
+
+    typos_public = setdiff(public_vars_list, actual_all)
+    if !isempty(typos_public)
+        println("Error: These symbols in `public_vars_list` are not defined in Unitful (typo or from Base): $typos_public")
+    end
+    @test isempty(typos_public)
+
+    typos_private = setdiff(private_vars_list, actual_all)
+    if !isempty(typos_private)
+        println("Error: These symbols in `private_vars_list` are not defined in Unitful (typo or from Base): $typos_private")
+    end
+    @test isempty(typos_private)
+
+    # Checks against exported symbols
+    exported_in_public = public_vars_list ∩ actual_exported
+    if !isempty(exported_in_public)
+        println("Error: These symbols in `public_vars_list` are already exported (remove them from the list): $exported_in_public")
+    end
+    @test isempty(exported_in_public)
+
+    exported_in_private = private_vars_list ∩ actual_exported
+    if !isempty(exported_in_private)
+        println("Error: These symbols in `private_vars_list` are already exported (remove them from the list): $exported_in_private")
+    end
+    @test isempty(exported_in_private)
+
+    # Checks against public symbols
+    public_in_private = private_vars_list ∩ actual_public
+    if !isempty(public_in_private)
+        println("Error: These symbols in `private_vars_list` are actually declared `public`. Remove the `public` declaration in code or move them to `public_vars_list`: $public_in_private")
+    end
+    @test isempty(public_in_private)
+
+    missing_public = setdiff(actual_public, public_vars_list)
+    if !isempty(missing_public)
+        println("Error: These symbols are declared `public` in code, but missing from `public_vars_list`: $missing_public")
+    end
+    @test isempty(missing_public)
+
+    # Checks against private symbols
+    private_in_public = public_vars_list ∩ actual_private
+    if !isempty(private_in_public)
+        println("Error: These symbols in `public_vars_list` are actually private. Did you forget to declare them as `public` in the code?: $private_in_public")
+    end
+    @test isempty(private_in_public)
+
+    missing_private = setdiff(actual_private, private_vars_list)
+    if !isempty(missing_private)
+        println("Error: These internal symbols are undocumented in the test. Add them to `private_vars_list`, or rename them to start with an underscore: $missing_private")
+    end
+    @test isempty(missing_private)
 end
 
 # Test precompiled Unitful extension modules

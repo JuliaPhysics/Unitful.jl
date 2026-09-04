@@ -140,12 +140,12 @@ the following three cases:
 
 ```jldoctest
 julia> [1.0u"m", 2.0u"m"]
-2-element Vector{Quantity{Float64, 𝐋, Unitful.FreeUnits{(m,), 𝐋, nothing}}}:
+2-element Vector{Quantity{Float64, 𝐋, Unitful.LengthFreeUnits{(m,), nothing}}}:
  1.0 m
  2.0 m
 
 julia> [1.0u"m", 2.0u"cm"]
-2-element Vector{Quantity{Float64, 𝐋, Unitful.FreeUnits{(m,), 𝐋, nothing}}}:
+2-element Vector{Quantity{Float64, 𝐋, Unitful.LengthFreeUnits{(m,), nothing}}}:
  1.0 m
  0.02 m
 
