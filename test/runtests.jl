@@ -1041,6 +1041,10 @@ end
         @test muladd(1s, 1.0mol/s, 2.0mol) === 3.0mol               # issue 138
     end
     @testset "> @fastmath" begin
+        for T in (Float32, Float64), (u, au) in ((°C, K), (°F, Ra))
+            @test (@fastmath T(1)*u - T(0)*u) === T(1)*au
+        end
+
         one32 = one(Float32)*m
         eps32 = eps(Float32)*m
         eps32_2 = eps32/2

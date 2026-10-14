@@ -35,7 +35,7 @@ add_fast(x::Quantity{T,D,U}, y::Quantity{T,D,U}) where {T <: FloatTypes,D,U} =
     Quantity{T,D,U}(add_fast(x.val, y.val))
 
 sub_fast(x::Quantity{T,D,U}, y::Quantity{T,D,U}) where {T <: FloatTypes,D,U} =
-    Quantity{T,D,U}(sub_fast(x.val, y.val))
+    Quantity(sub_fast(x.val, y.val), absoluteunit(unit(x)))
 
 function mul_fast(x::Quantity{T}, y::Quantity{T}) where {T <: FloatTypes}
     D = dimension(x) * dimension(y)
