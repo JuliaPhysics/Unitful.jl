@@ -150,6 +150,20 @@ struct TemperatureQuantity{T,U} <: Unitful.AbstractQuantity{T,𝚯,U}
 end
 TemperatureQuantity(x::Quantity{T,𝚯,U}) where {T,U} = TemperatureQuantity{T,U}(x.val)
 
+# Overrides only the two-argument `show`
+struct LabeledQuantity{T,D,U} <: Unitful.AbstractQuantity{T,D,U}
+    val::T
+end
+LabeledQuantity(x::Quantity{T,D,U}) where {T,D,U} = LabeledQuantity{T,D,U}(x.val)
+Base.show(io::IO, x::LabeledQuantity) = print(io, "labeled ", Quantity(x.val, unit(x)))
+
+# Promotes with any number on its own, like the dimensionless constants of PhysicalConstants.jl
+struct RatioQuantity{T,U} <: Unitful.AbstractQuantity{T,NoDims,U}
+    val::T
+end
+RatioQuantity(x::Quantity{T,NoDims,U}) where {T,U} = RatioQuantity{T,U}(x.val)
+Base.promote_rule(::Type{RatioQuantity{S,U}}, ::Type{T}) where {S,U,T<:Number} = promote_type(S, T)
+
 @testset "Conversion" begin
     @testset "> Unitless ↔ unitful conversion" begin
         @test_throws DimensionError convert(typeof(3m), 1)
@@ -1828,6 +1842,64 @@ Base.show(io::IO, ::MIME"text/plain", ::Foo) = print(io, "42.0")
     @test Base.alignment(stdout, 3.0dBm)   == Base.alignment(stdout, 3.0) .+ (0, 4)
     @test Base.alignment(stdout, 3.0dB*s)  == Base.alignment(stdout, 3.0) .+ (1, 6)
     @test Base.alignment(stdout, 3.0dBm*s) == Base.alignment(stdout, 3.0) .+ (1, 7)
+end
+
+@testset "AbstractQuantity subtypes behave like Quantity" begin
+    q = GenericQuantity
+    @testset "> Display" begin
+        withenv("UNITFUL_FANCY_EXPONENTS" => false) do
+            @test repr(q(1.5m/s)) == "1.5 m s^-1"
+            @test repr("text/plain", q(1.5m/s)) == "1.5 m s^-1"
+        end
+        @test repr(q(1.5°)) == "1.5°"
+        @test Base.alignment(stdout, q((1//3)m)) == Base.alignment(stdout, (1//3)m)
+        @test repr(LabeledQuantity(1.5m)) == "labeled 1.5 m"
+        @test repr("text/plain", LabeledQuantity(1.5m)) == "labeled 1.5 m"
+        @test LabeledQuantity(1.5m) + 1m === 2.5m
+        x = LabeledQuantity(Quantity{Float64,NoDims,typeof(NoUnits)}(1.5))
+        @test sum(Base.alignment(stdout, x)) == length("labeled 1.5")
+        io = IOContext(IOBuffer(), :displaysize => (24, 30), :limit => true)
+        show(io, MIME("text/plain"), fill(x, 2, 6))
+        rows = split(String(take!(io.io)), '\n')[2:end]
+        @test length(rows) == 2
+        @test all(row -> textwidth(row) <= 30, rows)
+    end
+    @testset "> Comparison" begin
+        @test q(1m) == q(100cm)
+        @test q(1m) == 100cm
+        @test 100cm == q(1m)
+        @test q(1m) < q(200cm)
+        @test q(1m) < 200cm
+        @test isless(q(1m), q(200cm))
+        @test isapprox(q(1.0m), q(100.0cm))
+        @test isapprox(q(1.0m), 100.0cm)
+        @test min(q(1m), q(1cm)) == 1cm
+        @test max(q(1m), 1cm) == 1m
+    end
+    @testset "> Arithmetic and promotion" begin
+        @test q(1m) + q(1cm) === (101//100)m
+        @test q(1m) + 1cm === (101//100)m
+        @test 1cm + q(1m) === (101//100)m
+        @test q(1m) - q(1cm) === (99//100)m
+        @test atan(q(1.0m), q(100.0cm)) ≈ π/4
+        @test @inferred(promote(q(1.0m), 1cm)) === (1.0m, 0.01m)
+        @test @inferred(promote(q(1.0mm/m), 1)) === (0.001, 1.0)
+        @test [q(1.0m), 1.0cm] isa Vector{typeof(1.0m)}
+        @test [q(1.0m), q(1.0cm)] isa Vector{typeof(1.0m)}
+        @test [RatioQuantity(1.0m/mm), RatioQuantity(1.0mm/m)] isa Vector{Float64}
+        @test [RatioQuantity(1.0m/mm), RatioQuantity(1.0mm/m)] == [1000.0, 0.001]
+        @test RatioQuantity(1.0m/mm) + q(1.0mm/m) ≈ 1000.001
+        @test promote_type(Quantity{Float64}, typeof(q(1.0m))) === Quantity{Float64}
+        @test promote_type(typeof(q(1.0m)), Quantity{Float64}) === Quantity{Float64}
+        @test Quantity{Float64}[q(1.0m), 1.0s] isa Vector{Quantity{Float64}}
+    end
+    @testset "> Conversion" begin
+        @test convert(Float64, q(1.0m/mm)) === 1000.0
+        @test convert(Number, q(1.0m)) === q(1.0m)
+        @test typeof(1.0cm)(q(1m)) === 100.0cm
+        @test convert(Quantity{Float64}, q(1m)) === 1.0m
+        @test convert(Quantity{Float64,𝐋}, q(1m)) === 1.0m
+    end
 end
 
 VERSION ≥ v"1.9.0" && @testset "printf" begin

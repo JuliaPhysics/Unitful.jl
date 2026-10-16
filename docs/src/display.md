@@ -10,7 +10,7 @@ or `false` to force using or not using the exponents.
 Unitful.BracketStyle
 Unitful.abbr
 Unitful.prefix
-Unitful.show(::IO, ::Quantity)
+Unitful.show(::IO, ::Unitful.AbstractQuantity)
 Unitful.show(::IO, ::Unitful.Unitlike)
 Unitful.showrep
 Unitful.showval
