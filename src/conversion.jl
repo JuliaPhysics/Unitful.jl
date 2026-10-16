@@ -77,11 +77,11 @@ _convfact_floattype(::Type{Float16}) = Float16
 _convfact_floattype(::Type{Float32}) = Float32
 
 """
-    uconvert(a::Units, x::Quantity{T,D,U}) where {T,D,U}
-Convert a [`Unitful.Quantity`](@ref) to different units. The conversion will
-fail if the target units `a` have a different dimension than the dimension of
-the quantity `x`. You can use this method to switch between equivalent
-representations of the same unit, like `N m` and `J`.
+    uconvert(a::Units, x::AbstractQuantity{T,D,U}) where {T,D,U}
+Convert a [`Unitful.AbstractQuantity`](@ref) to a [`Unitful.Quantity`](@ref) with
+different units. The conversion will fail if the target units `a` have a different
+dimension than the dimension of the quantity `x`. You can use this method to switch
+between equivalent representations of the same unit, like `N m` and `J`.
 
 Example:
 
@@ -93,7 +93,7 @@ julia> uconvert(u"J",1.0u"N*m")
 1.0 J
 ```
 """
-function uconvert(a::Units, x::Quantity{T,D,U}) where {T,D,U}
+function uconvert(a::Units, x::AbstractQuantity{T,D,U}) where {T,D,U}
     if typeof(a) == U
         return Quantity(x.val, a)    # preserves numeric type if convfact is 1
     elseif (a isa AffineUnits) || (x isa AffineQuantity)
@@ -113,16 +113,14 @@ end
 
 uconvert(a::Units, x::Missing) = missing
 
-@generated function uconvert_affine(a::Units, x::Quantity)
+@generated function uconvert_affine(a::Units, x::AbstractQuantity{T,D,U}) where {T,D,U}
     # TODO: test, may be able to get bad things to happen here when T<:LogScaled
     auobj = a()
-    xuobj = x.parameters[3]()
+    xuobj = U()
     conv = convfact(auobj, xuobj)
 
-    t0 = x <: AffineQuantity ? x.parameters[3].parameters[end].parameters[end] :
-        :(zero($(x.parameters[1])))
-    t1 = a <: AffineUnits ? a.parameters[end].parameters[end] :
-        :(zero($(x.parameters[1])))
+    t0 = x <: AffineQuantity ? U.parameters[end].parameters[end] : :(zero($T))
+    t1 = a <: AffineUnits ? a.parameters[end].parameters[end] : :(zero($T))
     quote
         dimension(a) != dimension(x) && throw(DimensionError(a, x))
         return Quantity(((x.val - $t0) * $conv) + $t1, a)
