@@ -164,6 +164,20 @@ end
 RatioQuantity(x::Quantity{T,NoDims,U}) where {T,U} = RatioQuantity{T,U}(x.val)
 Base.promote_rule(::Type{RatioQuantity{S,U}}, ::Type{T}) where {S,U,T<:Number} = promote_type(S, T)
 
+# Fixes dimension and units, so only the numeric type is free
+struct CurvatureQuantity{T} <: Unitful.AbstractQuantity{T,𝐋^-1,typeof(m^-1)}
+    val::T
+end
+CurvatureQuantity{T}(x::Unitful.AbstractQuantity) where T = convert(CurvatureQuantity{T}, x)
+
+mutable struct MutableQuantity{T,D,U} <: Unitful.AbstractQuantity{T,D,U}
+    val::T
+end
+
+# No field, like the constants of PhysicalConstants.jl
+struct SpeedConstant <: Unitful.AbstractQuantity{Float64,𝐋/𝐓,typeof(m/s)} end
+Base.getproperty(x::SpeedConstant, name::Symbol) = name === :val ? 3.0 : getfield(x, name)
+
 @testset "Conversion" begin
     @testset "> Unitless ↔ unitful conversion" begin
         @test_throws DimensionError convert(typeof(3m), 1)
@@ -1899,6 +1913,37 @@ end
         @test typeof(1.0cm)(q(1m)) === 100.0cm
         @test convert(Quantity{Float64}, q(1m)) === 1.0m
         @test convert(Quantity{Float64,𝐋}, q(1m)) === 1.0m
+        @test convert(q{Float32,𝐋,typeof(m)}, 2.0km) === q{Float32,𝐋,typeof(m)}(2000.0f0)
+        @test convert(q{Float64,𝐋,typeof(m)}, q(1.0m)) === q(1.0m)
+        @test convert(TemperatureQuantity{Rational{Int},typeof(K)}, 0°C) ===
+            TemperatureQuantity{Rational{Int},typeof(K)}(27315//100)
+        @test convert(RatioQuantity{Float64,typeof(m/mm)}, 0.5) ===
+            RatioQuantity{Float64,typeof(m/mm)}(0.0005)
+        @test_throws DimensionError convert(q{Float64,𝐋,typeof(m)}, 1.0s)
+        v = [q(0.0m)]
+        v[1] = 2.0cm
+        @test v[1] === q(0.02m)
+        c = CurvatureQuantity
+        @test convert(c, 2.0/km) === c(0.002)
+        @test only(c[2.0/km]) === c(0.002)
+        @test_throws DimensionError convert(c, 1.0m)
+        @test convert(c, c(0.5)) === c(0.5)
+        @test convert(c{Float64}, c(0.5)) === c(0.5)
+        @test c{Float32}(2.0/km) === c(0.002f0)
+        @test convert(Quantity{T,𝐋,typeof(m)} where T, 1km) === 1000m
+        mq = MutableQuantity{Float64,𝐋,typeof(m)}(1.0)
+        @test convert(typeof(mq), mq) === mq
+        @test convert(SpeedConstant, SpeedConstant()) === SpeedConstant()
+        @test SpeedConstant() + 1.0m/s === 4.0m/s
+        @test convert(Unitful.AbstractQuantity{Float64,𝐋,typeof(m)}, q(1.0m)) === q(1.0m)
+        @test @inferred(rand(typeof(q(1.0m)))) isa typeof(q(1.0m))
+        @test rand(MersenneTwister(0), typeof(q(1.0°C))) isa typeof(q(1.0°C))
+        @test round(typeof(q(1m)), 1.6m) === q(2m)
+        @test round(typeof(q(1m)), 1.5m, RoundDown) === q(1m)
+        @test floor(typeof(q(1m)), 160cm) === q(1m)
+        @test round(typeof(q(1.0m)), 126cm; digits=1) === q(1.3m)
+        @test round(typeof(q(1mm/m)), 1.6mm/m) === q(2mm/m)
+        @test round(typeof(q(1mm/m)), 1.6mm/m, RoundDown) === q(1mm/m)
     end
 end
 

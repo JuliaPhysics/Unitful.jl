@@ -151,7 +151,10 @@ kept separate to permit convenient dispatch on dimensions.
 A subtype stores the numeric value in a field `val` and behaves like the
 [`Unitful.Quantity`](@ref) with the same type parameters. Operations that create a
 new quantity return a `Quantity`. A subtype prints like a `Quantity` unless it
-defines its own `show` method.
+defines its own `show` method. Converting to a subtype `Q` calls `Q(v)` with the
+bare numeric value `v`, which the default constructor supports. A constructor that
+converts quantities must therefore dispatch on `AbstractQuantity`, not on `Number`,
+for example `Q{T}(x::AbstractQuantity) where T = convert(Q{T}, x)`.
 
 A subtype with its own `show` method should also define `Base.alignment(io::IO, x)`
 so that arrays of it align on the decimal point. The default method uses the printed

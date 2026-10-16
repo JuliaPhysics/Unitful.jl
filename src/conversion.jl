@@ -161,6 +161,13 @@ function convert(::Type{DimensionlessQuantity{T,U}}, x::AbstractQuantity) where 
     end
 end
 
+# other AbstractQuantity subtypes are constructed from the bare numeric value
+function convert(::Type{Q}, x::Number) where {D,U,Q<:AbstractQuantity{<:Any,D,U}}
+    x isa Q && return x
+    dimension(x) === D || throw(DimensionError(D, x))
+    return Q(ustrip(U(), x))
+end
+
 convert(::Type{Number}, y::AbstractQuantity) = y
 convert(::Type{T}, y::AbstractQuantity) where {T <: Real} =
     T(uconvert(NoUnits, y))
