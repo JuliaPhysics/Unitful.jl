@@ -139,6 +139,17 @@ Base.:*(x::MyFloat64, y::Float64) = x.num * y
 # Base.real(x::MyFloat) = x
 # Base.float(x::MyFloat) = x
 
+struct GenericQuantity{T,D,U} <: Unitful.AbstractQuantity{T,D,U}
+    val::T
+end
+GenericQuantity(x::Quantity{T,D,U}) where {T,D,U} = GenericQuantity{T,D,U}(x.val)
+
+# Fixes the dimension, so its type parameters differ from those of `Quantity`
+struct TemperatureQuantity{T,U} <: Unitful.AbstractQuantity{T,𝚯,U}
+    val::T
+end
+TemperatureQuantity(x::Quantity{T,𝚯,U}) where {T,U} = TemperatureQuantity{T,U}(x.val)
+
 @testset "Conversion" begin
     @testset "> Unitless ↔ unitful conversion" begin
         @test_throws DimensionError convert(typeof(3m), 1)
@@ -328,6 +339,19 @@ Base.:*(x::MyFloat64, y::Float64) = x.num * y
             @test_broken uconvert(dyn, 1Fr^2/cm^2) === 1dyn
             @test_broken uconvert(mN, 1Test780^2/cm^2) === 1mN
         end
+        @testset ">> AbstractQuantity subtypes" begin
+            @test @inferred(uconvert(cm, GenericQuantity(1m))) === 100cm
+            @test @inferred(uconvert(m, GenericQuantity(0x01*m))) === 0x01*m
+            @test @inferred(uconvert(NoUnits, GenericQuantity(5.0mJ/J))) === 0.005
+            @test_throws DimensionError uconvert(kg, GenericQuantity(1m))
+            @test @inferred(uconvert(K, GenericQuantity(0°C))) === (27315//100)K
+            @test @inferred(uconvert(°F, TemperatureQuantity(0°C))) === (32//1)°F
+            @test @inferred(uconvert(K, TemperatureQuantity(1Ra))) === 5K//9
+            @test cm(GenericQuantity(1m)) === 100cm
+            @test ustrip(cm, GenericQuantity(1.0m)) === 100.0
+            @test convert(typeof(1.0cm), GenericQuantity(1m)) === 100.0cm
+            @test mod(GenericQuantity(1m), 3cm) === 1cm
+        end
     end
 end
 
@@ -442,12 +466,6 @@ include("dates.jl")
     end
 end
 
-# preferred units work on AbstractQuantity
-struct QQQ <: Unitful.AbstractQuantity{Float64,𝐋,typeof(cm)}
-    val::Float64
-end
-Unitful.uconvert(U::Unitful.Units, q::QQQ) = uconvert(U, Quantity(q.val, cm))
-
 @testset "Promotion" begin
     @testset "> Unit preferences" begin
         # Should warn on possible redundant units issue (ms and s)
@@ -478,7 +496,7 @@ Unitful.uconvert(U::Unitful.Units, q::QQQ) = uconvert(U, Quantity(q.val, cm))
         @test ismissing(upreferred(missing))
 
         # preferred units work on AbstractQuantity
-        @test @inferred(upreferred(QQQ(10))) == 0.1m
+        @test @inferred(upreferred(GenericQuantity(10.0cm))) === 0.1m
     end
     @testset "> promote_unit" begin
         @test Unitful.promote_unit(FreeUnits(m)) === FreeUnits(m)
