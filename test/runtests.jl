@@ -220,6 +220,10 @@ Base.getproperty(x::SpeedConstant, name::Symbol) = name === :val ? 3.0 : getfiel
         end
         @test convert(Quantity{Int}, 1) === Quantity{Int,NoDims,typeof(NoUnits)}(1)
         @test convert(Quantity{Int,NoDims}, 1) === Quantity{Int,NoDims,typeof(NoUnits)}(1)
+        @test convert(Unitful.DimensionlessQuantity{Float64,typeof(NoUnits)}, 1.0m/mm) ===
+            Quantity{Float64,NoDims,typeof(NoUnits)}(1000.0)
+        @test convert(Unitful.DimensionlessQuantity{Float64,typeof(mm/m)}, 1.0m/mm) === 1.0e6mm/m
+        @test_throws DimensionError convert(Unitful.DimensionlessQuantity{Float64,typeof(NoUnits)}, 1.0m)
 
         # w/ units distinct from w/o units
         @test 1m != 1
@@ -1910,6 +1914,7 @@ end
     @testset "> Conversion" begin
         @test convert(Float64, q(1.0m/mm)) === 1000.0
         @test convert(Number, q(1.0m)) === q(1.0m)
+        @test convert(Unitful.DimensionlessQuantity{Float64,typeof(mm/m)}, q(1.0m/mm)) === 1.0e6mm/m
         @test typeof(1.0cm)(q(1m)) === 100.0cm
         @test convert(Quantity{Float64}, q(1m)) === 1.0m
         @test convert(Quantity{Float64,𝐋}, q(1m)) === 1.0m

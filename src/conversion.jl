@@ -155,7 +155,7 @@ convert(::Type{DimensionlessQuantity{T,U}}, x::Number) where {T,U} =
     uconvert(U(), convert(T,x))
 function convert(::Type{DimensionlessQuantity{T,U}}, x::AbstractQuantity) where {T,U}
     if dimension(x) == NoDims
-        _Quantity(T(x.val), U())
+        _Quantity(T(ustrip(U(), x)), U())
     else
         throw(DimensionError(NoDims,x))
     end
