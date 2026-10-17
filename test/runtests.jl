@@ -1941,6 +1941,9 @@ end
         @test convert(SpeedConstant, SpeedConstant()) === SpeedConstant()
         @test SpeedConstant() + 1.0m/s === 4.0m/s
         @test convert(Unitful.AbstractQuantity{Float64,𝐋,typeof(m)}, q(1.0m)) === q(1.0m)
+        @test @inferred(ustrip(q(1.5m))) === 1.5
+        @test @inferred(ustrip(q(1.5mm/m))) === 1.5
+        @test @inferred(ustrip(q(1.5°C))) === 1.5
         @test @inferred(rand(typeof(q(1.0m)))) isa typeof(q(1.0m))
         @test rand(MersenneTwister(0), typeof(q(1.0°C))) isa typeof(q(1.0°C))
         @test round(typeof(q(1m)), 1.6m) === q(2m)
