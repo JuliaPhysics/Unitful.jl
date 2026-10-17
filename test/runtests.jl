@@ -1045,6 +1045,48 @@ end
             @test (@fastmath T(1)*u - T(0)*u) === T(1)*au
         end
 
+        @testset "Affine quantities" begin
+            for T in (Float32, Float64), u in (°C, °F, ContextUnits(°C, °F), FixedUnits(°C))
+                for (a, b) in ((T(2), T(1)),
+                               (Complex{T}(2, 1), Complex{T}(1, 2)),
+                               (Complex{T}(2, 1), T(1)),
+                               (T(2), Complex{T}(1, 2)),
+                               (Complex{T}(1), T(1)))
+                    x, y = a*u, b*u
+                    for f in (:+, :-, :rem, :*, :/, :(==), :hypot)
+                        plain = try (@eval $f($x, $y)) catch e; e end
+                        fast = try (@eval @fastmath $f($x, $y)) catch e; e end
+                        if plain isa Exception
+                            @test typeof(fast) === typeof(plain)
+                            if fast isa Exception
+                                @test sprint(showerror, fast) == sprint(showerror, plain)
+                            end
+                        else
+                            @test fast === plain
+                        end
+                    end
+                    @test_throws AffineError x + y + x
+                    @test_throws AffineError @fastmath x + y + x
+                end
+            end
+            for (x, y) in ((2.0f0°C, 1.0°F), (2.0f0K, 1.0°C),
+                           (2.0f0°C, 1.0K), (2.0°C, 1.0), (2.0, 1.0°C),
+                           (2.0°C, (1.0 + im)*°F))
+                for f in (:+, :-, :rem, :*, :/, :min, :max, :minmax)
+                    plain = try (@eval $f($x, $y)) catch e; e end
+                    fast = try (@eval @fastmath $f($x, $y)) catch e; e end
+                    if plain isa Exception
+                        @test typeof(fast) === typeof(plain)
+                        if fast isa Exception
+                            @test sprint(showerror, fast) == sprint(showerror, plain)
+                        end
+                    else
+                        @test fast === plain
+                    end
+                end
+            end
+        end
+
         one32 = one(Float32)*m
         eps32 = eps(Float32)*m
         eps32_2 = eps32/2
