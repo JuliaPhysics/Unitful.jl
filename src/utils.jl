@@ -1,6 +1,34 @@
 @inline isunitless(::Units) = false
 @inline isunitless(::Units{()}) = true
 
+"""
+    numtype(x::Number)
+    numtype(::Type{T}) where {T<:Number}
+
+Return the underlying numeric type of a number or number type.
+
+For an [`AbstractQuantity`](@ref Unitful.AbstractQuantity), this is the type
+parameter describing the value stored alongside the units. For a plain `Number`,
+there is nothing to strip, so `numtype` returns its type. Other number-like
+types can extend `numtype` by adding methods.
+
+```jldoctest
+julia> using Unitful
+
+julia> Unitful.numtype(1.0u"m")
+Float64
+
+julia> Unitful.numtype(typeof(1.0u"m"))
+Float64
+
+julia> Unitful.numtype(1 + 2im)
+Complex{Int64}
+```
+"""
+function numtype end
+
+@inline numtype(x::Number) = typeof(x)
+@inline numtype(::Type{T}) where {T<:Number} = T
 @inline numtype(::AbstractQuantity{T}) where {T} = T
 @inline numtype(::Type{Q}) where {T, Q<:AbstractQuantity{T}} = T
 

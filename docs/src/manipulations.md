@@ -34,6 +34,12 @@ Unitful.dimension
 Unitful.ustrip
 ```
 
+## Numeric type extraction
+
+```@docs
+Unitful.numtype
+```
+
 ## Unit multiplication
 
 ```@docs
