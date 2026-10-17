@@ -355,20 +355,20 @@ round(::Type{T}, x::AbstractQuantity, r::RoundingMode=RoundNearest;
 round(::Type{T}, x::DimensionlessQuantity, r::RoundingMode=RoundNearest;
     kwargs...) where {T<:Number} = round(T, uconvert(NoUnits, x), r; kwargs...)
 function round(::Type{T}, x::AbstractQuantity;
-        kwargs...) where {S, T <: Quantity{S}}
+        kwargs...) where {S, T <: AbstractQuantity{S}}
     u = unit(T)
     unitless = ustrip(u, x)
-    return Quantity{S, dimension(T), typeof(u)}(round(unitless; kwargs...))
+    return convert(T, Quantity{S, dimension(T), typeof(u)}(round(unitless; kwargs...)))
 end
 function round(::Type{T}, x::AbstractQuantity, r::RoundingMode;
-        kwargs...) where {S, T <: Quantity{S}}
+        kwargs...) where {S, T <: AbstractQuantity{S}}
     u = unit(T)
     unitless = ustrip(u, x)
-    return Quantity{S, dimension(T), typeof(u)}(round(unitless, r; kwargs...))
+    return convert(T, Quantity{S, dimension(T), typeof(u)}(round(unitless, r; kwargs...)))
 end
-round(::Type{T}, x::DimensionlessQuantity; kwargs...) where {S, T <: Quantity{S}} =
+round(::Type{T}, x::DimensionlessQuantity; kwargs...) where {S, T <: AbstractQuantity{S}} =
     invoke(round, Tuple{Type{T},AbstractQuantity}, T, x; kwargs...) # for ambiguity resolution
-round(::Type{T}, x::DimensionlessQuantity, r::RoundingMode; kwargs...) where {S, T <: Quantity{S}} =
+round(::Type{T}, x::DimensionlessQuantity, r::RoundingMode; kwargs...) where {S, T <: AbstractQuantity{S}} =
     invoke(round, Tuple{Type{T},AbstractQuantity,RoundingMode}, T, x, r; kwargs...) # for ambiguity resolution
 
 # that should actually be fixed in Base ↓
@@ -516,8 +516,8 @@ else
 end
 ^(x::AbstractQuantity, y::Real) = Quantity((x.val)^y, unit(x)^y)
 
-Base.rand(r::Random.AbstractRNG, ::Random.SamplerType{<:AbstractQuantity{T,D,U}}) where {T,D,U} =
-    rand(r, T) * U()
+Base.rand(r::Random.AbstractRNG, ::Random.SamplerType{Q}) where {T,D,U,Q<:AbstractQuantity{T,D,U}} =
+    convert(Q, Quantity(rand(r, T), U()))
 Base.ones(Q::Type{<:AbstractQuantity}, dims::NTuple{N,Integer}) where {N} =
     fill!(Array{Q,N}(undef, map(Base.to_dim, dims)), oneunit(Q))
 Base.ones(Q::Type{<:AbstractQuantity}, dims::Tuple{}) = fill!(Array{Q}(undef), oneunit(Q))
