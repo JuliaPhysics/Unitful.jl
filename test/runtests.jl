@@ -178,6 +178,13 @@ end
 struct SpeedConstant <: Unitful.AbstractQuantity{Float64,𝐋/𝐓,typeof(m/s)} end
 Base.getproperty(x::SpeedConstant, name::Symbol) = name === :val ? 3.0 : getfield(x, name)
 
+# Keeps its type through the operations that call `withvalue`
+struct KeptQuantity{T,D,U} <: Unitful.AbstractQuantity{T,D,U}
+    val::T
+end
+KeptQuantity(x::Quantity{T,D,U}) where {T,D,U} = KeptQuantity{T,D,U}(x.val)
+Unitful.withvalue(::Type{<:KeptQuantity{<:Any,D,U}}, val) where {D,U} = KeptQuantity{typeof(val),D,U}(val)
+
 @testset "Conversion" begin
     @testset "> Unitless ↔ unitful conversion" begin
         @test_throws DimensionError convert(typeof(3m), 1)
@@ -415,6 +422,7 @@ include("dates.jl")
         @test_throws AffineError (32°F) * 2
         @test_throws AffineError 2 * (32°F)
         @test_throws AffineError (32°F) / 2
+        @test_throws AffineError (32°F) // 2
         @test_throws AffineError 2 / (32°F)
 
         for f = (:div, :rem, :divrem)
@@ -1953,6 +1961,96 @@ end
         @test round(typeof(q(1.0m)), 126cm; digits=1) === q(1.3m)
         @test round(typeof(q(1mm/m)), 1.6mm/m) === q(2mm/m)
         @test round(typeof(q(1mm/m)), 1.6mm/m, RoundDown) === q(1mm/m)
+    end
+end
+
+@testset "withvalue" begin
+    k = KeptQuantity
+    a, b = k(2.0m), k(3.0m)
+    @testset "> Default" begin
+        @test Unitful.withvalue(2.0m, 3) === 3m
+        @test Unitful.withvalue(typeof(1.0m), 3f0) === 3f0m
+        @test Unitful.withvalue(GenericQuantity(1.0m), 3) === 3m
+        @test -GenericQuantity(2.0m) === -2.0m
+        @test GenericQuantity(2.0m) + GenericQuantity(3.0m) === 5.0m
+        @test 2 * GenericQuantity(2.0m) === 4.0m
+        @test zero(GenericQuantity{Float64,𝐋,typeof(m)}) === 0.0m
+    end
+    @testset "> Sign and magnitude" begin
+        @test @inferred(-a) === k(-2.0m)
+        @test +a === a
+        @test abs(-a) === a
+        @test norm(-a) === a
+        @test copysign(a, -1) === -a
+        @test copysign(a, -1m) === -a
+        @test flipsign(a, -1) === -a
+        @test flipsign(a, -1m) === -a
+        @test conj(a) === a
+    end
+    @testset "> Addition and subtraction" begin
+        @test @inferred(a + b) === k(5.0m)
+        @test b - a === k(1.0m)
+        @test sum([a, b]) === k(5.0m)
+        @test sum(typeof(a)[]) === k(0.0m)
+        @test a + 1.0m === 3.0m
+        @test 1.0m - a === -1.0m
+        @test k(1m) + a === 3.0m
+        @test a + k(1.0cm) === 2.01m
+    end
+    @testset "> Scaling" begin
+        @test @inferred(2a) === k(4.0m)
+        @test a * 2 === k(4.0m)
+        @test a / 2 === k(1.0m)
+        @test k(2m) // 3 === k((2//3)m)
+        @test k(2m) // (3 + 0im) === k((2//3 + 0//1*im)m)
+        @test a * a === 4.0m^2
+        @test a / b === 2/3
+        @test a / 2s === 1.0m/s
+        @test @inferred(muladd(2, a, b)) === k(7.0m)
+        @test fma(a, 2, b) === k(7.0m)
+        @test muladd(2, a, 1.0m) === 5.0m
+        @test muladd(a, b, 1.0m^2) === 7.0m^2
+    end
+    @testset "> Remainders" begin
+        @test mod(b, a) === k(1.0m)
+        @test rem(-b, a) === k(-1.0m)
+        @test mod(b, 2.0m) === 1.0m
+        @test fld(b, 2) === k(1.0m)
+        @test cld(b, 2) === k(2.0m)
+        @test div(b, 2) === k(1.0m)
+        @test div(b, 2, RoundUp) === k(2.0m)
+    end
+    @testset "> Zero and limits" begin
+        @test zero(a) === k(0.0m)
+        @test @inferred(zero(typeof(a))) === k(0.0m)
+        @test typemin(typeof(a)) === k(-Inf*m)
+        @test typemax(a) === k(Inf*m)
+        @test eps(a) === k(eps(2.0)m)
+        @test eps(GenericQuantity(2.0m)) === eps(2.0)m
+        @test @inferred(rand(typeof(a))) isa typeof(a)
+    end
+    @testset "> Numeric type" begin
+        @test float(k(2m)) === a
+        @test Float32(a) === k(2.0f0m)
+        @test Integer(a) === k(2m)
+        @test Rational(a) === k((2//1)m)
+        @test unsigned(k(2m)) === k(unsigned(2)m)
+        @test nextfloat(a) === k(nextfloat(2.0)m)
+        @test prevfloat(a, 2) === k(prevfloat(2.0, 2)m)
+        @test big(a) isa KeptQuantity{BigFloat,𝐋,typeof(m)}
+        @test big(typeof(a)) === KeptQuantity{BigFloat,𝐋,typeof(m)}
+        @test big(typeof(GenericQuantity(1.0m))) === typeof(big(1.0)m)
+        @test big(typeof(k(1.0°C))) === typeof(big(k(1.0°C)))
+        @test big(typeof(GenericQuantity(1.0°C))) === typeof(big(GenericQuantity(1.0°C)))
+    end
+    @testset "> Unit-changing and other operations" begin
+        @test real(k((1.0 + 2.0im)m)) === 1.0m
+        @test imag(k((1.0 + 2.0im)m)) === 2.0m
+        @test abs2(a) === 4.0m^2
+        @test a^2 === 4.0m^2
+        @test sqrt(k(4.0m^2)) === 2.0m
+        @test inv(a) === 0.5/m
+        @test uconvert(cm, a) === 200.0cm
     end
 end
 
