@@ -64,6 +64,20 @@ julia> convert(Float64, 1.0u"μm/m")
 1.0e-6
 ```
 
+### Wrapping conversion
+
+Like `x % T` for integer types, `x % Q` converts `x` into the quantity type `Q` and wraps
+values that do not fit into its numeric type:
+
+```jldoctest
+julia> 3u"km" % typeof(UInt8(1)u"m")
+0xb8 m
+```
+
+```@docs
+rem(::Number, ::Type{Q}) where {T, D, U, Q <: Unitful.AbstractQuantity{T,D,U}}
+```
+
 ## Basic promotion mechanisms
 
 We decide the result units for addition and subtraction operations based on looking at the

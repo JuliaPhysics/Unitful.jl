@@ -352,6 +352,23 @@ TemperatureQuantity(x::Quantity{T,𝚯,U}) where {T,U} = TemperatureQuantity{T,U
             @test convert(typeof(1.0cm), GenericQuantity(1m)) === 100.0cm
             @test mod(GenericQuantity(1m), 3cm) === 1cm
         end
+        @testset ">> Wrapping conversion with `%`" begin
+            Q8 = typeof(UInt8(1)*m)
+            @test @inferred(300m % Q8) === UInt8(44)*m
+            @test @inferred(rem(3km, Q8)) === UInt8(184)*m
+            @test 1km % typeof(1m) === 1000m
+            @test (-5)km % typeof(UInt16(1)*m) === UInt16(60536)*m
+            @test 3m % typeof(true*m) === true*m
+            @test 5 % typeof(UInt8(1)*mm/m) === UInt8(136)*mm/m
+            @test 300°C % typeof(UInt8(1)*°C) === UInt8(44)*°C
+            @test GenericQuantity(300m) % Q8 === UInt8(44)*m
+            @test 300m % GenericQuantity{UInt8,𝐋,typeof(m)} === GenericQuantity{UInt8,𝐋,typeof(m)}(UInt8(44))
+            @test_throws MethodError 100cm % typeof(1m)
+            @test_throws MethodError 25°C % typeof(UInt16(1)*K)
+            @test_throws MethodError 1.0m % Q8
+            @test_throws DimensionError 300s % Q8
+            @test_throws DimensionError 5 % Q8
+        end
     end
 end
 
