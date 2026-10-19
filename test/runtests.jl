@@ -178,6 +178,13 @@ end
 struct SpeedConstant <: Unitful.AbstractQuantity{Float64,𝐋/𝐓,typeof(m/s)} end
 Base.getproperty(x::SpeedConstant, name::Symbol) = name === :val ? 3.0 : getfield(x, name)
 
+# Defines its own `uconvert`, which computes in `BigInt` and therefore does not overflow
+struct BigIntermediateQuantity{T,D,U} <: Unitful.AbstractQuantity{T,D,U}
+    val::T
+end
+Unitful.uconvert(a::Unitful.Units, x::BigIntermediateQuantity) =
+    Quantity(big(x.val) * Unitful.convfact(a, unit(x)), a)
+
 @testset "Conversion" begin
     @testset "> Unitless ↔ unitful conversion" begin
         @test_throws DimensionError convert(typeof(3m), 1)
@@ -384,6 +391,28 @@ Base.getproperty(x::SpeedConstant, name::Symbol) = name === :val ? 3.0 : getfiel
             @test ustrip(cm, GenericQuantity(1.0m)) === 100.0
             @test convert(typeof(1.0cm), GenericQuantity(1m)) === 100.0cm
             @test mod(GenericQuantity(1m), 3cm) === 1cm
+        end
+        @testset ">> Integer conversion into wider types" begin
+            x = typemax(Int)*km
+            exact = Int128(typemax(Int))*1000
+            @test convert(Quantity{Int128,𝐋,typeof(m)}, x) === exact*m
+            @test convert(Quantity{UInt128,𝐋,typeof(m)}, x) === UInt128(exact)*m
+            @test convert(Quantity{BigInt,𝐋,typeof(m)}, x) == big(exact)*m
+            @test convert(GenericQuantity{Int128,𝐋,typeof(m)}, x) ===
+                GenericQuantity{Int128,𝐋,typeof(m)}(exact)
+            @test convert(Quantity{Int128,NoDims,typeof(mm/m)}, typemax(Int)) === exact*mm/m
+            @test convert(Int128, x/m) === exact
+            @test @inferred(convert(typeof(1m), 3km)) === 3000m
+            @test convert(typeof(Int32(1)*m), Int16(3)*km) === Int32(3000)*m
+            @test convert(typeof(1.0f0m), 16777217km) === 1.6777217f10m
+            @test convert(Quantity{<:Any,𝐋,typeof(m)}, Int8(3)m) === Int8(3)m
+            @test convert(Quantity{<:Any,𝐋,typeof(m)}, Int8(3)km) === 3000m
+            @unit negm "negm" NegativeMeter -1m false
+            @test convert(Quantity{UInt128,𝐋,typeof(m)}, -3negm) === UInt128(3)*m
+            @test_throws InexactError convert(Quantity{UInt128,𝐋,typeof(m)}, 3negm)
+            @test convert(Quantity{Int128,𝐋,typeof(m)}, UInt64(3)*negm) === Int128(-3)*m
+            y = BigIntermediateQuantity{Int,𝐋,typeof(km)}(typemax(Int))
+            @test convert(Quantity{Float64,𝐋,typeof(m)}, y) === Float64(exact)*m
         end
     end
 end

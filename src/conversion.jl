@@ -127,10 +127,73 @@ uconvert(a::Units, x::Missing) = missing
     end
 end
 
+"""
+    _ustrip_as(::Type{T}, u::Units, x::Number) where T
+
+Return the numeric value of `x` in the units `u`, computed for a conversion to `T`.
+
+The value equals that of `uconvert(u, x)`, which scales an integer value by an integer
+conversion factor in the type of the product and wraps around on overflow, like other integer
+arithmetic. If `x` is an integer or a `Quantity` with an integer value and `T` is an integer
+type wider than that product, the exact product is converted to `T` instead, so the result is
+exact whenever it fits into `T`. This choice depends only on the types, so it costs nothing at
+runtime. Values of other `AbstractQuantity` subtypes always come from `uconvert`, because a
+subtype can define its own `uconvert` method.
+
+```jldoctest
+julia> Unitful._ustrip_as(Int128, u"m", typemax(Int)*u"km")
+9223372036854775807000
+
+julia> Unitful._ustrip_as(Int64, u"m", typemax(Int)*u"km")
+-1000
+
+julia> Unitful._ustrip_as(Int64, u"m", 150u"cm")
+3//2
+```
+"""
+function _ustrip_as(::Type{T}, u::Units, x::Number) where T
+    if x isa Base.BitInteger
+        return _scale_as(T, x, convfact(u, NoUnits))
+    elseif x isa Quantity && x.val isa Base.BitInteger && !(x isa AffineQuantity || u isa AffineUnits)
+        typeof(unit(x)) == typeof(u) && return x.val
+        return _scale_as(T, x.val, convfact(numtype(x), u, unit(x)))
+    else
+        q = uconvert(u, x)
+        return q isa AbstractQuantity ? q.val : q
+    end
+end
+
+"""
+    _scale_as(::Type{T}, val, cf) where T
+
+Return `val * cf`, computed exactly if both are bit integers and `T` is `BigInt` or a bit
+integer type wider than their product.
+
+The exact product is converted to `T`, which throws an `InexactError` if it does not fit.
+In all other cases the product wraps around on overflow, like other integer arithmetic.
+
+```jldoctest
+julia> Unitful._scale_as(Int128, typemax(Int), 1000)
+9223372036854775807000
+
+julia> Unitful._scale_as(UInt128, -3, -1)
+0x00000000000000000000000000000003
+
+julia> Unitful._scale_as(Int64, typemax(Int), 1000)
+-1000
+```
+"""
+_scale_as(::Type, val, cf) = val * cf
+function _scale_as(::Type{T}, val::Base.BitInteger, cf::Base.BitInteger) where T <: Integer
+    T === BigInt && return big(val) * big(cf)
+    P = promote_type(typeof(val), typeof(cf))
+    T <: Base.BitInteger && sizeof(T) > sizeof(P) || return val * cf
+    return convert(T, widemul(val, cf))
+end
+
 function convert(::Type{Quantity{T,D,U}}, x::Number) where {T,D,U}
     (dimension(x) != D) && throw(DimensionError(U(), x))
-    q = uconvert(U(), x)
-    Quantity{T,D,U}(isa(q, AbstractQuantity) ? q.val : q)
+    Quantity{T,D,U}(_ustrip_as(T, U(), x))
 end
 
 # needed ever since julialang/julia#28216
@@ -157,7 +220,7 @@ function convert(::Type{DimensionlessQuantity{T,U}}, x::Number) where {T,U}
 end
 function convert(::Type{DimensionlessQuantity{T,U}}, x::AbstractQuantity) where {T,U}
     if dimension(x) == NoDims
-        _Quantity(T(ustrip(U(), x)), U())
+        _Quantity(T(_ustrip_as(T, U(), x)), U())
     else
         throw(DimensionError(NoDims,x))
     end
@@ -167,11 +230,11 @@ end
 function convert(::Type{Q}, x::Number) where {D,U,Q<:AbstractQuantity{<:Any,D,U}}
     x isa Q && return x
     dimension(x) === D || throw(DimensionError(D, x))
-    return Q(ustrip(U(), x))
+    return Q(_ustrip_as(isconcretetype(Q) ? numtype(Q) : Any, U(), x))
 end
 
 convert(::Type{Number}, y::AbstractQuantity) = y
 convert(::Type{T}, y::AbstractQuantity) where {T <: Real} =
-    T(uconvert(NoUnits, y))
+    T(_ustrip_as(T, NoUnits, y))
 convert(::Type{T}, y::AbstractQuantity) where {T <: Complex} =
     T(uconvert(NoUnits, y))
