@@ -151,8 +151,10 @@ function convert(::Type{Quantity{T}}, x::Number) where {T}
     Quantity{T,NoDims,typeof(NoUnits)}(x)
 end
 
-convert(::Type{DimensionlessQuantity{T,U}}, x::Number) where {T,U} =
-    uconvert(U(), convert(T,x))
+function convert(::Type{DimensionlessQuantity{T,U}}, x::Number) where {T,U}
+    q = uconvert(U(), convert(T, x))
+    _Quantity(T(q isa AbstractQuantity ? q.val : q), U())
+end
 function convert(::Type{DimensionlessQuantity{T,U}}, x::AbstractQuantity) where {T,U}
     if dimension(x) == NoDims
         _Quantity(T(ustrip(U(), x)), U())

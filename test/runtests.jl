@@ -223,6 +223,7 @@ Base.getproperty(x::SpeedConstant, name::Symbol) = name === :val ? 3.0 : getfiel
         @test convert(Unitful.DimensionlessQuantity{Float64,typeof(NoUnits)}, 1.0m/mm) ===
             Quantity{Float64,NoDims,typeof(NoUnits)}(1000.0)
         @test convert(Unitful.DimensionlessQuantity{Float64,typeof(mm/m)}, 1.0m/mm) === 1.0e6mm/m
+        @test convert(Unitful.DimensionlessQuantity{Float32,typeof(°)}, 1) === Float32(180/π)*°
         @test_throws DimensionError convert(Unitful.DimensionlessQuantity{Float64,typeof(NoUnits)}, 1.0m)
 
         # w/ units distinct from w/o units
