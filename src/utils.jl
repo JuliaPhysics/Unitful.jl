@@ -39,7 +39,7 @@ julia> inverse(Base.Fix1(ustrip, u"m"))(5)
 
 """
     ustrip(x::Number)
-    ustrip(x::Quantity)
+    ustrip(x::AbstractQuantity)
 
 Returns the number out in front of any units. The value of `x` may differ from the number
 out front of the units in the case of dimensionless quantities, e.g. `1m/mm != 1`. See
@@ -55,7 +55,7 @@ true
 ```
 """
 @inline ustrip(x::Number) = x / unit(x)
-@inline ustrip(x::Quantity) = ustrip(x.val)
+@inline ustrip(x::AbstractQuantity) = ustrip(x.val)
 @inline ustrip(x::Missing) = missing
 
 """

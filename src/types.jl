@@ -147,6 +147,19 @@ The type parameter `T` represents the numeric backing type. The type parameters
 `D :: ` [`Unitful.Dimensions`](@ref) and `U <: ` [`Unitful.Units`](@ref).
 Of course, the dimensions follow from the units, but the type parameters are
 kept separate to permit convenient dispatch on dimensions.
+
+A subtype stores the numeric value in a field `val` and behaves like the
+[`Unitful.Quantity`](@ref) with the same type parameters. Operations that create a
+new quantity return a `Quantity`, unless the subtype keeps its type through
+[`Unitful.withvalue`](@ref). A subtype prints like a `Quantity` unless it
+defines its own `show` method. Converting to a subtype `Q` calls `Q(v)` with the
+bare numeric value `v`, which the default constructor supports. A constructor that
+converts quantities must therefore dispatch on `AbstractQuantity`, not on `Number`,
+for example `Q{T}(x::AbstractQuantity) where T = convert(Q{T}, x)`.
+
+A subtype with its own `show` method should also define `Base.alignment(io::IO, x)`
+so that arrays of it align on the decimal point. The default method uses the printed
+width of `x`, but takes the width left of the decimal point from `val`.
 """
 abstract type AbstractQuantity{T,D,U} <: Number end
 
@@ -160,7 +173,7 @@ The type parameter `T` represents the numeric backing type. The type parameters
 struct Quantity{T,D,U} <: AbstractQuantity{T,D,U}
     val::T
     Quantity{T,D,U}(v::Number) where {T,D,U} = new{T,D,U}(v)
-    Quantity{T,D,U}(v::Quantity) where {T,D,U} = convert(Quantity{T,D,U}, v)
+    Quantity{T,D,U}(v::AbstractQuantity) where {T,D,U} = convert(Quantity{T,D,U}, v)
 end
 
 # Field-only constructor
