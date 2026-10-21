@@ -150,6 +150,41 @@ struct TemperatureQuantity{T,U} <: Unitful.AbstractQuantity{T,𝚯,U}
 end
 TemperatureQuantity(x::Quantity{T,𝚯,U}) where {T,U} = TemperatureQuantity{T,U}(x.val)
 
+# Overrides only the two-argument `show`
+struct LabeledQuantity{T,D,U} <: Unitful.AbstractQuantity{T,D,U}
+    val::T
+end
+LabeledQuantity(x::Quantity{T,D,U}) where {T,D,U} = LabeledQuantity{T,D,U}(x.val)
+Base.show(io::IO, x::LabeledQuantity) = print(io, "labeled ", Quantity(x.val, unit(x)))
+
+# Promotes with any number on its own, like the dimensionless constants of PhysicalConstants.jl
+struct RatioQuantity{T,U} <: Unitful.AbstractQuantity{T,NoDims,U}
+    val::T
+end
+RatioQuantity(x::Quantity{T,NoDims,U}) where {T,U} = RatioQuantity{T,U}(x.val)
+Base.promote_rule(::Type{RatioQuantity{S,U}}, ::Type{T}) where {S,U,T<:Number} = promote_type(S, T)
+
+# Fixes dimension and units, so only the numeric type is free
+struct CurvatureQuantity{T} <: Unitful.AbstractQuantity{T,𝐋^-1,typeof(m^-1)}
+    val::T
+end
+CurvatureQuantity{T}(x::Unitful.AbstractQuantity) where T = convert(CurvatureQuantity{T}, x)
+
+mutable struct MutableQuantity{T,D,U} <: Unitful.AbstractQuantity{T,D,U}
+    val::T
+end
+
+# No field, like the constants of PhysicalConstants.jl
+struct SpeedConstant <: Unitful.AbstractQuantity{Float64,𝐋/𝐓,typeof(m/s)} end
+Base.getproperty(x::SpeedConstant, name::Symbol) = name === :val ? 3.0 : getfield(x, name)
+
+# Defines its own `uconvert`, which computes in `BigInt` and therefore does not overflow
+struct BigIntermediateQuantity{T,D,U} <: Unitful.AbstractQuantity{T,D,U}
+    val::T
+end
+Unitful.uconvert(a::Unitful.Units, x::BigIntermediateQuantity) =
+    Quantity(big(x.val) * Unitful.convfact(a, unit(x)), a)
+
 @testset "Conversion" begin
     @testset "> Unitless ↔ unitful conversion" begin
         @test_throws DimensionError convert(typeof(3m), 1)
@@ -192,6 +227,11 @@ TemperatureQuantity(x::Quantity{T,𝚯,U}) where {T,U} = TemperatureQuantity{T,U
         end
         @test convert(Quantity{Int}, 1) === Quantity{Int,NoDims,typeof(NoUnits)}(1)
         @test convert(Quantity{Int,NoDims}, 1) === Quantity{Int,NoDims,typeof(NoUnits)}(1)
+        @test convert(Unitful.DimensionlessQuantity{Float64,typeof(NoUnits)}, 1.0m/mm) ===
+            Quantity{Float64,NoDims,typeof(NoUnits)}(1000.0)
+        @test convert(Unitful.DimensionlessQuantity{Float64,typeof(mm/m)}, 1.0m/mm) === 1.0e6mm/m
+        @test convert(Unitful.DimensionlessQuantity{Float32,typeof(°)}, 1) === Float32(180/π)*°
+        @test_throws DimensionError convert(Unitful.DimensionlessQuantity{Float64,typeof(NoUnits)}, 1.0m)
 
         # w/ units distinct from w/o units
         @test 1m != 1
@@ -351,6 +391,28 @@ TemperatureQuantity(x::Quantity{T,𝚯,U}) where {T,U} = TemperatureQuantity{T,U
             @test ustrip(cm, GenericQuantity(1.0m)) === 100.0
             @test convert(typeof(1.0cm), GenericQuantity(1m)) === 100.0cm
             @test mod(GenericQuantity(1m), 3cm) === 1cm
+        end
+        @testset ">> Integer conversion into wider types" begin
+            x = typemax(Int)*km
+            exact = Int128(typemax(Int))*1000
+            @test convert(Quantity{Int128,𝐋,typeof(m)}, x) === exact*m
+            @test convert(Quantity{UInt128,𝐋,typeof(m)}, x) === UInt128(exact)*m
+            @test convert(Quantity{BigInt,𝐋,typeof(m)}, x) == big(exact)*m
+            @test convert(GenericQuantity{Int128,𝐋,typeof(m)}, x) ===
+                GenericQuantity{Int128,𝐋,typeof(m)}(exact)
+            @test convert(Quantity{Int128,NoDims,typeof(mm/m)}, typemax(Int)) === exact*mm/m
+            @test convert(Int128, x/m) === exact
+            @test @inferred(convert(typeof(1m), 3km)) === 3000m
+            @test convert(typeof(Int32(1)*m), Int16(3)*km) === Int32(3000)*m
+            @test convert(typeof(1.0f0m), 16777217km) === 1.6777217f10m
+            @test convert(Quantity{<:Any,𝐋,typeof(m)}, Int8(3)m) === Int8(3)m
+            @test convert(Quantity{<:Any,𝐋,typeof(m)}, Int8(3)km) === 3000m
+            @unit negm "negm" NegativeMeter -1m false
+            @test convert(Quantity{UInt128,𝐋,typeof(m)}, -3negm) === UInt128(3)*m
+            @test_throws InexactError convert(Quantity{UInt128,𝐋,typeof(m)}, 3negm)
+            @test convert(Quantity{Int128,𝐋,typeof(m)}, UInt64(3)*negm) === Int128(-3)*m
+            y = BigIntermediateQuantity{Int,𝐋,typeof(km)}(typemax(Int))
+            @test convert(Quantity{Float64,𝐋,typeof(m)}, y) === Float64(exact)*m
         end
     end
 end
@@ -1828,6 +1890,99 @@ Base.show(io::IO, ::MIME"text/plain", ::Foo) = print(io, "42.0")
     @test Base.alignment(stdout, 3.0dBm)   == Base.alignment(stdout, 3.0) .+ (0, 4)
     @test Base.alignment(stdout, 3.0dB*s)  == Base.alignment(stdout, 3.0) .+ (1, 6)
     @test Base.alignment(stdout, 3.0dBm*s) == Base.alignment(stdout, 3.0) .+ (1, 7)
+end
+
+@testset "AbstractQuantity subtypes behave like Quantity" begin
+    q = GenericQuantity
+    @testset "> Display" begin
+        withenv("UNITFUL_FANCY_EXPONENTS" => false) do
+            @test repr(q(1.5m/s)) == "1.5 m s^-1"
+            @test repr("text/plain", q(1.5m/s)) == "1.5 m s^-1"
+        end
+        @test repr(q(1.5°)) == "1.5°"
+        @test Base.alignment(stdout, q((1//3)m)) == Base.alignment(stdout, (1//3)m)
+        @test repr(LabeledQuantity(1.5m)) == "labeled 1.5 m"
+        @test repr("text/plain", LabeledQuantity(1.5m)) == "labeled 1.5 m"
+        @test LabeledQuantity(1.5m) + 1m === 2.5m
+        x = LabeledQuantity(Quantity{Float64,NoDims,typeof(NoUnits)}(1.5))
+        @test sum(Base.alignment(stdout, x)) == length("labeled 1.5")
+        io = IOContext(IOBuffer(), :displaysize => (24, 30), :limit => true)
+        show(io, MIME("text/plain"), fill(x, 2, 6))
+        rows = split(String(take!(io.io)), '\n')[2:end]
+        @test length(rows) == 2
+        @test all(row -> textwidth(row) <= 30, rows)
+    end
+    @testset "> Comparison" begin
+        @test q(1m) == q(100cm)
+        @test q(1m) == 100cm
+        @test 100cm == q(1m)
+        @test q(1m) < q(200cm)
+        @test q(1m) < 200cm
+        @test isless(q(1m), q(200cm))
+        @test isapprox(q(1.0m), q(100.0cm))
+        @test isapprox(q(1.0m), 100.0cm)
+        @test min(q(1m), q(1cm)) == 1cm
+        @test max(q(1m), 1cm) == 1m
+    end
+    @testset "> Arithmetic and promotion" begin
+        @test q(1m) + q(1cm) === (101//100)m
+        @test q(1m) + 1cm === (101//100)m
+        @test 1cm + q(1m) === (101//100)m
+        @test q(1m) - q(1cm) === (99//100)m
+        @test atan(q(1.0m), q(100.0cm)) ≈ π/4
+        @test @inferred(promote(q(1.0m), 1cm)) === (1.0m, 0.01m)
+        @test @inferred(promote(q(1.0mm/m), 1)) === (0.001, 1.0)
+        @test [q(1.0m), 1.0cm] isa Vector{typeof(1.0m)}
+        @test [q(1.0m), q(1.0cm)] isa Vector{typeof(1.0m)}
+        @test [RatioQuantity(1.0m/mm), RatioQuantity(1.0mm/m)] isa Vector{Float64}
+        @test [RatioQuantity(1.0m/mm), RatioQuantity(1.0mm/m)] == [1000.0, 0.001]
+        @test RatioQuantity(1.0m/mm) + q(1.0mm/m) ≈ 1000.001
+        @test promote_type(Quantity{Float64}, typeof(q(1.0m))) === Quantity{Float64}
+        @test promote_type(typeof(q(1.0m)), Quantity{Float64}) === Quantity{Float64}
+        @test Quantity{Float64}[q(1.0m), 1.0s] isa Vector{Quantity{Float64}}
+    end
+    @testset "> Conversion" begin
+        @test convert(Float64, q(1.0m/mm)) === 1000.0
+        @test convert(Number, q(1.0m)) === q(1.0m)
+        @test convert(Unitful.DimensionlessQuantity{Float64,typeof(mm/m)}, q(1.0m/mm)) === 1.0e6mm/m
+        @test typeof(1.0cm)(q(1m)) === 100.0cm
+        @test convert(Quantity{Float64}, q(1m)) === 1.0m
+        @test convert(Quantity{Float64,𝐋}, q(1m)) === 1.0m
+        @test convert(q{Float32,𝐋,typeof(m)}, 2.0km) === q{Float32,𝐋,typeof(m)}(2000.0f0)
+        @test convert(q{Float64,𝐋,typeof(m)}, q(1.0m)) === q(1.0m)
+        @test convert(TemperatureQuantity{Rational{Int},typeof(K)}, 0°C) ===
+            TemperatureQuantity{Rational{Int},typeof(K)}(27315//100)
+        @test convert(RatioQuantity{Float64,typeof(m/mm)}, 0.5) ===
+            RatioQuantity{Float64,typeof(m/mm)}(0.0005)
+        @test_throws DimensionError convert(q{Float64,𝐋,typeof(m)}, 1.0s)
+        v = [q(0.0m)]
+        v[1] = 2.0cm
+        @test v[1] === q(0.02m)
+        c = CurvatureQuantity
+        @test convert(c, 2.0/km) === c(0.002)
+        @test only(c[2.0/km]) === c(0.002)
+        @test_throws DimensionError convert(c, 1.0m)
+        @test convert(c, c(0.5)) === c(0.5)
+        @test convert(c{Float64}, c(0.5)) === c(0.5)
+        @test c{Float32}(2.0/km) === c(0.002f0)
+        @test convert(Quantity{T,𝐋,typeof(m)} where T, 1km) === 1000m
+        mq = MutableQuantity{Float64,𝐋,typeof(m)}(1.0)
+        @test convert(typeof(mq), mq) === mq
+        @test convert(SpeedConstant, SpeedConstant()) === SpeedConstant()
+        @test SpeedConstant() + 1.0m/s === 4.0m/s
+        @test convert(Unitful.AbstractQuantity{Float64,𝐋,typeof(m)}, q(1.0m)) === q(1.0m)
+        @test @inferred(ustrip(q(1.5m))) === 1.5
+        @test @inferred(ustrip(q(1.5mm/m))) === 1.5
+        @test @inferred(ustrip(q(1.5°C))) === 1.5
+        @test @inferred(rand(typeof(q(1.0m)))) isa typeof(q(1.0m))
+        @test rand(MersenneTwister(0), typeof(q(1.0°C))) isa typeof(q(1.0°C))
+        @test round(typeof(q(1m)), 1.6m) === q(2m)
+        @test round(typeof(q(1m)), 1.5m, RoundDown) === q(1m)
+        @test floor(typeof(q(1m)), 160cm) === q(1m)
+        @test round(typeof(q(1.0m)), 126cm; digits=1) === q(1.3m)
+        @test round(typeof(q(1mm/m)), 1.6mm/m) === q(2mm/m)
+        @test round(typeof(q(1mm/m)), 1.6mm/m, RoundDown) === q(1mm/m)
+    end
 end
 
 VERSION ≥ v"1.9.0" && @testset "printf" begin

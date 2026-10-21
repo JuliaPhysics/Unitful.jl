@@ -108,11 +108,11 @@ has_unit_spacing(u) = true
 has_unit_spacing(u::Units{(Unit{:Degree, NoDims}(0, 1//1),), NoDims}) = false
 
 """
-    show(io::IO, x::Quantity)
+    show(io::IO, x::AbstractQuantity)
 Show a unitful quantity by calling [`showval`](@ref) on the numeric value, appending a
 space, and then calling `show` on a units object `U()`.
 """
-function show(io::IO, x::Quantity)
+function show(io::IO, x::AbstractQuantity)
     if isunitless(unit(x))
         showval(io, x.val, false)
     else
@@ -260,12 +260,9 @@ else
     printed_length(io, x) = length(sprint(show, x, context=io))
 end
 
-function Base.alignment(io::IO, x::Quantity)
-    if isunitless(unit(x))
-        return Base.alignment(io, x.val)
-    end
+function Base.alignment(io::IO, x::AbstractQuantity)
     length = printed_length(io, x)
     left, _ = Base.alignment(io, x.val)
-    left += BracketStyle(x.val) != NoBrackets()
+    isunitless(unit(x)) || (left += BracketStyle(x.val) != NoBrackets())
     return left, length - left
 end
