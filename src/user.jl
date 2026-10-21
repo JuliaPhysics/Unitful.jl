@@ -70,24 +70,21 @@ macro dimension(symb, abbr, name, autodocs=false)
     name_doc =  """
                     $__module__.$name{T, U}
 
-                A supertype for quantities and levels of dimension [`$__module__.$s`](@ref) with a value
-                of type `T` and units `U`.
+                A supertype for quantities and levels of dimension [`$__module__.$s`](@ref) with a value of type `T` and units `U`.
 
                 See also: [`$__module__.$s`](@ref), $name_links.
                 """
     unit_doc =  """
                     $__module__.$uname{U}
 
-                A supertype for units of dimension [`$__module__.$s`](@ref). Equivalent to
-                `Unitful.Units{U, $__module__.$s}`.
+                A supertype for units of dimension [`$__module__.$s`](@ref). Equivalent to `Unitful.Units{U, $__module__.$s}`.
 
                 See also: [`$__module__.$s`](@ref), $unit_links.
                 """
     funit_doc = """
                     $__module__.$funame{U}
 
-                A supertype for $funit_links of dimension [`$__module__.$s`](@ref). Equivalent to
-                `Unitful.FreeUnits{U, $__module__.$s}`.
+                A supertype for $funit_links of dimension [`$__module__.$s`](@ref). Equivalent to `Unitful.FreeUnits{U, $__module__.$s}`.
 
                 See also: [`$__module__.$s`](@ref).
                 """
@@ -136,8 +133,7 @@ macro derived_dimension(name, dims, autodocs=false)
     name_doc =  """
                     $__module__.$name{T, U}
 
-                A supertype for quantities and levels of dimension `$dims` with a value of type `T` and
-                units `U`.
+                A supertype for quantities and levels of dimension `$dims` with a value of type `T` and units `U`.
 
                 See also: $name_links.
                 """
@@ -151,8 +147,7 @@ macro derived_dimension(name, dims, autodocs=false)
     funit_doc = """
                     $__module__.$funame{U}
 
-                A supertype for $funit_links of dimension `$dims`. Equivalent to
-                `Unitful.FreeUnits{U, $dims}`.
+                A supertype for $funit_links of dimension `$dims`. Equivalent to `Unitful.FreeUnits{U, $dims}`.
                 """
     esc(quote
         const global ($name){T,U} = Union{
