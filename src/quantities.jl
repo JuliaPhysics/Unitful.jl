@@ -99,6 +99,35 @@ for f in (:mod, :rem)
     end
 end
 
+"""
+    rem(x::Number, ::Type{Q}) where {T, D, U, Q <: AbstractQuantity{T,D,U}}
+    x % Q
+
+Convert `x` to the units of `Q` and wrap the bare value into `T` with `rem(value, T)`.
+
+The unit conversion is computed in the numeric type of `x` and can overflow. For an integer
+type `T`, `rem` accepts only integer values: a floating-point or `Rational` value throws a
+`MethodError` even when it is integral, such as `1.0`. Other types, such as fixed-point types,
+round. The type of the converted value depends on the conversion factor, not on the value:
+`1km` to `m` has the integer factor 1000, while `100cm` to `m` has the factor `1//100` and
+gives `1//1`. Affine units such as `°C` are accepted. A mismatch of dimensions throws a
+`DimensionError`.
+
+```jldoctest
+julia> 300u"m" % typeof(UInt8(1)u"m")
+0x2c m
+
+julia> 1u"km" % typeof(1u"m")
+1000 m
+
+julia> 100u"cm" % typeof(1u"m")
+ERROR: MethodError: no method matching rem(::Rational{Int64}, ::Type{Int64})
+[...]
+```
+"""
+rem(x::Number, ::Type{Q}) where {T, D, U, Q <: AbstractQuantity{T,D,U}} =
+    Q(rem(ustrip(U(), x), T))
+
 _affineerror(f, args...) =
     throw(AffineError("an invalid operation was attempted with affine quantities: $f($(join(args, ", ")))"))
 
