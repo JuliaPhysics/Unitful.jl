@@ -36,6 +36,10 @@ export @logscale, @logunit, @dB, @B, @cNp, @Np
 export Level, Gain
 export uparse
 
+@static if VERSION ≥ v"1.11.0-DEV.469"
+    eval(Meta.parse("public withvalue"))
+end
+
 const unitmodules = Vector{Module}()
 
 function _basefactors(m::Module)

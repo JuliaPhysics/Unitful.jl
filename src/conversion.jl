@@ -136,7 +136,7 @@ end
 # needed ever since julialang/julia#28216
 convert(::Type{Quantity{T,D,U}}, x::Quantity{T,D,U}) where {T,D,U} = x
 
-function convert(::Type{Quantity{T,D}}, x::Quantity) where {T,D}
+function convert(::Type{Quantity{T,D}}, x::AbstractQuantity) where {T,D}
     (dimension(x) !== D) && throw(DimensionError(D, x))
     return Quantity{T,D,typeof(unit(x))}(convert(T, x.val))
 end
@@ -144,25 +144,34 @@ function convert(::Type{Quantity{T,D}}, x::Number) where {T,D}
     (D !== NoDims) && throw(DimensionError(D, NoDims))
     Quantity{T,NoDims,typeof(NoUnits)}(x)
 end
-function convert(::Type{Quantity{T}}, x::Quantity) where {T}
+function convert(::Type{Quantity{T}}, x::AbstractQuantity) where {T}
     Quantity{T,dimension(x),typeof(unit(x))}(convert(T, x.val))
 end
 function convert(::Type{Quantity{T}}, x::Number) where {T}
     Quantity{T,NoDims,typeof(NoUnits)}(x)
 end
 
-convert(::Type{DimensionlessQuantity{T,U}}, x::Number) where {T,U} =
-    uconvert(U(), convert(T,x))
-function convert(::Type{DimensionlessQuantity{T,U}}, x::Quantity) where {T,U}
+function convert(::Type{DimensionlessQuantity{T,U}}, x::Number) where {T,U}
+    q = uconvert(U(), convert(T, x))
+    _Quantity(T(q isa AbstractQuantity ? q.val : q), U())
+end
+function convert(::Type{DimensionlessQuantity{T,U}}, x::AbstractQuantity) where {T,U}
     if dimension(x) == NoDims
-        _Quantity(T(x.val), U())
+        _Quantity(T(ustrip(U(), x)), U())
     else
         throw(DimensionError(NoDims,x))
     end
 end
 
-convert(::Type{Number}, y::Quantity) = y
-convert(::Type{T}, y::Quantity) where {T <: Real} =
+# other AbstractQuantity subtypes are constructed from the bare numeric value
+function convert(::Type{Q}, x::Number) where {D,U,Q<:AbstractQuantity{<:Any,D,U}}
+    x isa Q && return x
+    dimension(x) === D || throw(DimensionError(D, x))
+    return Q(ustrip(U(), x))
+end
+
+convert(::Type{Number}, y::AbstractQuantity) = y
+convert(::Type{T}, y::AbstractQuantity) where {T <: Real} =
     T(uconvert(NoUnits, y))
-convert(::Type{T}, y::Quantity) where {T <: Complex} =
+convert(::Type{T}, y::AbstractQuantity) where {T <: Complex} =
     T(uconvert(NoUnits, y))

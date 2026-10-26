@@ -42,6 +42,7 @@ some subset of `Unitful.Quantity` subtypes.
     Unitful.AbstractQuantity
     Unitful.Quantity
     Unitful.DimensionlessQuantity
+    Unitful.withvalue
 ```
 
 ### Units and dimensions
