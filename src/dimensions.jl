@@ -76,7 +76,7 @@ end
 ^(x::Dimensions{T}, y::Number) where {T} = *(Dimensions{map(a->a^y, T)}())
 
 @generated function Base.literal_pow(::typeof(^), x::Dimensions{T}, ::Val{p}) where {T,p}
-    z = *(Dimensions{map(a->a^p, T)}())
+    z = *(Dimensions{(map(a->a^p, Any[T...])...,)}())
     :($z)
 end
 
@@ -86,7 +86,7 @@ end
 for (fun,pow) in ((:inv, -1//1), (:sqrt, 1//2), (:cbrt, 1//3))
     # The following are generated functions to ensure type stability.
     @eval @generated function ($fun)(x::Dimensions)
-        dimtuple = map(x->x^($pow), x.parameters[1])
+        dimtuple = (map(x->x^($pow), Any[x.parameters[1]...])...,)
         y = *(Dimensions{dimtuple}())    # sort appropriately
         :($y)
     end
