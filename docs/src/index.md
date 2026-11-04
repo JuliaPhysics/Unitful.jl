@@ -102,6 +102,18 @@ julia> mod(1hr+3minute+5s, 24s)
 17 s
 ```
 
+You can also parse units from a string
+```jldoctest
+julia> unit_str = "kg/m^2"
+"kg/m^2"
+
+julia> units = uparse(unit_str)
+kg m^-2
+
+julia> 100 * units
+100 kg m^-2
+```
+
 One useful interactive function is being able to convert to preferred (in this case SI) units. 
 
 ```jldoctest
