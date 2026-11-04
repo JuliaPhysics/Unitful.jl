@@ -608,6 +608,10 @@ earth, a unit of acceleration, defined by standard to be exactly 9.806,65 m / s^
 \nDimension: [`Unitful.𝐋`](@ref).
 \nSee Also: [`Unitful.nm`](@ref)."
 ((@unit angstrom "Å"       Angstrom             (1//10)*nm              false), const Å = angstrom)
+"    Unitful.nm
+\nNautical mile, a maritime and aviation unit of length. Defined as 1852 meters.
+\nDimension: [`Unitful.𝐋`](@ref)."
+@unit nmi        "nmi"     NauticalMile         1852m                 false
 
 # Area
 "    Unitful.ac
@@ -682,6 +686,12 @@ earth, a unit of acceleration, defined by standard to be exactly 9.806,65 m / s^
 \nDimension: 𝐌 𝐋^-1 𝐓^-2.
 \nSee Also: [`Unitful.lbf`](@ref), [`Unitful.inch`](@ref)."
 @unit psi       "psi"      PoundsPerSquareInch  1lbf/inch^2             false
+
+# Speed
+"    Unitful.kn
+\nKnot, a maritime and aviation unit of speed. Defined as 1 nautical mile per hour.
+\nDimension: 𝐋 𝐓^-1."
+@unit kn        "kn"        Knot                1nmi/hr                  false
 
 #########
 # Logarithmic scales and units
