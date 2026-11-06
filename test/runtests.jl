@@ -2088,6 +2088,31 @@ end
         @test convert(typeof(1.0dB), 1Np) ≈ 8.685889638065037dB
         @test convert(typeof(1.0dBm), 1W) == 30.0dBm
         @test_throws DimensionError convert(typeof(1.0dBm), 1V)
+        @testset "logarithmic conversion error dimensions" begin
+            for Q in (typeof(1.0dBm*s), typeof(1.0u"dBV*s"),
+                      Quantity{Level,dimension(1.0dBm*s),typeof(s)})
+                err = try
+                    convert(Q, 1s)
+                catch e
+                    e
+                end
+                @test err isa DimensionError
+                @test err.x === dimension(Q)
+                @test err.y === 1s
+                @test occursin(string(dimension(Q)), sprint(showerror, err))
+            end
+            err = try
+                convert(typeof(1.0m), 1s)
+            catch e
+                e
+            end
+            @test err isa DimensionError
+            @test err.x === m
+            @test err.y === 1s
+            @test sprint(showerror, err) == sprint(showerror, DimensionError(m, 1s))
+            @test convert(typeof(1.0m), 1cm) === 0.01m
+            @test linear(convert(typeof(1.0dBm), 1mW)) == 1mW
+        end
         @test convert(typeof(3dB), 3dB) === 3dB
         @test convert(typeof(3.0dB), 3dB) === 3.0dB
         @test convert(Float64, 0u"dBFS") === 1.0

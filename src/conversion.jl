@@ -128,7 +128,7 @@ uconvert(a::Units, x::Missing) = missing
 end
 
 function convert(::Type{Quantity{T,D,U}}, x::Number) where {T,D,U}
-    (dimension(x) != D) && throw(DimensionError(U(), x))
+    (dimension(x) != D) && throw(DimensionError(T <: Level ? D : U(), x))
     q = uconvert(U(), x)
     Quantity{T,D,U}(isa(q, AbstractQuantity) ? q.val : q)
 end
