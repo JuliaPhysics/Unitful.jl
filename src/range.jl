@@ -157,7 +157,35 @@ broadcasted(::DefaultArrayStyle{1}, ::typeof(*), x::AbstractQuantity, r::Abstrac
 const BCAST_PROPAGATE_CALLS = Union{typeof(upreferred), Units}
 broadcasted(::DefaultArrayStyle{1}, ::typeof(*), r::AbstractRange, x::Ref{<:Units}) = r * x[]
 broadcasted(::DefaultArrayStyle{1}, ::typeof(*), x::Ref{<:Units}, r::AbstractRange) = x[] * r
-broadcasted(::DefaultArrayStyle{1}, x::BCAST_PROPAGATE_CALLS, r::StepRangeLen) = StepRangeLen{typeof(x(zero(eltype(r))))}(x(r.ref), x(r.step), r.len, r.offset)
+function broadcasted(::DefaultArrayStyle{1}, x::BCAST_PROPAGATE_CALLS, r::StepRangeLen)
+    T = typeof(x(zero(eltype(r))))
+    if T <: AffineQuantity
+        # Keep reference/step arithmetic on a linear scale; convert only the
+        # final indexed value to the affine element type.
+        return _affine_steprangelen(T, r.ref, r.step, r.len, r.offset)
+    end
+    return StepRangeLen{T}(x(r.ref), x(r.step), r.len, r.offset)
+end
+
+function _affine_steprangelen(::Type{T}, ref, step, len, offset) where {T}
+    if ref isa Base.TwicePrecision || step isa Base.TwicePrecision
+        # Mixed storage would use Base's component-wise TwicePrecision-to-T
+        # conversion, which treats both components as affine points.
+        ref = ref isa Base.TwicePrecision ? ref : Base.TwicePrecision(ref, zero(ref))
+        step = step isa Base.TwicePrecision ? step : Base.TwicePrecision(step, zero(step))
+    end
+    return StepRangeLen{T}(ref, step, len, offset)
+end
+
+Base.step(r::StepRangeLen{T,R,S}) where {T<:AffineQuantity,R<:Base.TwicePrecision{<:ScalarQuantity},S<:Base.TwicePrecision{<:ScalarQuantity}} =
+    r.step.hi + r.step.lo
+
+function Base.getindex(r::StepRangeLen{T,R,S}, indices::Base.OrdinalRange{I}) where {T<:AffineQuantity,R<:Base.TwicePrecision{<:ScalarQuantity},S<:Base.TwicePrecision{<:ScalarQuantity},I<:Integer}
+    # Slice with linear arithmetic as well, including empty/singleton slices
+    # for which Base may replace the high-precision reference with a scalar.
+    raw = StepRangeLen{typeof(r.ref.hi)}(r.ref, r.step, r.len, r.offset)[indices]
+    return _affine_steprangelen(T, raw.ref, raw.step, raw.len, raw.offset)
+end
 function broadcasted(::DefaultArrayStyle{1}, x::BCAST_PROPAGATE_CALLS, r::StepRange)
     start = x(r.start)
     au_to = absoluteunit(unit(start))
@@ -193,8 +221,15 @@ function _offset_for_steprangelen(start, stop, len)
     end
 end
 
-broadcasted(::DefaultArrayStyle{1}, ::typeof(ustrip), r::StepRangeLen) =
-    StepRangeLen{typeof(ustrip(zero(eltype(r))))}(ustrip(unit(eltype(r)), r.ref), ustrip(unit(eltype(r)), r.step), r.len, r.offset)
+_ustrip_range_ref(u::Units, x::Any) = ustrip(u, x)
+_ustrip_range_ref(u::Units, x::Base.TwicePrecision) =
+    Base.TwicePrecision(ustrip(u, x.hi), ustrip(absoluteunit(u), x.lo))
+function broadcasted(::DefaultArrayStyle{1}, ::typeof(ustrip), r::StepRangeLen)
+    u = unit(eltype(r))
+    ref = _ustrip_range_ref(u, r.ref)
+    step = ustrip(absoluteunit(u), r.step)
+    return StepRangeLen{typeof(ustrip(zero(eltype(r))))}(ref, step, r.len, r.offset)
+end
 broadcasted(::DefaultArrayStyle{1}, ::typeof(ustrip), r::StepRange) =
     ustrip(unit(eltype(r)), r.start):ustrip(unit(eltype(r)), r.step):ustrip(unit(eltype(r)), r.stop)
 broadcasted(::DefaultArrayStyle{1}, ::typeof(ustrip), r::LinRange) =

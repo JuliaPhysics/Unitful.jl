@@ -1487,6 +1487,52 @@ end
                 end
             end
 
+            @testset "affine floating range conversion" begin
+                ranges = (1°C:0.1K:12°C, 1.11°C:1K:12°C,
+                          12°C:-0.1K:1°C, -300°C:0.1K:-200°C,
+                          1f0°C:0.1f0K:12f0°C,
+                          range(274.15K, step=0.1K, length=0),
+                          range(274.15K, step=0.1K, length=1),
+                          range(274.15K, step=0.1K, length=10^7))
+                same_temperature(a, b, tol) = isapprox(ustrip(K, a), ustrip(K, b);
+                    rtol=tol, atol=300tol)
+                same_coordinates(a, b, tol) = length(a) == length(b) &&
+                    all(isapprox(x, y; rtol=tol, atol=300tol) for (x,y) in zip(a,b))
+                for r in ranges, f in (°C, °F)
+                    rf = f.(r)
+                    @test rf isa StepRangeLen
+                    @test eltype(rf) === typeof(f(zero(eltype(r))))
+                    @test length(rf) == length(r)
+                    @test step(rf) == step(r)
+                    @test !(step(rf) isa AffineQuantity)
+                    @test occursin(string(f), sprint(show, rf))
+                    tol = 8eps(typeof(ustrip(zero(eltype(r)))))
+                    indices = isempty(r) ? Int[] : unique([1, min(2, length(r)), cld(length(r), 2), length(r)])
+                    @test all(same_temperature(rf[i], f(r[i]), tol) for i in indices)
+                    @test length(r) > 2000 || all(same_temperature(a, f(b), tol) for (a,b) in zip(rf, r))
+                    @test all(same_temperature(reverse(rf)[i], f(r[end-i+1]), tol) for i in indices)
+                    small_indices = 1:min(3, length(r))
+                    small = rf[small_indices]
+                    @test small isa AbstractRange
+                    @test all(same_temperature(a, f(b), tol) for (a,b) in zip(collect(small), collect(r[small_indices])))
+                    singleton = small[1:min(1, length(small))]
+                    @test singleton isa AbstractRange
+                    @test all(same_temperature(a, f(b), tol) for (a,b) in zip(collect(singleton), collect(r[1:min(1, length(r))])))
+                    stripped = ustrip.(rf)
+                    @test stripped isa AbstractRange
+                    @test length(stripped) == length(rf)
+                    @test all(isapprox(stripped[i], ustrip(rf[i]); rtol=tol, atol=300tol) for i in indices)
+                    @test length(r) > 2000 || same_coordinates(collect(stripped), [ustrip(q) for q in rf], tol)
+                    @test same_coordinates(collect(ustrip.(small)), [ustrip(q) for q in small], tol)
+                    @test same_coordinates(collect(ustrip.(singleton)), [ustrip(q) for q in singleton], tol)
+                end
+                r = 1°C:(1//10)K:12°C
+                @test collect(°C.(r)) == [°C(x) for x in r]
+                @test collect(°F.(r)) == [°F(x) for x in r]
+                r = 1.0K:0.1K:12.0K
+                @test collect(K.(r)) == collect(r)
+            end
+
             # float conversion from unitless
             r = 1:1:360
             rf = °.(r)
