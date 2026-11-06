@@ -2145,6 +2145,24 @@ end
         @test uconvertp(NoUnits, 20dB) == 100
         @test uconvertp(dB, 100) == 20dB
 
+        @testset "explicit power conventions for dimensionless quantities" begin
+            @test isapprox(ustrip(uconvertp(dB, 1.0mm/m)), -30; rtol=1e-12, atol=1e-12)
+            @test isapprox(ustrip(uconvertrp(dB, 1.0mm/m)), -60; rtol=1e-12, atol=1e-12)
+            @test isapprox(ustrip(uconvertp(Np, 1.0mm/m)), log(0.001)/2; rtol=1e-12, atol=1e-12)
+            @test isapprox(ustrip(uconvertrp(Np, 1.0mm/m)), log(0.001); rtol=1e-12, atol=1e-12)
+            for x in (1.0mm/m, GenericQuantity(1.0mm/m), 1000.0mm/m, 1.0m/mm, 1.0rad)
+                ratio = ustrip(NoUnits, x)
+                for logunit in (dB, dB_p, dB_rp, Np, Np_p, Np_rp)
+                    @test uconvertp(logunit, x) === uconvertp(logunit, ratio)
+                    @test uconvertrp(logunit, x) === uconvertrp(logunit, ratio)
+                end
+            end
+            @test isapprox(ustrip(uconvertp(dB, 0.001)), -30; rtol=1e-12, atol=1e-12)
+            @test isapprox(ustrip(uconvertrp(dB, 0.001)), -60; rtol=1e-12, atol=1e-12)
+            @test_throws DimensionError uconvertp(dB, 1.0m)
+            @test_throws DimensionError uconvertrp(dB, 1.0m)
+        end
+
         @test linear(@dB(1mW/mW)/Hz) === 1mW/Hz
         @test linear(@dB(1.4V/2.8V)/s) === 1.4V/s
 
