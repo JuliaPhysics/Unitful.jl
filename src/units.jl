@@ -134,15 +134,15 @@ Base.literal_pow(::typeof(^), x::AffineUnits, ::Val{p}) where p =
     throw(AffineError("an invalid operation was attempted with affine units: $x"))
 
 @generated function Base.literal_pow(::typeof(^), x::FreeUnits{N,D,nothing}, ::Val{p}) where {N,D,p}
-    y = *(FreeUnits{(map(a->a^p, Any[N...])...,), ()}())
+    y = *(FreeUnits{_powtuple(N, p), ()}())
     :($y)
 end
 @generated function Base.literal_pow(::typeof(^), x::ContextUnits{N,D,P,nothing}, ::Val{p}) where {N,D,P,p}
-    y = *(ContextUnits{(map(a->a^p, Any[N...])...,), (), typeof(P()^p)}())
+    y = *(ContextUnits{_powtuple(N, p), (), typeof(P()^p)}())
     :($y)
 end
 @generated function Base.literal_pow(::typeof(^), x::FixedUnits{N,D,nothing}, ::Val{p}) where {N,D,p}
-    y = *(FixedUnits{(map(a->a^p, Any[N...])...,), ()}())
+    y = *(FixedUnits{_powtuple(N, p), ()}())
     :($y)
 end
 
@@ -154,7 +154,7 @@ for (fun,pow) in ((:inv, -1//1), (:sqrt, 1//2), (:cbrt, 1//3))
     @eval @generated function ($fun)(x::FreeUnits)
         (x <: AffineUnits) && throw(
             AffineError("an invalid operation was attempted with affine units: $(x())"))
-        unittuple = (map(x->x^($pow), Any[x.parameters[1]...])...,)
+        unittuple = _powtuple(x.parameters[1], $pow)
         y = *(FreeUnits{unittuple,()}())    # sort appropriately
         :($y)
     end
@@ -162,7 +162,7 @@ for (fun,pow) in ((:inv, -1//1), (:sqrt, 1//2), (:cbrt, 1//3))
     @eval @generated function ($fun)(x::ContextUnits)
         (x <: AffineUnits) && throw(
             AffineError("an invalid operation was attempted with affine units: $(x())"))
-        unittuple = (map(x->x^($pow), Any[x.parameters[1]...])...,)
+        unittuple = _powtuple(x.parameters[1], $pow)
         promounit = ($fun)(x.parameters[3]())
         y = *(ContextUnits{unittuple,(),typeof(promounit)}())   # sort appropriately
         :($y)
@@ -171,7 +171,7 @@ for (fun,pow) in ((:inv, -1//1), (:sqrt, 1//2), (:cbrt, 1//3))
     @eval @generated function ($fun)(x::FixedUnits)
         (x <: AffineUnits) && throw(
             AffineError("an invalid operation was attempted with affine units: $(x())"))
-        unittuple = (map(x->x^($pow), Any[x.parameters[1]...])...,)
+        unittuple = _powtuple(x.parameters[1], $pow)
         y = *(FixedUnits{unittuple,()}())   # sort appropriately
         :($y)
     end
