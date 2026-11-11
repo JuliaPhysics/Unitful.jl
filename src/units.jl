@@ -49,7 +49,7 @@
     # [nm,cm^6,m^6,μs^3,s]
 
     d = (c...,)
-    f = mapreduce(dimension, *, d; init=NoDims)
+    f = mapreduce(dimension, *, c; init=NoDims)
     :(FreeUnits{$d,$f,$(a0.parameters[3])}())
 end
 *(a0::ContextUnits, a::ContextUnits...) =
@@ -134,15 +134,15 @@ Base.literal_pow(::typeof(^), x::AffineUnits, ::Val{p}) where p =
     throw(AffineError("an invalid operation was attempted with affine units: $x"))
 
 @generated function Base.literal_pow(::typeof(^), x::FreeUnits{N,D,nothing}, ::Val{p}) where {N,D,p}
-    y = *(FreeUnits{map(a->a^p, N), ()}())
+    y = *(FreeUnits{_powtuple(N, p), ()}())
     :($y)
 end
 @generated function Base.literal_pow(::typeof(^), x::ContextUnits{N,D,P,nothing}, ::Val{p}) where {N,D,P,p}
-    y = *(ContextUnits{map(a->a^p, N), (), typeof(P()^p)}())
+    y = *(ContextUnits{_powtuple(N, p), (), typeof(P()^p)}())
     :($y)
 end
 @generated function Base.literal_pow(::typeof(^), x::FixedUnits{N,D,nothing}, ::Val{p}) where {N,D,p}
-    y = *(FixedUnits{map(a->a^p, N), ()}())
+    y = *(FixedUnits{_powtuple(N, p), ()}())
     :($y)
 end
 
@@ -154,7 +154,7 @@ for (fun,pow) in ((:inv, -1//1), (:sqrt, 1//2), (:cbrt, 1//3))
     @eval @generated function ($fun)(x::FreeUnits)
         (x <: AffineUnits) && throw(
             AffineError("an invalid operation was attempted with affine units: $(x())"))
-        unittuple = map(x->x^($pow), x.parameters[1])
+        unittuple = _powtuple(x.parameters[1], $pow)
         y = *(FreeUnits{unittuple,()}())    # sort appropriately
         :($y)
     end
@@ -162,7 +162,7 @@ for (fun,pow) in ((:inv, -1//1), (:sqrt, 1//2), (:cbrt, 1//3))
     @eval @generated function ($fun)(x::ContextUnits)
         (x <: AffineUnits) && throw(
             AffineError("an invalid operation was attempted with affine units: $(x())"))
-        unittuple = map(x->x^($pow), x.parameters[1])
+        unittuple = _powtuple(x.parameters[1], $pow)
         promounit = ($fun)(x.parameters[3]())
         y = *(ContextUnits{unittuple,(),typeof(promounit)}())   # sort appropriately
         :($y)
@@ -171,7 +171,7 @@ for (fun,pow) in ((:inv, -1//1), (:sqrt, 1//2), (:cbrt, 1//3))
     @eval @generated function ($fun)(x::FixedUnits)
         (x <: AffineUnits) && throw(
             AffineError("an invalid operation was attempted with affine units: $(x())"))
-        unittuple = map(x->x^($pow), x.parameters[1])
+        unittuple = _powtuple(x.parameters[1], $pow)
         y = *(FixedUnits{unittuple,()}())   # sort appropriately
         :($y)
     end
@@ -187,7 +187,7 @@ end
 
 @generated function tensfactor(x::Units)
     tunits = x.parameters[1]
-    a = mapreduce(tensfactor, +, tunits; init=0)
+    a = mapreduce(tensfactor, +, Any[tunits...]; init=0)
     :($a)
 end
 
@@ -268,8 +268,12 @@ reference units.
 """
 @inline basefactor(x::Unit{U}) where {U} = basefactor(basefactors[U]..., 1, 0, power(x))
 
-function basefactor(::Units{U}) where {U}
-    fact1 = map(basefactor, U)
+basefactor(::Units{U}) where {U} = _basefactor_units(U)
+
+# Only called when units are defined and in the generator of `convfact`, so it is not
+# worth specializing on each tuple of units (and on the reductions over it).
+function _basefactor_units(@nospecialize(U::Tuple))
+    fact1 = Any[basefactor(u) for u in U]
     inex1 = mapreduce(first, *, fact1, init=1.0)
     float_num = mapreduce(x -> float(numerator(last(x))), *, fact1, init=1.0)
     float_den = mapreduce(x -> float(denominator(last(x))), *, fact1, init=1.0)

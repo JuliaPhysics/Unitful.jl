@@ -75,8 +75,13 @@ end
 ^(x::Dimensions{T}, y::Integer) where {T} = *(Dimensions{map(a->a^y, T)}())
 ^(x::Dimensions{T}, y::Number) where {T} = *(Dimensions{map(a->a^y, T)}())
 
+# Raise each `Unit` or `Dimension` in the tuple `xs` to the power `p`. Used in generators,
+# so it maps over a `Vector` with a single function type to avoid compiling the
+# reduction machinery once per tuple of units and once per call site.
+_powtuple(@nospecialize(xs::Tuple), p) = (map(Base.Fix2(^, p), Any[xs...])...,)
+
 @generated function Base.literal_pow(::typeof(^), x::Dimensions{T}, ::Val{p}) where {T,p}
-    z = *(Dimensions{map(a->a^p, T)}())
+    z = *(Dimensions{_powtuple(T, p)}())
     :($z)
 end
 
@@ -86,7 +91,7 @@ end
 for (fun,pow) in ((:inv, -1//1), (:sqrt, 1//2), (:cbrt, 1//3))
     # The following are generated functions to ensure type stability.
     @eval @generated function ($fun)(x::Dimensions)
-        dimtuple = map(x->x^($pow), x.parameters[1])
+        dimtuple = _powtuple(x.parameters[1], $pow)
         y = *(Dimensions{dimtuple}())    # sort appropriately
         :($y)
     end
