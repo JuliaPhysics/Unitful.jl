@@ -69,17 +69,17 @@ the result to PyPlot, for example.
 
 ```jldoctest
 julia> a = [1u"m", 2u"m"]
-2-element Vector{Quantity{Int64, 𝐋, Unitful.FreeUnits{(m,), 𝐋, nothing}}}:
+2-element Vector{Quantity{Int64, 𝐋, Unitful.LengthFreeUnits{(m,), nothing}}}:
  1 m
  2 m
 
 julia> b = ustrip(a)
-2-element reinterpret(Int64, ::Vector{Quantity{Int64, 𝐋, Unitful.FreeUnits{(m,), 𝐋, nothing}}}):
+2-element reinterpret(Int64, ::Vector{Quantity{Int64, 𝐋, Unitful.LengthFreeUnits{(m,), nothing}}}):
  1
  2
 
 julia> a[1] = 3u"m"; b
-2-element reinterpret(Int64, ::Vector{Quantity{Int64, 𝐋, Unitful.FreeUnits{(m,), 𝐋, nothing}}}):
+2-element reinterpret(Int64, ::Vector{Quantity{Int64, 𝐋, Unitful.LengthFreeUnits{(m,), nothing}}}):
  3
  2
 ```
@@ -265,3 +265,21 @@ Base.showerror(io::IO, e::AffineError) = print(io, "AffineError: $(e.x)")
 
 fp_overflow_underflow(input, result) =
     isfinite(input) && !isfinite(result) || !iszero(input) && iszero(result)
+
+"""
+    macro public(ex)
+Declares variables as public on Julia v1.11 or later, and is noop otherwise.
+See https://discourse.julialang.org/t/is-compat-jl-worth-it-for-the-public-keyword/119041
+
+Examples:
+
+```
+julia> @public x
+julia> @public x, y
+```
+"""
+macro public(ex)
+    @static Base.VERSION >= v"1.11.0-DEV.469" || return nothing
+    args = ex isa Symbol ? (ex,) : Base.isexpr(ex, :tuple) ? ex.args : error("Macro argument must be single symbol or tuple, see docstring")
+    return esc(Expr(:public, args...))
+end
