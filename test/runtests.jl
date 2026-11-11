@@ -1016,6 +1016,43 @@ Base.:(<=)(x::Issue399, y::Issue399) = x.num <= y.num
     end
 end
 
+@testset "Floating-point quantity limits and subnormals" begin
+    for T in (Float16, Float32, Float64), units in (m, mm, s, rad, FixedUnits(mm), ContextUnits(m, cm))
+        x = one(T)*units
+        Q = typeof(x)
+        for f in (floatmin, floatmax)
+            expected = f(T)*units
+            @test @inferred(f(x)) === expected
+            @test @inferred(f(Q)) === expected
+            @test typeof(f(x)) === Q
+            @test unit(f(x)) === units
+        end
+        for value in (zero(T), -zero(T), nextfloat(zero(T)), -nextfloat(zero(T)),
+                      prevfloat(floatmin(T)), floatmin(T), one(T), T(Inf), T(-Inf), T(NaN))
+            @test @inferred(issubnormal(value*units)) === issubnormal(value)
+        end
+    end
+end
+
+@testset "Concrete unitless and affine floating quantities" begin
+    for T in (Float16, Float32, Float64)
+        for Q in (Quantity{T,NoDims,typeof(NoUnits)}, Quantity{T,dimension(°C),typeof(°C)})
+            x = Q(one(T))
+            for f in (floatmin, floatmax)
+                @test @inferred(f(x)) === Q(f(T))
+                @test @inferred(f(Q)) === Q(f(T))
+                @test typeof(f(x)) === Q
+                @test unit(f(x)) === unit(x)
+                @test ustrip(f(x)) === f(T)
+            end
+            for value in (zero(T), -zero(T), nextfloat(zero(T)), -nextfloat(zero(T)),
+                          prevfloat(floatmin(T)), floatmin(T), one(T), T(Inf), T(-Inf), T(NaN))
+                @test @inferred(issubnormal(Q(value))) === issubnormal(value)
+            end
+        end
+    end
+end
+
 @testset "Fast mathematics" begin
     @testset "> fma and muladd" begin
         m2cm = ContextUnits(m,cm)

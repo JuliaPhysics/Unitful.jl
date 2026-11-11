@@ -503,6 +503,13 @@ typemin(x::AbstractQuantity{T}) where {T} = typemin(T)*unit(x)
 typemax(::Type{<:AbstractQuantity{T,D,U}}) where {T,D,U} = typemax(T)*U()
 typemax(x::AbstractQuantity{T}) where {T} = typemax(T)*unit(x)
 
+# Preserve concrete Quantity types, including NoUnits and affine coordinates.
+Base.floatmin(::Type{Quantity{T,D,U}}) where {T<:AbstractFloat,D,U} = Quantity{T,D,U}(floatmin(T))
+Base.floatmin(x::Quantity{T}) where {T<:AbstractFloat} = typeof(x)(floatmin(T))
+Base.floatmax(::Type{Quantity{T,D,U}}) where {T<:AbstractFloat,D,U} = Quantity{T,D,U}(floatmax(T))
+Base.floatmax(x::Quantity{T}) where {T<:AbstractFloat} = typeof(x)(floatmax(T))
+Base.issubnormal(x::Quantity{<:AbstractFloat}) = issubnormal(x.val)
+
 Base.literal_pow(::typeof(^), x::AbstractQuantity, ::Val{v}) where {v} =
     Quantity(Base.literal_pow(^, x.val, Val(v)),
              Base.literal_pow(^, unit(x), Val(v)))
