@@ -382,6 +382,8 @@ uconvertp(::Units{()}, x::Gain{L}) where {L} =
     fromlog(L, ifelse(isrootpower(L), 2, 1)*x.val)
 uconvertp(u::T, x::Real) where {L, G <: Gain{L}, T <: MixedUnits{G, <:Units{()}}} =
     convert(Gain{L,:p}, x)
+uconvertp(u::T, x::DimensionlessQuantity{<:Real}) where {L, G <: Gain{L}, T <: MixedUnits{G, <:Units{()}}} =
+    uconvertp(u, ustrip(NoUnits, x))
 # function uconvertp(a::MixedUnits{Gain{L}}, x::Number) where {L}
 #     dimension(a) != dimension(x) && throw(DimensionError(a,x))
 #
@@ -405,6 +407,8 @@ uconvertrp(::Units{()}, x::Gain{L}) where {L} =
     fromlog(L, ifelse(isrootpower(L), 1.0, 0.5)*x.val)
 uconvertrp(u::T, x::Real) where {L, G <: Gain{L}, T <: MixedUnits{G, <:Units{()}}} =
     convert(Gain{L,:rp}, x)
+uconvertrp(u::T, x::DimensionlessQuantity{<:Real}) where {L, G <: Gain{L}, T <: MixedUnits{G, <:Units{()}}} =
+    uconvertrp(u, ustrip(NoUnits, x))
 
 """
     linear(x::Quantity)
