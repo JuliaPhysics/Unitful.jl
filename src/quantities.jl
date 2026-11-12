@@ -216,9 +216,15 @@ cis(x::DimensionlessQuantity{<:Complex}) = exp(-imag(x)) * cis(real(x))
 cispi(x::DimensionlessQuantity{<:Real}) = Complex(reverse(sincospi(x))...)
 cispi(x::DimensionlessQuantity{<:Complex}) = exp(-(π*imag(x))) * cispi(real(x))
 
-atan(y::AbstractQuantity{T1,D,U1}, x::AbstractQuantity{T2,D,U2}) where {T1,T2,D,U1,U2} =
+# like y / x, atan(y, x) is not defined for affine quantities
+function atan(y::AbstractQuantity{T1,D,U1}, x::AbstractQuantity{T2,D,U2}) where {T1,T2,D,U1,U2}
+    (y isa AffineQuantity || x isa AffineQuantity) && _affineerror(atan, y, x)
     atan(promote(y,x)...)
-atan(y::AbstractQuantity{T,D,U}, x::AbstractQuantity{T,D,U}) where {T,D,U} = atan(y.val,x.val)
+end
+function atan(y::AbstractQuantity{T,D,U}, x::AbstractQuantity{T,D,U}) where {T,D,U}
+    (y isa AffineQuantity || x isa AffineQuantity) && _affineerror(atan, y, x)
+    atan(y.val,x.val)
+end
 atan(y::AbstractQuantity, x::AbstractQuantity) = throw(DimensionError(x,y))
 
 abs(x::AbstractQuantity) = Quantity(abs(x.val), unit(x))
