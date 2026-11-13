@@ -112,3 +112,12 @@ Base.promote_rule(::Type{Quantity{T}}, ::Type{Quantity{S,D,U}}) where {T,S,D,U} 
 
 Base.promote_rule(::Type{Quantity{S,D,U}}, ::Type{Quantity{T}}) where {T,S,D,U} =
     Quantity{promote_type(T,S)}
+
+# other AbstractQuantity subtypes promote like the Quantity with the same type parameters
+Base.promote_rule(::Type{Quantity{S1,D1,U1}},
+        ::Type{<:AbstractQuantity{S2,D2,U2}}) where {S1,D1,U1,S2,D2,U2} =
+    promote_type(Quantity{S1,D1,U1}, Quantity{S2,D2,U2})
+Base.promote_rule(::Type{Quantity{S}}, ::Type{<:AbstractQuantity{T,D,U}}) where {S,T,D,U} =
+    Quantity{promote_type(S,T)}
+Base.promote_rule(::Type{<:AbstractQuantity{S,D,U}}, ::Type{T}) where {S,D,U,T <: Number} =
+    promote_type(Quantity{S,D,U}, T)
